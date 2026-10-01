@@ -1,0 +1,88 @@
+# =============================================================================
+# publish.yml - build the website and publish it on GitHub Pages
+# =============================================================================
+# What this does, in plain words:
+#   Every time you push to the "main" branch (e.g. "Push origin" in GitHub
+#   Desktop), GitHub starts a fresh Linux computer in the cloud, installs
+#   Quarto and R, renders the site, and publishes the result at
+#   https://flomuench.github.io/Teaching_PEIB/
+# You can follow each run in the "Actions" tab of the repository.
+#
+# One-time setup on github.com: Settings > Pages > Build and deployment >
+# Source: "GitHub Actions".
+# =============================================================================
+
+name: Publish website
+
+on:
+  push:
+    branches: [main]      # run on every push to main
+  workflow_dispatch:      # ...and allow a manual "Run workflow" button
+
+# Rights the workflow needs: read the code, write to GitHub Pages, and prove
+# its identity to Pages (id-token) when deploying.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# If you push twice in quick succession, do not run two deployments at once.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: build the site into the _site folder
+  # ---------------------------------------------------------------------------
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download the repository's files onto the cloud computer
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      # 2. Install Quarto (the latest release)
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      # 3. Install R. use-public-rspm gives fast pre-built Linux packages.
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # 4. Install the R packages needed at render time. Only "shinylive" is
+      #    needed (it also brings in its dependencies). The app's own packages
+      #    (shiny) are downloaded by the student's browser, not installed here.
+      #    "any::" means "any version from CRAN is fine". We have no
+      #    DESCRIPTION file, so we list the packages directly.
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: any::shinylive
+
+      # 5. Render the website. Output goes to _site/ (see _quarto.yml).
+      #    On the first run shinylive also downloads its web assets.
+      - name: Render site
+        run: quarto render
+
+      # 6. Hand the _site folder over to GitHub Pages
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  # ---------------------------------------------------------------------------
+  # Job 2: publish what job 1 built (runs only if the build succeeded)
+  # ---------------------------------------------------------------------------
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

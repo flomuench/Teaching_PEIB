@@ -1,0 +1,15 @@
+# Rendered website (GitHub Actions rebuilds it on every push)
+_site/
+# Quarto's internal cache
+.quarto/
+# RStudio / R session files
+.Rproj.user/
+.Rhistory
+.RData
+# Local scratch folder for experiments
+_scratch/
+/.luarc.json
+# Operating-system clutter
+.DS_Store
+Thumbs.db
+desktop.ini

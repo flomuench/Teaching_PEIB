@@ -1,0 +1,34 @@
+# =============================================================================
+# _quarto.yml - settings for the whole website
+# =============================================================================
+# Quarto reads this file first. It says: "this folder is a website", which
+# pages exist, what the navigation bar looks like, and which filters to run.
+
+project:
+  type: website
+  output-dir: _site          # rendered HTML goes here (not committed to git;
+                             # GitHub Actions rebuilds it on every push)
+
+website:
+  title: "SEES0082 - Political Economy of International Business"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Tutorials       # a drop-down menu; add one line per new tutorial
+        menu:
+          - href: tutorials/tutorial01_market.qmd
+            text: "Tutorial 1 - Markets, equilibrium and welfare"
+  page-footer:
+    center: "UCL SSEES - Florian Münch - 2026/27"
+
+# The shinylive filter (in _extensions/quarto-ext/shinylive) turns
+# {shinylive-r} code chunks into apps that run inside the student's browser.
+# Declaring it here applies it to every page of the site.
+filters:
+  - shinylive
+
+format:
+  html:
+    theme: cosmo
+    toc: true                # table of contents on the right of each page

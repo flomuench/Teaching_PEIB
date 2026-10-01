@@ -1,0 +1,21 @@
+---
+title: "Political Economy of International Business"
+subtitle: "SEES0082 - interactive diagrams for the tutorials"
+---
+
+## What is this site?
+
+This site holds the **interactive diagrams** that accompany the SEES0082 tutorials. Each page explains one idea in plain language, shows the diagram from the handout, and then lets you play with it: change the assumptions and watch what happens to prices, quantities and who gains or loses.
+
+New pages are added week by week as the module progresses.
+
+## How to use the apps
+
+- **Move the sliders** on the left (on a phone: above) the diagram. The picture and the numbers update immediately.
+- **Tick or untick the boxes** to show or hide the shaded areas.
+- **Be patient the first time.** The app runs entirely in your browser, so the first load can take 10-30 seconds. After that it is fast.
+- **Nothing to install.** It works on laptops, tablets and phones, in any recent browser.
+
+## Tutorials
+
+- [Tutorial 1 - Markets, equilibrium and welfare](tutorials/tutorial01_market.qmd)
