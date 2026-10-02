@@ -1,5 +1,6 @@
 ---
 title: "Tutorial 1 - Markets, equilibrium and welfare"
+engine: markdown   # nothing to run at build time; the app runs in the browser
 ---
 
 <!--

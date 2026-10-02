@@ -28,6 +28,12 @@ website:
 filters:
   - shinylive
 
+# Pages with apps must say `engine: markdown` in their own header (see
+# tutorials/tutorial01_market.qmd). The {shinylive-r} chunks are run later by
+# the student's browser, not during the build; without that line Quarto
+# guesses Jupyter/Python, which is not installed on GitHub, and the build fails.
+# (Setting it here, for the whole site, is ignored by current Quarto.)
+
 format:
   html:
     theme: cosmo
