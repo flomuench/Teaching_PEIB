@@ -5,13 +5,17 @@ engine: markdown   # nothing to run at build time; the app runs in the browser
 
 <!--
   NOTE FOR MAINTENANCE (this comment is not shown on the website)
-  - The static picture below is made by R/make_figures.R (run it in RStudio).
+  - The static picture below is made by code/tutorial01_figures.R (run
+    code/master.R in RStudio; Part 3 makes the Tutorial 1 figures).
   - The interactive app further down is a {shinylive-r} chunk. Shinylive apps
     must be self-contained, so the chunk contains two "files":
-      app.R     - the user interface and server (written here)
-      models.R  - pulled in from ../R/models.R by Quarto's include shortcode
-                  when the site is rendered, so the app always uses the same
-                  model code as the handout figures.
+      app.R               - the user interface and server (written here)
+      functions_models.R  - pulled in from ../code/functions_models.R by
+                            Quarto's include shortcode when the site is
+                            rendered, so the app always uses the same model
+                            code as the handout figures.
+  - To try the app on your computer as a normal Shiny app before pushing,
+    switch on Part 14 (code/app_test.R) in code/master.R.
 -->
 
 ## The idea in plain language
@@ -31,7 +35,7 @@ engine: markdown   # nothing to run at build time; the app runs in the browser
 
 ## The diagram
 
-![Market equilibrium with a per-unit tax of 3 (demand $P = 12 - Q$, supply $P = 2 + Q$).](../figures/tutorial01_market_tax.png){fig-alt="Supply and demand diagram with a per-unit tax. Consumer surplus in blue, producer surplus in orange, tax revenue as a green rectangle and the deadweight loss as a red triangle." width="85%"}
+![Market equilibrium with a per-unit tax of 3 (demand $P = 12 - Q$, supply $P = 2 + Q$).](../figures/tutorial1/tutorial01_market_tax.png){fig-alt="Supply and demand diagram with a per-unit tax. Consumer surplus in blue, producer surplus in orange, tax revenue as a green rectangle and the deadweight loss as a red triangle." width="85%"}
 
 ## Try it yourself
 
@@ -48,10 +52,11 @@ The interactive version runs entirely in your browser. **The first time, it may 
 ## file: app.R
 # ---------------------------------------------------------------------------
 # Interactive supply-and-demand app (Tutorial 1)
-# The model and the plotting function live in models.R (bundled below).
+# The model and the plotting function live in functions_models.R (bundled
+# below).
 # ---------------------------------------------------------------------------
 library(shiny)
-source("models.R")   # gives us market_outcomes() and draw_market()
+source("functions_models.R")   # gives us market_outcomes() and draw_market()
 
 # ---- User interface: what students see ------------------------------------
 # sidebarLayout puts the controls on the left on a laptop; on a narrow phone
@@ -115,8 +120,8 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 
-## file: models.R
-{{< include ../R/models.R >}}
+## file: functions_models.R
+{{< include ../code/functions_models.R >}}
 ```
 
 ## Things to try
