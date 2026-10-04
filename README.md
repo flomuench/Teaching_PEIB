@@ -12,7 +12,7 @@ The diagrams are small Shiny apps that run **inside the student's browser** (via
 |---|---|
 | `_quarto.yml` | Website settings: title, navigation bar, theme, footer, shinylive filter. Add new pages to the navbar here. |
 | `index.qmd` | Home page. |
-| `tutorials/tutorial01_market.qmd` | Tutorial 1 page: explanation, static figure, interactive app, "things to try". |
+| `tutorials/tutorial01_market.qmd` | Tutorial 1 page: short intro, the interactive explorer (one app for all 12 handout figures: choose a figure, move the sliders), the static figures with the key handout text and "things to try", the welfare ledger, and the per-unit tax app (moves to Tutorial 3 later). |
 | `code/master.R` | **Start here for all R work.** Runs every R step in order (see "The R code" below). |
 | `code/functions_models.R` | **The shared model code**: all model and drawing functions (`market_outcomes()`, `draw_market()`, `draw_firm_step()`, `draw_market_step()`, ...), base R only. Used by both the website apps (bundled into each app) and the handout figures. |
 | `code/tutorial01_figures.R` | Makes the Tutorial 1 PNGs in `figures/tutorial1/` and prints the answer key numbers. |
@@ -93,5 +93,5 @@ Rules for the app code:
 
 - **Red cross in the Actions tab**: click the failed run, open the red step and read the last lines of the log. Usually a typo in a `.qmd` or `_quarto.yml` (YAML is sensitive to indentation). Fix, commit, push again.
 - **The app area stays blank or grey**: wait 30 seconds (first load). If it is still blank, open the browser's developer console (F12 or Cmd+Option+I > Console) and look for red errors. An R error in `app.R` or `functions_models.R` shows up there; test the app on your computer first with Part 14 of `code/master.R` (`code/app_test.R`), or run Parts 1 and 2 of `code/master.R` and then e.g. `draw_market(tax = 2)`.
-- **First load is slow**: expected. The browser downloads R itself (webR) the first time; later visits use the cache. The static PNG above each app is there so students see the diagram immediately.
+- **First load is slow**: expected. The browser downloads R itself (webR) the first time; later visits use the cache. The static PNGs on each page are there so students see the diagrams immediately.
 - **Site not updated after a push**: check the Actions tab; then force-refresh the page (Ctrl+F5 / Cmd+Shift+R).

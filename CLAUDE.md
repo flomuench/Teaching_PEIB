@@ -11,7 +11,7 @@ The public course website for **SEES0082 Political Economy of International Busi
 - Content is added week by week: each tutorial gets a page with a short plain-language explanation, a static figure, an interactive diagram with sliders, and "Things to try" prompts.
 - The same R code also produces static PNGs that Florian inserts into his Word tutorial handouts.
 
-Course materials (lectures, handouts, assessment) live elsewhere, in the OneDrive course folder `C:\Users\flori\OneDrive\Documents\Teaching\Political Economy of International Business`, which has its own CLAUDE.md.
+Course materials (lectures, handouts, assessment) live elsewhere, on the UCL Drive shared with co-teacher Irakli: `C:\Users\flori\OneDrive - University College London\UCL teaching\Political Economy of International Business` (working folder `PEIB_Florian_Irakli\`). The older personal OneDrive copy (`C:\Users\flori\OneDrive\Documents\Teaching\...`) is outdated. Claude's outputs (feedback documents, drafts, tables) go into `Claude outputs\Week<N>\Lecture\` or `\Tutorial\` in that folder; figures for the website stay in this repo under `figures/tutorialN/`.
 
 ## 2. Use the skill
 
@@ -21,7 +21,7 @@ Course materials (lectures, handouts, assessment) live elsewhere, in the OneDriv
 
 - `_quarto.yml` - website settings, navbar (add each new tutorial page to the "Tutorials" menu), `filters: [shinylive]`.
 - `index.qmd` - home page (keep its list of tutorials up to date).
-- `tutorials/tutorialNN_<topic>.qmd` - one page per tutorial, one app per page. Template: `tutorials/tutorial01_market.qmd`.
+- `tutorials/tutorialNN_<topic>.qmd` - one page per tutorial, at most two apps per page (each app loads its own R engine in the browser). Template: `tutorials/tutorial01_market.qmd`: one "stepper" app (the explorer: a figure drop-down, sliders shown per figure via `conditionalPanel`, an outcome table) covering all handout figures, then the static PNGs with short key text.
 - `code/master.R` - runs all R steps (open `Teaching_PEIB.Rproj`, open `code/master.R`, Source). Part 1 settings (root folder via USERPROFILE, else the working directory, checked for `_quarto.yml`; paths `c_code`, `d_tut`, `o_fig`, `o_fig_t1`, `d_site`; `pacman::p_load(shiny, shinylive)`), Part 2 sources `functions_models.R`, Part 3 Tutorial 1 figures (on), Parts 4-12 Tutorials 2-10 `tutorialNN_figures.R` (off until the scripts exist), Part 13 `website_build.R` (off), Part 14 `app_test.R` (off), Part 15 `sessionInfo()`.
 - `code/functions_models.R` - ALL model and plotting functions (base R only). Used by the apps (bundled via the include shortcode) and by the figure scripts.
 - `code/tutorial01_figures.R` - writes the Tutorial 1 PNGs (300 dpi) to `figures/tutorial1/` and prints the answer key numbers. Uses `o_fig_t1` and the functions from master Parts 1-2; never sets the working directory itself.
@@ -52,11 +52,11 @@ Course materials (lectures, handouts, assessment) live elsewhere, in the OneDriv
 - When writing into this repo from Cowork: avoid `git status` before delete permission is granted (it can leave a `.git/index.lock` that blocks GitHub Desktop); for edits to existing files prefer in-place edits and verify with `md5sum`.
 - Record decisions and progress in the Claude project doc `claude/project.md` (project "Political Economy of International Business").
 
-## 6. Status (2026-10-03)
+## 6. Status (2026-10-04)
 
-- Pipeline working end to end: Tutorial 1 "Markets, equilibrium and welfare" (supply and demand with a per-unit tax: CS, PS, tax revenue, DWL) is live.
-- R code restructured into `code/` with `master.R` (the old `R/` folder is gone).
-- Tutorial 1 has 12 approved static figures in `figures/tutorial1/`: supply side steps 1-6b (`tutorial01_firm_step1` ... `6b`), demand, equilibrium, excess supply, shortage; plus the overview sheet `figures/tutorial1/tutorial01_figures_overview.png` (a contact sheet made outside R). The live page still shows the old app and `tutorial01_market_tax.png`.
-- Next: the Tutorial 1 stepper app and page text. The tax figure (`tutorial01_market_tax.png`) moves to Tutorial 3 later, likely as a subsidy.
+- Pipeline working end to end; R code in `code/` with `master.R` (the old `R/` folder is gone).
+- Tutorial 1 has 12 approved static figures in `figures/tutorial1/`: supply side steps 1-6b (`tutorial01_firm_step1` ... `6b`), demand, equilibrium, excess supply, shortage; plus the overview sheet `figures/tutorial1/tutorial01_figures_overview.png` (a contact sheet made outside R, a handout working file, not linked on the site).
+- Tutorial 1 page rebuilt (2026-10-04): short intro, the explorer app (all 12 figures; slider defaults = handout values; app axes 0-14 x 0-20; `viewerHeight: 820`), the 12 PNGs with key handout text and "Things to try", a welfare ledger, and at the end the per-unit tax app with `tutorial01_market_tax.png` as a "Preview of Tutorial 3" (to move there later, likely as a subsidy). `tutorial01_market_equilibrium.png` was deleted (Figure 8 replaces it).
+- `draw_firm_step()` has an optional `q` (step 5a only; NULL = q*, the handout figure): a quantity above q* shades the loss on the extra units, below q* the forgone surplus (handout Question 4). `draw_market_step("demand")` treats the marginal unit (W2P = P*) as bought with a surplus of 0. The handout PNGs are unchanged.
 - Next candidates: tariff / small open economy, import quota, export tax, subsidies, externalities (market failures I and II), matching the tutorial sequence.
-- Open: test first-load time on a phone over 4G; consider a larger `viewerHeight` or smaller plot for phones (the app currently scrolls inside an 820px frame).
+- Open: test first-load time on a phone over 4G (the Tutorial 1 page loads two R engines); on phones the explorer's sidebar stacks above the plot, so the app scrolls inside its 820px frame (content about 1,250px tall at 375px width).

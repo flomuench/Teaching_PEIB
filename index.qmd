@@ -11,8 +11,8 @@ New pages are added week by week as the module progresses.
 
 ## How to use the apps
 
-- **Move the sliders** on the left (on a phone: above) the diagram. The picture and the numbers update immediately.
-- **Tick or untick the boxes** to show or hide the shaded areas.
+- **Choose a figure** in the drop-down menu (where there is one), then **move the sliders** on the left (on a phone: above) the diagram. The picture and the numbers update immediately.
+- **Tick or untick the boxes** (where there are some) to show or hide the shaded areas.
 - **Be patient the first time.** The app runs entirely in your browser, so the first load can take 10-30 seconds. After that it is fast.
 - **Nothing to install.** It works on laptops, tablets and phones, in any recent browser.
 

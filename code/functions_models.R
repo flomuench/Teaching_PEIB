@@ -815,20 +815,29 @@ firm_bracket <- function(x_edge, y0, y1, lab, xlim, ylim, curves,
 # the app at phone width); fit_top = TRUE shrinks the top margin to the
 # legend actually shown (handout PNGs without titles), while the default
 # FALSE keeps the same margins in every step (the app).
-# Returns the outcomes invisibly: firm_linear_outcomes() for steps 3-5b,
-# firm_cubic_outcomes() for steps 6a and 6b, list(c, d, shift) for 1 and 2.
+# q (step 5a only, optional): the quantity the firm actually produces. NULL
+# (the default, used by the handout PNGs) means q*, and the figure is the
+# usual one. A q above q* adds the loss on the extra units (MC > p*, red); a
+# q below q* shows the surplus forgone on the units from q to q* that are
+# not produced (hatched). Used by the website app for the question "what if
+# the firm produces q = 8 instead of q* = 6?".
+# Returns the outcomes invisibly: firm_linear_outcomes() for steps 3-5b
+# (in step 5a at the quantity q, if given), firm_cubic_outcomes() for steps
+# 6a and 6b, list(c, d, shift) for 1 and 2.
 firm_steps <- c("1", "2", "3", "4", "5a", "5b", "6a", "6b")
 
 draw_firm_step <- function(step = "1", c = 2, d = 1, shift = c(2, -2), P = 8,
                            q_unit = 3, FC = 10,
                            alpha = 6, beta = 1, gamma = 1/12,
                            xlim = c(0, 20), ylim = c(0, 20), main = NULL,
-                           tick_step = NULL, fit_top = FALSE) {
+                           tick_step = NULL, fit_top = FALSE, q = NULL) {
   step <- as.character(step)
   if (length(step) != 1 || !(step %in% firm_steps)) {
     stop("'step' must be one of ", paste(firm_steps, collapse = ", "), ".",
          call. = FALSE)
   }
+  if (!is.null(q)) check_firm_number(q, "q", min = 0,
+                                     what = "a quantity cannot be negative")
   op <- par(c("mar", "las"))  # firm_canvas() changes these two settings;
   on.exit(par(op))            # restore them when we finish
   if (step %in% c("6a", "6b")) {
@@ -840,7 +849,7 @@ draw_firm_step <- function(step = "1", c = 2, d = 1, shift = c(2, -2), P = 8,
                             fit_top = fit_top)
   } else {
     out <- draw_firm_linear(step, c, d, P, q_unit, xlim, ylim, main,
-                            tick_step = tick_step, fit_top = fit_top)
+                            tick_step = tick_step, fit_top = fit_top, q = q)
   }
   invisible(out)
 }
@@ -908,27 +917,39 @@ draw_firm_supply <- function(step, c, d, shift, xlim, ylim, main,
   list(c = c, d = d, shift = shift)
 }
 
-# Steps 3, 4, 5a and 5b (called by draw_firm_step): straight-line MC
+# Steps 3, 4, 5a and 5b (called by draw_firm_step): straight-line MC.
+# q: step 5a only, the quantity actually produced (NULL = q*), see
+# draw_firm_step(). Everything that q adds sits in "if (has_q)" blocks, so
+# with q = NULL the figure is exactly the same as before q existed.
 draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
-                             tick_step = NULL, fit_top = FALSE) {
-  out <- firm_linear_outcomes(c = c, d = d, P = P, q_unit = q_unit)
+                             tick_step = NULL, fit_top = FALSE, q = NULL) {
+  q_5a <- if (step == "5a") q else NULL
+  out <- firm_linear_outcomes(c = c, d = d, P = P, q = q_5a, q_unit = q_unit)
   mc <- function(x) c + d * x
   Qs <- out$Q_star
   rx <- diff(xlim); ry <- diff(ylim)
   pad_x <- 0.015 * rx; pad_y <- 0.02 * ry
+  # Does the firm produce a quantity other than q*? (step 5a only)
+  has_q <- !is.null(q_5a) && abs(q_5a - Qs) > 1e-9
+  # PS and TVC are shaded from 0 to q_end: q* as usual, or q if the firm
+  # stops before q* (the units from q to q* are not produced)
+  q_end <- if (has_q && q_5a < Qs) q_5a else Qs
 
   # With fit_top, count the legend entries first (same rules as below: PS
-  # and TVC in steps 5a and 5b, plus the two parts of the unit bar in 5b)
+  # and TVC in steps 5a and 5b, plus the two parts of the unit bar in 5b;
+  # with q, the loss or forgone area, and TVC if q* = 0)
   n_leg <- NULL
   if (fit_top) {
     n_leg <- (if (Qs > 0 && step %in% c("5a", "5b")) 2 else 0) +
              (if (step == "5b") (if (mc(q_unit) != P) 2 else 1) else 0)
+    if (has_q) n_leg <- n_leg + 1 + (if (Qs <= 0) 1 else 0)
   }
   firm_canvas(xlim, ylim, main, tick_step = tick_step, n_legend = n_leg)
   items <- character(0); fills <- character(0); borders <- character(0)
-  add <- function(label, col, border = NA) {
+  dens <- numeric(0)          # hatching density per legend entry (NA = solid)
+  add <- function(label, col, border = NA, density = NA_real_) {
     items <<- c(items, label); fills <<- c(fills, col)
-    borders <<- c(borders, border)
+    borders <<- c(borders, border); dens <<- c(dens, density)
   }
   # Labels must not cross the MC line or the price line
   curves <- function(x) list(mc(x), rep(P, length(x)))
@@ -938,7 +959,7 @@ draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
   a_area <- if (step == "5b") 0.2 else 0.45
 
   # Shaded areas first (lines go on top)
-  xs <- seq(0, max(Qs, 0), length.out = 101)
+  xs <- seq(0, max(q_end, 0), length.out = 101)
   m  <- pmax(0, mc(xs))            # MC, cut at zero (no negative costs drawn)
   if (Qs > 0) {
     if (step == "3") {
@@ -948,8 +969,8 @@ draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
     }
     if (step %in% c("4", "5a", "5b")) {
       # Total variable cost: the area under MC from 0 to q*
-      polygon(c(0, xs, Qs), c(0, m, 0), col = firm_fill(peib_cols["tvc"], a_area),
-              border = NA)
+      polygon(c(0, xs, q_end), c(0, m, 0),
+              col = firm_fill(peib_cols["tvc"], a_area), border = NA)
     }
     if (step %in% c("5a", "5b")) {
       # Producer surplus: the area between the price line and MC
@@ -958,6 +979,31 @@ draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
       add("Producer surplus (PS)", firm_fill(peib_cols["ps"], a_area))
       add("Total variable cost (TVC)", firm_fill(peib_cols["tvc"], a_area))
     }
+  }
+
+  # Step 5a with a quantity q other than q*
+  if (has_q && q_5a > Qs) {
+    # Units beyond q* cost more than they earn (MC > p*). Revenue covers the
+    # part of their cost below p* (TVC, purple); the part above p* is a loss
+    # (red): profit falls by this triangle.
+    xl <- seq(Qs, q_5a, length.out = 101)
+    if (P > 0) rect(Qs, 0, q_5a, P, col = firm_fill(peib_cols["tvc"], a_area),
+                    border = NA)
+    polygon(c(xl, rev(xl)), c(pmax(mc(xl), P), rep(P, length(xl))),
+            col = firm_fill(peib_cols["loss"], 0.6), border = NA)
+    if (Qs <= 0) add("Total variable cost (TVC)",
+                     firm_fill(peib_cols["tvc"], a_area))
+    add("Loss on extra units (MC > p*)", firm_fill(peib_cols["loss"], 0.6))
+  }
+  if (has_q && q_5a < Qs) {
+    # The units from q to q* are not produced: the surplus they would have
+    # earned (between p* and MC) is forgone. Hatched, in the colour of PS.
+    xf <- seq(q_5a, Qs, length.out = 101)
+    polygon(c(xf, rev(xf)), c(rep(P, length(xf)), rev(pmax(0, mc(xf)))),
+            col = peib_cols["ps"], border = peib_cols["ps"], density = 20,
+            angle = 45)
+    add("Forgone surplus (units not made)", peib_cols["ps"], peib_cols["ps"],
+        density = 30)
   }
 
   # Step 5b: one unit, drawn as a thin bar
@@ -987,13 +1033,43 @@ draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
 
   # The supply (= marginal cost) line, price line and q*
   avoid <- firm_add_box(avoid, firm_supply_line(c, d, "S = MC", xlim, ylim))
-  avoid <- firm_add_box(avoid, firm_price_line(P, xlim, ylim))
+  # With q > q*, the red loss area lies just above the price line. If it
+  # reaches under the price label (q* close to 0), the label goes below the
+  # line, if there is room (as in the U-shaped cost figures).
+  p_below <- FALSE
+  if (has_q && q_5a > Qs) {
+    lab_r <- xlim[1] + 0.01 * rx +
+      1.04 * strwidth(paste0("p* = ", firm_fmt(P), " (market price)"), cex = 0.8)
+    p_below <- Qs < lab_r && mc(min(q_5a, lab_r)) - P > 0.02 * ry &&
+      P > ylim[1] + 0.1 * ry
+  }
+  avoid <- firm_add_box(avoid, firm_price_line(P, xlim, ylim, below = p_below))
+  # (in step 5a the q* label moves right, to leave room for the brace)
   avoid <- firm_add_box(avoid, firm_qstar_guide(
-    Qs, P, xlim, ylim, dx = if (step == "5a") 0.035 else 0.01))
+    Qs, P, xlim, ylim, dx = if (step == "5a" && !has_q) 0.035 else 0.01))
   if (Qs > 0) avoid <- firm_add_box(avoid, c(l = Qs, r = Qs, b = 0, t = P))
+  if (has_q) {
+    # Dashed guide at the quantity produced, labelled just above the q axis
+    # (on a second row if the first row is taken, e.g. by the q* label)
+    top_q <- max(P, mc(q_5a))
+    segments(q_5a, 0, q_5a, top_q, lty = 2, col = "grey30")
+    avoid <- firm_add_box(avoid, c(l = q_5a, r = q_5a, b = 0, t = top_q))
+    lab <- paste0("q = ", firm_fmt(q_5a))
+    b <- peib_q_label(q_5a, lab, xlim, ylim, avoid)
+    if (is.null(b)) {
+      sz <- firm_text_size(lab, 0.8)
+      b <- firm_place_label(lab, q_5a + c(-1, 1) * (sz[["w"]] + 0.02 * rx),
+                            ylim[1] + c(0.06, 0.06 + 2.5 * sz[["h"]] / ry) * ry,
+                            q_5a + 0.01 * rx + sz[["w"]] / 2,
+                            ylim[1] + 0.06 * ry + sz[["h"]] / 2, curves, avoid,
+                            cex = 0.8, font = 1)
+    }
+    avoid <- firm_add_box(avoid, b)
+  }
 
   # Labels inside the areas (only where they fit)
   in_x <- c(xlim[1] + pad_x, Qs - pad_x)          # inside the areas: 0 to q*
+  in_a <- c(xlim[1] + pad_x, q_end - pad_x)       # PS and TVC: 0 to q_end
   if (step == "3" && Qs > 0) {
     # Preferably in the upper-left part, above the MC line (the part below MC
     # becomes TVC in step 4); otherwise anywhere inside the rectangle
@@ -1014,20 +1090,33 @@ draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
   }
 
   if (step %in% c("4", "5a") && Qs > 0) {
-    b <- firm_place_label("TVC", in_x, c(ylim[1] + pad_y, P), Qs / 2,
-                          0.4 * mc(Qs / 2), curves, avoid, ok = below_mc)
+    b <- firm_place_label("TVC", in_a, c(ylim[1] + pad_y, P), q_end / 2,
+                          0.4 * mc(q_end / 2), curves, avoid, ok = below_mc)
     if (is.null(b) && step == "4") {
       add("Total variable cost (TVC)", firm_fill(peib_cols["tvc"], a_area))
     }
     avoid <- firm_add_box(avoid, b)
   }
   if (step == "5a" && Qs > 0) {
-    firm_place_label("PS", in_x, c(ylim[1], P - pad_y), Qs / 3,
-                     (max(0, mc(0)) + 2 * P) / 3, curves, avoid, ok = above_mc)
+    b <- firm_place_label("PS", in_a, c(ylim[1], P - pad_y), q_end / 3,
+                          (max(0, mc(0)) + 2 * P) / 3, curves, avoid,
+                          ok = above_mc)
     # Total revenue = the whole rectangle from 0 to p*: a brace on its right
-    # edge (an outline would hide under the axes and guide lines)
-    firm_bracket(Qs, 0, P, "TR = PS + TVC", xlim, ylim, curves, avoid,
-                 style = "brace")
+    # edge (an outline would hide under the axes and guide lines). Only at
+    # q = q*: with another q, TR is p* x q (see the app's table).
+    if (!has_q) {
+      firm_bracket(Qs, 0, P, "TR = PS + TVC", xlim, ylim, curves, avoid,
+                   style = "brace")
+    } else {
+      avoid <- firm_add_box(avoid, b)
+    }
+  }
+  if (has_q && q_5a > Qs) {
+    # "Loss" inside the red triangle (left out if it does not fit)
+    firm_place_label("Loss", c(Qs + pad_x, q_5a - pad_x),
+                     c(P, min(mc(q_5a), ylim[2])), (Qs + 2 * q_5a) / 3,
+                     (2 * P + min(mc(q_5a), ylim[2])) / 3, curves, avoid,
+                     ok = function(x, y) y > P && y < mc(x), cex = 0.8)
   }
 
   if (step == "4") {
@@ -1102,7 +1191,9 @@ draw_firm_linear <- function(step, c, d, P, q_unit, xlim, ylim, main,
                         firm_fmt(c), ")"), xlim, ylim)
   }
 
-  firm_legend(items, fills, xlim, ylim, borders = borders)
+  # (density only if an entry is hatched; otherwise the same call as before)
+  firm_legend(items, fills, xlim, ylim, borders = borders,
+              density = if (any(!is.na(dens))) dens else NULL)
   out
 }
 
@@ -1270,7 +1361,28 @@ draw_firm_cubic <- function(P, FC, alpha, beta, gamma, xlim, ylim, main,
   avoid <- firm_add_box(avoid, c(l = x0, r = x0 + sz[["w"]],
                                  b = y0 - sz[["h"]], t = y0))
   if (Qs > 0) {
-    avoid <- firm_add_box(avoid, firm_qstar_guide(Qs, P, xlim, ylim))
+    # The q* label normally sits just right of the q* guide (as drawn by
+    # firm_qstar_guide). On wider axes (the app) it can run into the shutdown
+    # price label; only then it moves to the nearest free spot just above
+    # the q axis. (The box below is the one firm_qstar_guide would use.)
+    lab_q <- paste0("q* = ", firm_fmt(Qs))
+    right <- Qs < xlim[2] - 0.12 * rx
+    w_q <- strwidth(lab_q, cex = 0.8); h_q <- strheight(lab_q, cex = 0.8) * 1.3
+    x_q <- Qs + (if (right) 0.01 else -0.01) * rx; y_q <- ylim[1] + 0.02 * ry
+    box_q <- c(l = if (right) x_q else x_q - w_q, r = if (right) x_q + w_q else x_q,
+               b = y_q, t = y_q + h_q)
+    if (!peib_overlaps(box_q, avoid)) {
+      avoid <- firm_add_box(avoid, firm_qstar_guide(Qs, P, xlim, ylim))
+    } else {
+      segments(Qs, 0, Qs, P, lty = 2, col = "grey30")
+      points(Qs, P, pch = 19, cex = 0.9)
+      avoid <- firm_add_box(avoid, c(l = Qs, r = Qs, b = ylim[1], t = P))
+      sz <- firm_text_size(lab_q, 0.8)
+      avoid <- firm_add_box(avoid, firm_place_label(
+        lab_q, Qs + c(-3, 3) * sz[["w"]], c(ylim[1], ylim[1] + 0.15 * ry),
+        Qs + 0.01 * rx + sz[["w"]] / 2, y_q + sz[["h"]] / 2, curves, avoid,
+        cex = 0.8, font = 1))
+    }
   } else {
     # Placed left of centre, below the "Firm supply curve" label
     firm_message(paste0("Shutdown: the price (", firm_fmt(P), ") is below\n",
@@ -1412,9 +1524,12 @@ draw_market_step <- function(step = "demand", a = 14, b = 1, c = 2, d = 1,
     items <<- c(items, label); fills <<- c(fills, col)
   }
   nm <- firm_fmt(q_unit)
+  # Is the unit bought? Yes if W2P >= P* (at W2P = P*, the last unit, Q*,
+  # the buyer is indifferent and the surplus on it is 0)
+  bought <- out$W2P >= Pst - 1e-9
   if (step == "demand") {
     if (trade) add("Consumer surplus (CS)", firm_fill(peib_cols["cs"], 0.3))
-    if (out$W2P > Pst) {
+    if (bought) {
       add(paste0("Price paid for unit ", nm, " (P*)"),
           firm_fill(peib_cols["tr"], 0.9))
       add(paste0("Surplus on unit ", nm, " (W2P - P*)"),
@@ -1461,7 +1576,7 @@ draw_market_step <- function(step = "demand", a = 14, b = 1, c = 2, d = 1,
   w <- 0.012 * rx
   if (step == "demand") {
     W2P <- out$W2P
-    if (W2P > Pst) {
+    if (bought) {
       rect(q_unit - w, 0, q_unit + w, Pst, col = firm_fill(peib_cols["tr"], 0.9),
            border = NA)
       rect(q_unit - w, Pst, q_unit + w, W2P, col = firm_fill(peib_cols["cs"], 0.9),
@@ -1498,7 +1613,7 @@ draw_market_step <- function(step = "demand", a = 14, b = 1, c = 2, d = 1,
                                                   name = "Q*"))
     above_d <- function(x, y) y > dem(x)
     in_cs   <- function(x, y) y < dem(x) && y > Pst
-    if (W2P > Pst) {
+    if (bought) {
       # W2P at the top of the bar, on its right (above the demand curve)
       # (spelled out once: most students have no economics background)
       lab <- paste0("Willingness to pay (W2P) = ", firm_fmt(W2P))

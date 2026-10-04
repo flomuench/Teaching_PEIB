@@ -4,26 +4,26 @@
 #
 # Purpose: Tutorial 1 static figures (300 dpi PNGs) for the Word handouts
 #          and the website, plus the numbers for the answer key
-#       Part 1: Parameters (one firm, U-shaped costs, the market, old
-#               market figures, figure size)
+#       Part 1: Parameters (one firm, U-shaped costs, the market, the
+#               per-unit tax figure, figure size)
 #       Part 2: Helper functions that save one figure as a PNG
 #       Part 3: Supply side: one firm, steps 1 to 6b
 #       Part 4: Demand
 #       Part 5: Equilibrium, excess supply and shortage
-#       Part 6: Old market figures (equilibrium and per-unit tax)
+#       Part 6: Per-unit tax figure (to move to Tutorial 3)
 #       Part 7: Answer key numbers (printed in the console)
 #
 # Authors: Florian Münch
 # Requires: Parts 1 and 2 of code/master.R: the path variable o_fig_t1
 #     (figures/tutorial1/) and the drawing functions from
 #     code/functions_models.R
-# Creates: 14 PNGs in figures/tutorial1/ (6 x 4.5 inches, 300 dpi),
+# Creates: 13 PNGs in figures/tutorial1/ (6 x 4.5 inches, 300 dpi),
 #     overwriting the previous versions:
 #     tutorial01_firm_step1/2/3/4/5a/5b/6a/6b.png  (Part 3)
 #     tutorial01_demand.png                        (Part 4)
 #     tutorial01_equilibrium.png, tutorial01_excess_supply.png,
 #     tutorial01_shortage.png                      (Part 5)
-#     tutorial01_market_equilibrium.png, tutorial01_market_tax.png (Part 6)
+#     tutorial01_market_tax.png                    (Part 6)
 # ***********************************************************
 
 # How to run (explanatory notes):
@@ -97,9 +97,9 @@ mkt01 <- list(a = 14, b = 1, c = 2, d = 1,
               P2_high = 11,    # excess supply figure: a price above P*
               P2_low = 5)      # shortage figure: a price below P*
 
-### Old market figures (Part 6) ----
+### Per-unit tax figure (Part 6) ----
 # Demand: P = a - b*Q    Supply: P = c + d*Q    Per-unit tax: t
-# (These keep a = 12, unlike the step-by-step market figures above.)
+# (This keeps a = 12, unlike the step-by-step market figures above.)
 tut01 <- list(a = 12, b = 1, c = 2, d = 1)
 tut01_tax <- 3                     # tax used in tutorial01_market_tax.png
 
@@ -144,7 +144,7 @@ save_market_step_png <- function(step, file, P2 = NULL, main = NULL) {
   invisible(out)
 }
 
-### Old market figures: draw_market() ----
+### Per-unit tax figure: draw_market() ----
 save_market_png <- function(file, tax, main = NULL) {
   file <- file.path(o_fig_t1, file)
   png(file, width = fig_width, height = fig_height, units = "in",
@@ -191,17 +191,16 @@ m_sh  <- save_market_step_png("shortage", "shortage", P2 = mkt01$P2_low)
 
 
 # ***********************************************************
-# Part 6: Old market figures (equilibrium and per-unit tax) ----
+# Part 6: Per-unit tax figure (to move to Tutorial 3) ----
 # ***********************************************************
 # Explanatory notes:
-  # These two figures come from the first version of Tutorial 1.
-  # tutorial01_market_tax.png is the picture currently shown on the live
-  # Tutorial 1 page (tutorials/tutorial01_market.qmd). It will MOVE TO
-  # TUTORIAL 3 later (probably redrawn as a subsidy); when that happens,
-  # move its line below into the Tutorial 3 script.
-  # tutorial01_market_equilibrium.png is the no-tax version of the same
-  # market; it is not linked on any page at the moment.
-eq <- save_market_png("tutorial01_market_equilibrium.png", tax = 0)
+  # This figure comes from the first version of Tutorial 1. It is shown at
+  # the end of the Tutorial 1 page (tutorials/tutorial01_market.qmd), in the
+  # section "Preview of Tutorial 3", next to the per-unit tax app. It will
+  # MOVE TO TUTORIAL 3 later (probably redrawn as a subsidy); when that
+  # happens, move its line below into the Tutorial 3 script.
+  # (The no-tax version, tutorial01_market_equilibrium.png, was dropped in
+  # October 2026: Figure 8, tutorial01_equilibrium.png, replaces it.)
 tx <- save_market_png("tutorial01_market_tax.png", tax = tut01_tax)
 
 
@@ -236,6 +235,7 @@ print(round(c(P2 = m_es$P2, Qd = m_es$Qd, Qs = m_es$Qs,
 print(round(c(P2 = m_sh$P2, Qd = m_sh$Qd, Qs = m_sh$Qs,
               shortage = m_sh$shortage), 2))
 
-### Old market figures: without and with the per-unit tax ----
-print(round(unlist(eq[c("Q0", "P0", "CS", "PS")]), 2))
-print(round(unlist(tx[c("Qt", "Pb", "Ps", "CS", "PS", "tax_revenue", "DWL")]), 2))
+### Per-unit tax figure (to move to Tutorial 3) ----
+# Q0 and P0: the same market without the tax
+print(round(unlist(tx[c("Q0", "P0", "Qt", "Pb", "Ps", "CS", "PS", "tax_revenue",
+                        "DWL")]), 2))

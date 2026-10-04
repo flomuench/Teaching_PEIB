@@ -117,7 +117,7 @@ source(file.path(c_code, "functions_models.R"))
 # ***********************************************************
 # Part 3: Tutorial 1 figures: markets, equilibrium and welfare ----
 # ***********************************************************
-# Writes the 14 Tutorial 1 PNGs into figures/tutorial1/ (overwriting the
+# Writes the 13 Tutorial 1 PNGs into figures/tutorial1/ (overwriting the
 # old ones) and prints the answer key numbers in the console.
 if (1) source(file.path(c_code, "tutorial01_figures.R"), echo = TRUE)
 
