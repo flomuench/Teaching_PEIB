@@ -1,6 +1,6 @@
 ---
 title: "Political Economy of International Business"
-subtitle: "SEES0082 - interactive diagrams for the tutorials"
+subtitle: "Module Leader: Dr Florian Münch<br>SEES0082"   # <br> = line break: SEES0082 on its own line
 ---
 
 ## What is this site?
@@ -9,7 +9,7 @@ This site holds the **interactive diagrams** that accompany the SEES0082 tutoria
 
 New pages are added week by week as the module progresses.
 
-## How to use the apps
+## How to use this site?
 
 - **Choose a figure** in the drop-down menu (where there is one), then **move the sliders** on the left (on a phone: above) the diagram. The picture and the numbers update immediately.
 - **Tick or untick the boxes** (where there are some) to show or hide the shaded areas.
