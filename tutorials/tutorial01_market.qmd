@@ -1,6 +1,6 @@
 ---
 title: "Tutorial 1 - Markets, equilibrium and welfare"
-engine: markdown   # nothing to run at build time; the apps run in the browser
+engine: markdown   # nothing to run at build time; the app runs in the browser
 ---
 
 <!--
@@ -8,23 +8,22 @@ engine: markdown   # nothing to run at build time; the apps run in the browser
   - The static figures are made by code/tutorial01_figures.R (run
     code/master.R in RStudio; Part 3 makes the Tutorial 1 figures). They are
     the same PNGs as in the Word handout.
-  - This page has TWO apps ({shinylive-r} chunks): the Tutorial 1 explorer
-    (all 12 handout figures, one app) and, at the end, the per-unit tax app
-    (to move to Tutorial 3). Each app loads its own copy of R in the
-    browser, so do not add a third one to this page.
-  - Shinylive apps must be self-contained, so each chunk contains two
+  - This page has ONE app ({shinylive-r} chunk): the Tutorial 1 explorer
+    (all 12 handout figures in one app). Each app loads its own copy of R
+    in the browser, so a page should hold at most two apps.
+  - Shinylive apps must be self-contained, so the chunk contains two
     "files":
       app.R               - the user interface and server (written here)
       functions_models.R  - pulled in from ../code/functions_models.R by
                             Quarto's include shortcode when the site is
-                            rendered, so the apps always use the same model
+                            rendered, so the app always uses the same model
                             and drawing code as the handout figures.
   - The explorer's slider defaults are the handout values (list "handout"
     at the top of its app.R): if the handout parameters in
     code/tutorial01_figures.R change, change them there too.
-  - To try an app on your computer as a normal Shiny app before pushing,
+  - To try the app on your computer as a normal Shiny app before pushing,
     switch on Part 14 (code/app_test.R) in code/master.R (app_chunk = 1 is
-    the explorer, 2 the tax app).
+    the explorer).
 -->
 
 The starting point for this course is the *competitive market equilibrium*: a highly stylised version of a market that is seldom, potentially never, realised in the real world. Its supply-demand framework gives us a graphic and algebraic definition of the economic benefits that sellers (*producer surplus*, close to profit) and buyers (*consumer surplus*, savings relative to their willingness to pay) derive from the market. In later tutorials we progressively loosen its strict assumptions, to see how the outcomes change when there are multiple, interconnected international markets, such as global supply chains, and how "market failures" can justify government intervention.
@@ -477,96 +476,3 @@ To get to total economic welfare, economists sum producer and consumer surplus a
 : Table 1: Social accounting ledger for the competitive market equilibrium (Figure 8)
 
 *Note: In Figure 8, CS = PS = 18, so the net social benefit is 36. Government and external effects are zero because there is no intervention and, by assumption, no externalities; they become non-zero in later tutorials.*
-
-## Preview of Tutorial 3: what a per-unit tax does
-
-A per-unit tax of $t$ drives a wedge between the price buyers pay ($P_b$) and the price sellers keep ($P_s = P_b - t$), so fewer units are traded. Part of the old surplus becomes *tax revenue* for the government (tax $\times$ quantity); another part simply disappears, because trades that would have benefited both sides no longer happen. This lost surplus is the *deadweight loss (DWL)*.
-
-![Market equilibrium with a per-unit tax of 3 (demand $P = 12 - Q$, supply $P = 2 + Q$).](../figures/tutorial1/tutorial01_market_tax.png){fig-alt="Supply and demand diagram with a per-unit tax. Consumer surplus in blue, producer surplus in orange, tax revenue as a green rectangle and the deadweight loss as a red triangle." width="85%"}
-
-Move the sliders to change demand, supply and the tax. This second app loads its own copy of R, so it may take a few seconds longer than the explorer.
-
-```{shinylive-r}
-#| standalone: true
-#| viewerHeight: 820
-
-## file: app.R
-# ---------------------------------------------------------------------------
-# Interactive supply-and-demand app with a per-unit tax (to move to
-# Tutorial 3). The model and the plotting function live in
-# functions_models.R (bundled below).
-# ---------------------------------------------------------------------------
-library(shiny)
-source("functions_models.R")   # gives us market_outcomes() and draw_market()
-
-# ---- User interface: what students see ------------------------------------
-# sidebarLayout puts the controls on the left on a laptop; on a narrow phone
-# screen the sidebar automatically moves above the plot.
-ui <- fluidPage(
-  sidebarLayout(
-    sidebarPanel(
-      width = 4,
-      sliderInput("a", "Demand: highest willingness to pay (a)",
-                  min = 5, max = 20, value = 12, step = 0.5),
-      sliderInput("b", "Demand: steepness (b)",
-                  min = 0.25, max = 3, value = 1, step = 0.25),
-      sliderInput("c", "Supply: cost of the cheapest seller (c)",
-                  min = 0, max = 10, value = 2, step = 0.5),
-      sliderInput("d", "Supply: steepness (d)",
-                  min = 0.25, max = 3, value = 1, step = 0.25),
-      sliderInput("tax", "Tax per unit sold (t)",
-                  min = 0, max = 12, value = 0, step = 0.5),
-      checkboxInput("show_cs",  "Show consumer surplus", TRUE),
-      checkboxInput("show_ps",  "Show producer surplus", TRUE),
-      checkboxInput("show_tax", "Show tax revenue and deadweight loss", TRUE)
-    ),
-    mainPanel(
-      width = 8,
-      plotOutput("market_plot", height = "460px"),
-      tableOutput("outcomes")
-    )
-  )
-)
-
-# ---- Server: what happens when a slider moves -----------------------------
-server <- function(input, output, session) {
-
-  # reactive() recomputes the numbers whenever any slider it uses changes
-  outcomes <- reactive({
-    market_outcomes(input$a, input$b, input$c, input$d, input$tax)
-  })
-
-  output$market_plot <- renderPlot({
-    draw_market(a = input$a, b = input$b, c = input$c, d = input$d,
-                tax = input$tax,
-                show_cs = input$show_cs, show_ps = input$show_ps,
-                show_tax = input$show_tax,
-                xlim = c(0, 20), ylim = c(0, 20))   # fixed axes
-  }, res = 96)   # res = resolution; 96 makes text a comfortable size on screen
-
-  output$outcomes <- renderTable({
-    o <- outcomes()
-    # With no trade there is no market price: show "no trade" instead of a
-    # number (otherwise e.g. a negative "price sellers keep" could appear)
-    if (o$no_trade) { o$Pb <- NA; o$Ps <- NA }
-    data.frame(
-      Measure = c("Quantity traded", "Price buyers pay", "Price sellers keep",
-                  "Consumer surplus", "Producer surplus", "Tax revenue",
-                  "Deadweight loss", "Total surplus (CS + PS + tax revenue)"),
-      Value = round(c(o$Qt, o$Pb, o$Ps, o$CS, o$PS, o$tax_revenue,
-                      o$DWL, o$total_surplus), 2)
-    )
-  }, digits = 2, striped = TRUE, width = "100%", na = "no trade")
-}
-
-shinyApp(ui, server)
-
-## file: functions_models.R
-{{< include ../code/functions_models.R >}}
-```
-
-**Things to try**
-
-1. **Introduce a tax.** Set the tax to 2. Which area shrinks most? Check in the table that consumer surplus + producer surplus + tax revenue + deadweight loss equals the total surplus without the tax.
-2. **Who really pays the tax?** Make demand steep (b = 3) and supply flat (d = 0.25), then add a tax of 2. Does the price buyers pay rise a lot or a little? Now swap the slopes.
-3. **Taxing a market out of existence.** How high must the tax be before no trade takes place at all? What happens to tax revenue just before that point?

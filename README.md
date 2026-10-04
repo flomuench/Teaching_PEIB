@@ -12,7 +12,7 @@ The diagrams are small Shiny apps that run **inside the student's browser** (via
 |---|---|
 | `_quarto.yml` | Website settings: title, navigation bar, theme, footer, shinylive filter. Add new pages to the navbar here. |
 | `index.qmd` | Home page. |
-| `tutorials/tutorial01_market.qmd` | Tutorial 1 page: short intro, the interactive explorer (one app for all 12 handout figures: choose a figure, move the sliders), the static figures with the key handout text and "things to try", the welfare ledger, and the per-unit tax app (moves to Tutorial 3 later). |
+| `tutorials/tutorial01_market.qmd` | Tutorial 1 page: short intro, the interactive explorer (one app for all 12 handout figures: choose a figure, move the sliders), the static figures with the key handout text and "things to try", and the welfare ledger. |
 | `code/master.R` | **Start here for all R work.** Runs every R step in order (see "The R code" below). |
 | `code/functions_models.R` | **The shared model code**: all model and drawing functions (`market_outcomes()`, `draw_market()`, `draw_firm_step()`, `draw_market_step()`, ...), base R only. Used by both the website apps (bundled into each app) and the handout figures. |
 | `code/tutorial01_figures.R` | Makes the Tutorial 1 PNGs in `figures/tutorial1/` and prints the answer key numbers. |

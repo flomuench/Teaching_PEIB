@@ -194,11 +194,12 @@ m_sh  <- save_market_step_png("shortage", "shortage", P2 = mkt01$P2_low)
 # Part 6: Per-unit tax figure (to move to Tutorial 3) ----
 # ***********************************************************
 # Explanatory notes:
-  # This figure comes from the first version of Tutorial 1. It is shown at
-  # the end of the Tutorial 1 page (tutorials/tutorial01_market.qmd), in the
-  # section "Preview of Tutorial 3", next to the per-unit tax app. It will
-  # MOVE TO TUTORIAL 3 later (probably redrawn as a subsidy); when that
-  # happens, move its line below into the Tutorial 3 script.
+  # This figure comes from the first version of Tutorial 1. It is no longer
+  # shown on the Tutorial 1 page (tutorials/tutorial01_market.qmd): the
+  # section "Preview of Tutorial 3" and the per-unit tax app were removed
+  # on 2026-10-04. The figure is kept for Tutorial 3 and will MOVE THERE
+  # later (probably redrawn as a subsidy); when that happens, move its line
+  # below into the Tutorial 3 script.
   # (The no-tax version, tutorial01_market_equilibrium.png, was dropped in
   # October 2026: Figure 8, tutorial01_equilibrium.png, replaces it.)
 tx <- save_market_png("tutorial01_market_tax.png", tax = tut01_tax)
