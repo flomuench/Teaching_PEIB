@@ -1,0 +1,70 @@
+\begin{frame}{Taxe vs quota : curbe DM plate}
+
+\centering
+\begin{tikzpicture}[scale=1.2]
+
+% Paramètres (MD relativement plat)
+\pgfmathsetmacro{\m}{0.6}
+\pgfmathsetmacro{\bE}{0.2}
+\pgfmathsetmacro{\bA}{1.2}
+\pgfmathsetmacro{\k}{3.2}
+\pgfmathsetmacro{\d}{0.2} % MD plat
+
+% Points clés
+\pgfmathsetmacro{\Ro}{(\k-\bA)/(\m+\d)}
+\pgfmathsetmacro{\yRo}{\m*\Ro+\bA}
+
+\pgfmathsetmacro{\Rq}{(\k-\bE)/(\m+\d)}
+\pgfmathsetmacro{\yRq}{\m*\Rq+\bE}
+
+\pgfmathsetmacro{\Rt}{2.0}
+\pgfmathsetmacro{\tlevel}{\m*\Rt+\bA}
+\pgfmathsetmacro{\yMDatRt}{\k-\d*\Rt}
+
+\pgfmathsetmacro{\Cq}{\m*\Rq+\bA}
+
+% Axes
+\draw[->, thick] (0,0) -- (6,0) node[below] {Réduction de la pollution};
+\draw[->, thick] (0,0) -- (0,5.3) node[above] {Coût / Dommage};
+
+% Courbes
+\draw[thick, blue, dotted] (0.5, {\m*0.5+\bA}) -- (6.8, {\m*6.8+\bA});
+\node[blue] at (6.75, {\m*7.2+\bA}) {$CMA^*$};
+
+\draw[thick, blue] (0.5, {\m*0.5+\bE}) -- (6.8, {\m*6.8+\bE});
+\node[blue] at (6.75, {\m*7.2+\bE}) {$CMA_r$};
+
+\draw[thick, red] (0.5, {\k-\d*0.5}) -- (6.8, {\k-\d*6.8});
+\node[red] at (7.5, {\k-\d*6.8}) {$DM (B'')$};
+
+% Taxe
+\draw[thick, green!70!black] (0.5,\tlevel) -- (6.8,\tlevel);
+\node[left] at (0,\tlevel) {$t=C_t$};
+
+% Verticales
+\draw[dashed] (\Rt,0) -- (\Rt,\yMDatRt);
+\node[below] at (\Rt,0) {$R_t$};
+
+\draw[dashed] (\Ro,0) -- (\Ro,\yRo);
+\node[below] at (\Ro,0) {$R^{o}$};
+
+\draw[dashed] (\Rq,0) -- (\Rq,\Cq);
+\node[below] at (\Rq,0) {$R_q$};
+
+% Horizontale Cq
+\draw[dashed] (0,\Cq) -- (\Rq,\Cq);
+\node[left] at (0,\Cq) {$C_q$};
+
+% DWL taxe
+\fill[green!60, opacity=0.55]
+(\Rt,\tlevel) -- (\Ro,\yRo) -- (\Rt,\yMDatRt) -- cycle;
+\node at ({(\Rt+\Ro)/2 -0.1}, {\tlevel+0.6}) {$DWL_t$};
+
+% DWL quota
+\fill[yellow, opacity=0.55]
+(\Ro,\yRo) -- (\Rq,\yRq) -- (\Rq,\Cq) -- cycle;
+\node at ({(\Ro+\Rq)/2 +0.15}, {\yRo+0.95}) {$DWL_q$};
+
+\end{tikzpicture}
+
+\end{frame}
