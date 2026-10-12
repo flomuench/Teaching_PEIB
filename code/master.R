@@ -6,7 +6,8 @@
 #       Part 1: Settings: clean start, folder paths, packages
 #       Part 2: Load the model and drawing functions
 #       Part 3: Tutorial 1 figures                          (on)
-#       Parts 4-12: Tutorials 2 to 10 figures               (off)
+#       Part 4: Tutorial 2 figures                          (on)
+#       Parts 5-12: Tutorials 3 to 10 figures               (off)
 #       Part 13: Build the website locally                  (off)
 #       Part 14: Test an app locally as a normal Shiny app  (off)
 #       Part 15: Session information
@@ -14,9 +15,9 @@
 # Authors: Florian Münch
 # Requires: the repository folder (the one with _quarto.yml), opened via
 #     Teaching_PEIB.Rproj; the scripts in code/
-# Creates: figures/tutorialN/*.png (Part 3: PNGs for the Word handouts
-#     and the website); _site/ (Part 13: the rendered website, not
-#     committed)
+# Creates: figures/tutorialN/*.png (Parts 3 and 4: PNGs for the Word
+#     handouts and the website); _site/ (Part 13: the rendered website,
+#     not committed)
 # ***********************************************************
 
 # How to use (explanatory notes):
@@ -77,9 +78,10 @@ o_fig  <- file.path(root, "figures")     # PNGs for handouts and website
 d_site <- file.path(root, "_site")       # rendered website (Part 13)
 
 # One figures subfolder per tutorial: figures/tutorial1/, figures/tutorial2/,
-# ... (no leading zero in the folder name). Add o_fig_t2 <- file.path(o_fig,
-# "tutorial2") etc. here when the next tutorial's figures script exists.
+# ... (no leading zero in the folder name). Add o_fig_t3 <- file.path(o_fig,
+# "tutorial3") etc. here when the next tutorial's figures script exists.
 o_fig_t1 <- file.path(o_fig, "tutorial1")   # Tutorial 1 figures (Part 3)
+o_fig_t2 <- file.path(o_fig, "tutorial2")   # Tutorial 2 figures (Part 4)
 
 dir.create(o_fig, showWarnings = FALSE)  # create figures/ if it is missing
 
@@ -87,10 +89,12 @@ dir.create(o_fig, showWarnings = FALSE)  # create figures/ if it is missing
 # Explanatory notes:
   # The figures need NO package: functions_models.R uses base R only,
   # because it is also bundled into the browser apps, where every package
-  # means a longer download for students. Only two optional parts need one:
+  # means a longer download for students. Only optional parts need one:
   #   shiny     - Part 14 runs an app on this computer as a normal Shiny app
   #   shinylive - Part 13: when Quarto renders the site, it calls this R
   #               package to turn each {shinylive-r} chunk into a browser app
+  #   png       - Part 4: only for the Tutorial 2 overview sheet (a working
+  #               file that shows all figures at once); never used in apps
   # Quarto itself is a separate program, not an R package (see README.md);
   # code/website_build.R calls it directly, so the quarto R package is not
   # needed. pacman::p_load() installs a package if it is missing, then
@@ -101,7 +105,9 @@ if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load(
   # Interactive apps
   shiny,      # app_test.R (Part 14)
-  shinylive   # used by Quarto when rendering the website (Part 13)
+  shinylive,  # used by Quarto when rendering the website (Part 13)
+  # Figure overview sheets (working files, not on the website)
+  png         # tutorial02_figures.R, Part 9: reads the PNGs back in
 )
 
 
@@ -109,8 +115,9 @@ pacman::p_load(
 # Part 2: Load the model and drawing functions ----
 # ***********************************************************
 # Defines market_outcomes(), draw_market(), draw_firm_step(),
-# draw_market_step(), the colour palette peib_cols and their helpers.
-# Nothing is drawn yet. (No echo: the file is 1,700 lines long.)
+# draw_market_step() (Tutorial 1), chain_outcomes() and the draw_chain_*()
+# functions (Tutorial 2), the colour palette peib_cols and their helpers.
+# Nothing is drawn yet. (No echo: the file is 3,000 lines long.)
 source(file.path(c_code, "functions_models.R"))
 
 
@@ -126,16 +133,18 @@ if (1) source(file.path(c_code, "tutorial01_figures.R"), echo = TRUE)
 # Parts 4-12: Tutorials 2 to 10 ----
 # ***********************************************************
 # Explanatory notes:
-  # These lines are switched off (if (0)) because the scripts do not exist
+  # Parts 5-12 are switched off (if (0)) because their scripts do not exist
   # yet; a switched-off line is skipped, so it cannot cause an error. When a
-  # tutorial's figures are ready: copy code/tutorial01_figures.R to the new
+  # tutorial's figures are ready: copy code/tutorial02_figures.R to the new
   # name as a template, replace its figures, then change if (0) to if (1).
   # Each tutorial saves its PNGs in its own folder figures/tutorialN/ (e.g.
-  # Tutorial 2: figures/tutorial2/, path o_fig_t2 defined in Part 1; in the
-  # copied script, replace every o_fig_t1 by o_fig_t2).
+  # Tutorial 3: figures/tutorial3/, path o_fig_t3 to be defined in Part 1;
+  # in the copied script, replace every o_fig_t2 by o_fig_t3).
 
-### Part 4: Tutorial 2 ----
-if (0) source(file.path(c_code, "tutorial02_figures.R"), echo = TRUE)
+### Part 4: Tutorial 2: the nickel-battery value chain ----
+# Writes the Tutorial 2 PNGs (student and tutor versions) and the overview
+# sheet into figures/tutorial2/ and prints the answer key numbers.
+if (1) source(file.path(c_code, "tutorial02_figures.R"), echo = TRUE)
 
 ### Part 5: Tutorial 3 ----
 # Will also take over tutorial01_market_tax.png (probably redrawn as a

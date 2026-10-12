@@ -13,3 +13,5 @@ _scratch/
 .DS_Store
 Thumbs.db
 desktop.ini
+# Course slide sources (LaTeX, KCL/Namur/PEIB): kept out of the public site
+Latex slides/
