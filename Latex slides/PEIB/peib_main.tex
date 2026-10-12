@@ -9,35 +9,49 @@
 %   py "$HOME/.claude/skills/latex-teaching/scripts/build.py" peib_main.tex --runs 1
 %   or compile on Overleaf (upload this file alone) and save peib_main.pdf here.
 % Export one PNG per page (0.83 = \Large shown as 12 pt in Word), one line.
-% Student version (\showanswers = 0, 33 pages):
-%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main.pdf --out png/week2 --size-factor 0.83 --names w2_01_forms,w2_02_deriv,w2_03_integral,w2_04_triangle,w2_05_arealine,w2_06_model,w2_07_we1a,w2_08_we1b,w2_09_we2,w2_rn_q13,w2_rn_q14,w2_10_we3a,w2_11_we3b,w2_12_we4,w2_13_elast_def,w2_14_elast_read,w2_15_elast_example,w2_16_we5,w2_17_we6a,w2_18_we6b,w2_19_we6c,w2_20_we6d,w2_21_we6e,w2_rn_q24b,w2_rn_q24c,w2_rn_q31a,w2_rn_q31b,w2_rn_q32,w2_22_we7,w2_23_we8a,w2_24_we8b,w2_25_we9a,w2_26_we9b
-% Tutor version (\showanswers = 1, 54 pages, tutor frames interleaved
+% Student version (\showanswers = 0, 13 pages):
+%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main.pdf --out png/week2 --size-factor 0.83 --names w2_wt1_firm,w2_wt1_industry,w2_wt2_innovation,w2_wt3_equilibrium,w2_wt3_welfare,w2_wt4_elasticity,w2_wt5_firm,w2_wt5_industry,w2_wt6_derived,w2_wt7_chain,w2_appA_forms,w2_appC_passthrough,w2_appC_derived
+% Tutor version (\showanswers = 1, 34 pages, tutor frames interleaved
 % after the question they answer; file names = labels in file order):
-%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main.pdf --out png/week2_tutor --size-factor 0.83 --names w2_01_forms,w2_02_deriv,w2_03_integral,w2_04_triangle,w2_05_arealine,w2_06_model,w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_07_we1a,w2_08_we1b,w2_09_we2,w2_rn_q13,w2_ans_q13c,w2_rn_q14,w2_10_we3a,w2_11_we3b,w2_ans_q21a,w2_ans_q21b,w2_12_we4,w2_ans_q22a,w2_ans_q22b,w2_ans_q22c,w2_13_elast_def,w2_14_elast_read,w2_15_elast_example,w2_16_we5,w2_ans_q23,w2_17_we6a,w2_18_we6b,w2_19_we6c,w2_20_we6d,w2_21_we6e,w2_rn_q24b,w2_rn_q24c,w2_rn_q31a,w2_rn_q31b,w2_ans_q31c,w2_rn_q32,w2_22_we7,w2_ans_q33a,w2_ans_q33b,w2_23_we8a,w2_24_we8b,w2_ans_we8a,w2_ans_we8b,w2_25_we9a,w2_26_we9b,w2_ans_q34a0,w2_ans_q34a1,w2_ans_q34b,w2_ans_q34c,w2_ans_q34d0,w2_ans_q34d1
+%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main.pdf --out png/week2_tutor --size-factor 0.83 --names w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_wt1_firm,w2_wt1_industry,w2_wt2_innovation,w2_wt3_equilibrium,w2_wt3_welfare,w2_ans_q21a,w2_ans_q21b,w2_ans_q22a,w2_ans_q22c,w2_ans_q22b,w2_wt4_elasticity,w2_ans_q23a,w2_ans_q23c,w2_wt5_firm,w2_wt5_industry,w2_ans_q31b,w2_wt6_derived,w2_ans_q32a,w2_ans_q32b,w2_ans_q32n1,w2_ans_q32n2,w2_wt7_chain,w2_ans_q33a0,w2_ans_q33a1,w2_ans_q33b,w2_ans_q33c,w2_ans_q33c1,w2_ans_q33c2,w2_appA_forms,w2_appC_passthrough,w2_appC_derived
 % Compile one week only: uncomment the matching \includeonlyframes line below.
 %
 % Student vs tutor version: frames inside \ifnum\showanswers=1 (labels
 % w2_ans_<question>, tags (M1), (M2), ...) reproduce the algebra of the
 % model responses; keep \showanswers at 0 when exporting images for the
 % student handout. Student tags (1), (2), ... are identical in both
-% versions. Tutor labels: w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_ans_q13c,w2_ans_q21a,w2_ans_q21b,w2_ans_q22a,w2_ans_q22b,w2_ans_q22c,w2_ans_q23,w2_ans_q31c,w2_ans_q33a,w2_ans_q33b,w2_ans_we8a,w2_ans_we8b,w2_ans_q34a0,w2_ans_q34a1,w2_ans_q34b,w2_ans_q34c,w2_ans_q34d0,w2_ans_q34d1
+% versions. Student frames only contain formulas that appear in the
+% student-facing text (walkthroughs, appendices); anything from a model
+% response is a tutor frame.
 %
-% Frames labelled w2_rn_<question> answer Florian's review notes of 12 Oct
-% (show rather than ask); drop them if the handout revision goes another way.
-% Florian's note on Q3.1 [171] says "d)", but the question has parts a-c;
-% part c (shift of battery supply per pound of P_N) is kept tutor-only
-% (w2_ans_q31c) until he confirms.
-% Handout [189] should say "with b + g = 2, s = 1" (b = 1 from [177] on);
-% frame w2_24_we8b writes the upstream rate as (b + g)/((b + g) + s).
-%
-% Source of the week 2 content: handout version 3 (2026-10-12),
-% student_text.md and tutor_text.md (export of the student and tutor Word
-% files). Paragraph indices [n] in the frame comments refer to
-% student_text.md; [Tn] to tutor_text.md.
-% Notation follows the handout: the refresher writes TC = a + bq + cq^2,
-% the area and pass-through frames write P = A - bQ and P = u + sQ
-% (a different b); from Worked example 7 on, b is the slope of battery
-% demand (= 1) and g the slope of other battery marginal cost (= 1).
+% Source of the week 2 content: handout version 4 (2026-10-12, 22:54),
+% seminar2_handout.docx (student master) and
+% seminar2_handout_with_model_responses.docx (generated from it by
+% make_tutor.py). Paragraph indices [n] in the frame comments refer to
+% the student text export (student3_text.md), [Tn] to the tutor export
+% (tutor3_text.md). The handout keeps 13 equation image slots, one per
+% student frame, in this order (the image follows the paragraph named):
+%   w2_wt1_firm          Walkthrough 1, Step 1 ("... so we solve the same equation for q")
+%   w2_wt1_industry      Walkthrough 1, Step 3 ("... each moving only a little up its MC curve")
+%   w2_wt2_innovation    Walkthrough 2 ("Repeating Steps 1 to 3 with the new cost function ...")
+%   w2_wt3_equilibrium   Walkthrough 3 ("The market clears where ...")
+%   w2_wt3_welfare       Walkthrough 3 ("With linear curves, consumer and producer surplus ...")
+%   w2_wt4_elasticity    Walkthrough 4 ("Elasticity: how responsive quantity is to price ...")
+%   w2_wt5_firm          Walkthrough 5 ("Read only. The algebra is the same as in Question 1.1 ...")
+%   w2_wt5_industry      Walkthrough 5 (directly after w2_wt5_firm)
+%   w2_wt6_derived       Walkthrough 6 ("For any nickel price PN, the battery market clears ...")
+%   w2_wt7_chain         Walkthrough 7 ("The innovation travels down the chain in two stages ...")
+%   w2_appA_forms        Appendix A ("Moving between the two forms is simple algebra ...")
+%   w2_appC_passthrough  Appendix C ("Pass-through in elasticities ...")
+%   w2_appC_derived      Appendix C ("Repeat the derivation of Walkthrough 6 in general terms ...")
+% The tutor handout has one more slot, inside the model response to
+% Question 2.3 between parts (b) and (c): frame w2_ans_q23c.
+% Retired frames (refresher, old worked examples, review-note frames) are
+% in archive.tex next to this file.
+% Notation follows the handout: Walkthrough 4 writes P = A - bQ and
+% P = u + sQ; from Walkthrough 7 on, b is the slope of battery demand
+% (= 1) and g the slope of other battery marginal cost (= 1), so the
+% nickel demand slope is b + g = 2.
 % =====================================================================
 
 \documentclass{beamer}
@@ -86,7 +100,7 @@
 \newcommand{\showanswers}{0}
 
 % SELECTIVE COMPILATION: uncomment one line to build a single week
-% \includeonlyframes{w2_01_forms,w2_02_deriv,w2_03_integral,w2_04_triangle,w2_05_arealine,w2_06_model,w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_07_we1a,w2_08_we1b,w2_09_we2,w2_rn_q13,w2_ans_q13c,w2_rn_q14,w2_10_we3a,w2_11_we3b,w2_ans_q21a,w2_ans_q21b,w2_12_we4,w2_ans_q22a,w2_ans_q22b,w2_ans_q22c,w2_13_elast_def,w2_14_elast_read,w2_15_elast_example,w2_16_we5,w2_ans_q23,w2_17_we6a,w2_18_we6b,w2_19_we6c,w2_20_we6d,w2_21_we6e,w2_rn_q24b,w2_rn_q24c,w2_rn_q31a,w2_rn_q31b,w2_ans_q31c,w2_rn_q32,w2_22_we7,w2_ans_q33a,w2_ans_q33b,w2_23_we8a,w2_24_we8b,w2_ans_we8a,w2_ans_we8b,w2_25_we9a,w2_26_we9b,w2_ans_q34a0,w2_ans_q34a1,w2_ans_q34b,w2_ans_q34c,w2_ans_q34d0,w2_ans_q34d1}
+% \includeonlyframes{w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_wt1_firm,w2_wt1_industry,w2_wt2_innovation,w2_wt3_equilibrium,w2_wt3_welfare,w2_ans_q21a,w2_ans_q21b,w2_ans_q22a,w2_ans_q22c,w2_ans_q22b,w2_wt4_elasticity,w2_ans_q23a,w2_ans_q23c,w2_wt5_firm,w2_wt5_industry,w2_ans_q31b,w2_wt6_derived,w2_ans_q32a,w2_ans_q32b,w2_ans_q32n1,w2_ans_q32n2,w2_wt7_chain,w2_ans_q33a0,w2_ans_q33a1,w2_ans_q33b,w2_ans_q33c,w2_ans_q33c1,w2_ans_q33c2,w2_appA_forms,w2_appC_passthrough,w2_appC_derived}
 
 \begin{document}
 
@@ -99,143 +113,16 @@
 
 
 %========================
-% WEEK 2: Linked markets, elasticities, pass-through (Tutorial 2)
+% WEEK 2: Linked markets, pass-through, welfare along a value chain
+% (Tutorial 2). Handout structure: Exercise 1 (Questions 1.1-1.2,
+% Walkthroughs 1-2), Exercise 2 (Walkthrough 3, Questions 2.1-2.2,
+% Walkthrough 4, Question 2.3), Exercise 3 (Walkthrough 5, Question 3.1,
+% Walkthrough 6, Question 3.2, Walkthrough 7, Question 3.3),
+% Appendices A (two forms), B (refresher, text only), C (optional).
 %========================
 \section{Week 2}
 
-% --- Section II.D [69]-[74], Table 3: direct and inverse form -------------
-% Hand check: Q = P - 50 <=> P = 50 + Q; Q = 85 - 0.5P <=> 0.5P = 85 - Q
-% <=> P = 170 - 2Q. Slopes: demand dQ/dP = -0.5, dP/dQ = -2 = 1/(-0.5);
-% supply 1 and 1.
-\begin{frame}[plain,label=w2_01_forms]
-  \Large
-  \[
-    \tag{1}\;\text{Direct form: } Q^S(P), \quad Q^D(P)
-  \]
-  \[
-    \tag{2}\;\text{Inverse form: } P^S(Q), \quad P^D(Q)
-  \]
-  \[
-    \tag{3}\;Q^S = P - 50 \;\Leftrightarrow\; P = 50 + Q
-  \]
-  \[
-    \tag{4}\;Q^D = 85 - 0.5P \;\Leftrightarrow\; P = 170 - 2Q
-  \]
-
-  \vspace{0.5em}
-  \begin{itemize}\Large
-    \item Valid for $P \ge 50$ (supply), $P \le 170$ (demand)
-    \item Inverse slope $= 1 /$ direct slope
-    \item Demand: $-0.5$ and $-2$; supply: $1$ and $1$
-  \end{itemize}
-\end{frame}
-
-% --- Section II.E [76]: derivative of a quadratic ---------------------------
-\begin{frame}[plain,label=w2_02_deriv]
-  \Large
-  \[
-    \tag{5}\;TC(q) = a + bq + cq^2
-  \]
-  \[
-    \tag{6}\;MC(q) = \frac{dTC}{dq} = b + 2cq
-  \]
-
-  \vspace{0.75em}
-  \begin{itemize}\Large
-    \item $a$: fixed cost, disappears in the derivative
-    \item $bq$ contributes $b$; $cq^2$ contributes $2cq$
-    \item $MC$: the cost of one more unit
-  \end{itemize}
-\end{frame}
-
-% --- Section II.E [77]-[78]: from marginal to total, producer surplus -------
-\begin{frame}[plain,label=w2_03_integral]
-  \Large
-  \[
-    \tag{7}\;TVC(q) = \int_0^{q} MC(x)\,dx = bq + cq^2
-  \]
-  \begin{align*}
-    \tag{8}\;PS &= TR - TVC = P \times q - TVC(q)\\
-                &= \int_0^{q} \bigl[P - MC(x)\bigr]\,dx
-  \end{align*}
-
-  \vspace{0.5em}
-  \begin{itemize}\Large
-    \item Integral $=$ area under $MC$, $0$ to $q$
-    \item $PS$: between price line and $MC$
-  \end{itemize}
-\end{frame}
-
-% --- Section II.E [79]: triangles, CS and PS -------------------------------
-\begin{frame}[plain,label=w2_04_triangle]
-  \Large
-  \begin{align*}
-    \tag{9}\;\text{Area of a triangle} &= \tfrac{1}{2} \times \text{base}\\
-                                       &\phantom{=}\; \times \text{height}
-  \end{align*}
-  \[
-    \tag{10}\;CS = \tfrac{1}{2}\, Q^* \,(\text{demand intercept} - P^*)
-  \]
-  \[
-    \tag{11}\;PS = \tfrac{1}{2}\, Q^* \,(P^* - \text{supply intercept})
-  \]
-
-  \vspace{0.75em}
-  \begin{itemize}\Large
-    \item Base $= Q^*$ on the quantity axis
-    \item Height $=$ vertical distance on the price axis
-  \end{itemize}
-\end{frame}
-
-% --- Section II.E [80]: area under a straight line (Question 3.4d) ---------
-% Hand check: 220*40 - 0.5*40^2 = 8800 - 800 = 8000;
-% 50*40 + 0.5*40^2 = 2000 + 800 = 2800
-% A, b and u, s are the intercepts and slopes of the two lines (rectangle
-% minus or plus a triangle), as in Worked example 6.
-\begin{frame}[plain,label=w2_05_arealine]
-  \Large
-  \[
-    \tag{12}\;\int_0^{Q} (A - bx)\,dx = AQ - \tfrac{1}{2} b Q^2
-  \]
-  \[
-    \tag{13}\;\int_0^{Q} (u + sx)\,dx = uQ + \tfrac{1}{2} s Q^2
-  \]
-  \[
-    \tag{14}\;220 \times 40 - \tfrac{1}{2} \times 40^2 = 8{,}800 - 800 = 8{,}000
-  \]
-  \[
-    \tag{15}\;50 \times 40 + \tfrac{1}{2} \times 40^2 = 2{,}800
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Under $P = 220 - Q$ and $MC = 50 + Q$
-    \item Needed in Question 3.4d
-  \end{itemize}
-\end{frame}
-
-% --- Section III [82]-[88]: the model ---------------------------------------
-\begin{frame}[plain,label=w2_06_model]
-  \Large
-  \[
-    \tag{16}\;TC_N(q) = 20 + 50q + 5q^2
-  \]
-  \[
-    \tag{17}\;TC_B(q) = 20 + (P_N + 50)q + 5q^2
-  \]
-  \[
-    \tag{18}\;P_B = 220 - Q_B, \qquad Q_N = Q_B
-  \]
-
-  \vspace{0.5em}
-  \begin{itemize}\Large
-    \item $q$: one firm; $Q$: industry (10 firms)
-    \item $P_N q$: the nickel bill
-    \item Innovation: $TC_N = 20 + 20q + 5q^2$
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Question 1.1 model responses [T107]-[T109] ----------------------
+% --- Tutor: Question 1.1 model responses [T57]-[T59] ------------------------
 % Hand check: FC = 20; TVC = 50q + 5q^2; MC = 50 + 2*5q = 50 + 10q;
 % 90 = 50 + 10q => 10q = 40 => q* = 4
 \ifnum\showanswers=1
@@ -260,7 +147,7 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 1.2 a-b model responses [T114]-[T115] ------------------
+% --- Tutor: Question 1.2 a-b model responses [T63] --------------------------
 % Hand check: TR = 90*4 = 360; TVC(4) = 200 + 5*16 = 200 + 80 = 280;
 % trapezium 0.5*(50 + 90)*4 = 0.5*140*4 = 280
 \ifnum\showanswers=1
@@ -284,7 +171,7 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 1.2 c-e model responses [T116]-[T118] ------------------
+% --- Tutor: Question 1.2 c-e model responses [T63]-[T64] --------------------
 % Hand check: PS = 360 - 280 = 80; triangle 0.5*4*40 = 80;
 % profit = 360 - 280 - 20 = 60; PS = profit + FC: 80 = 60 + 20
 \ifnum\showanswers=1
@@ -311,12 +198,12 @@
 \end{frame}
 \fi
 
-% --- Worked example 1, step 1 [96]-[98]: the firm's supply function ---------
+% --- Walkthrough 1, Step 1 [56]: the supply function of one firm -----------
 % Hand check: P = 50 + 10q => 10q = P - 50 => q = (P - 50)/10; q(50) = 0
-\begin{frame}[plain,label=w2_07_we1a]
+\begin{frame}[plain,label=w2_wt1_firm]
   \Large
   \begin{align*}
-    \tag{19}\;P &= MC(q) = 50 + 10q\\
+    \tag{1}\;P &= MC(q) = 50 + 10q\\
     \Rightarrow 10q &= P - 50\\
     \Rightarrow q(P) &= \frac{P - 50}{10}, \quad P \ge 50
   \end{align*}
@@ -329,17 +216,17 @@
   \end{itemize}
 \end{frame}
 
-% --- Worked example 1, steps 2-3 [99]-[102]: the industry supply curve ------
+% --- Walkthrough 1, Steps 2-3 [58]-[59]: the industry supply curve ---------
 % Hand check: Q = 10*(P - 50)/10 = P - 50 => P = 50 + Q; firm slope 10,
 % industry slope 1 (+1 pound: +0.1 per firm, +1 for 10 firms)
-\begin{frame}[plain,label=w2_08_we1b]
+\begin{frame}[plain,label=w2_wt1_industry]
   \Large
   \begin{align*}
-    \tag{20}\;Q_N(P) &= 10 \times q(P) = 10 \times \frac{P - 50}{10}\\
+    \tag{2}\;Q_N(P) &= 10 \times q(P) = 10 \times \frac{P - 50}{10}\\
                     &= P - 50
   \end{align*}
   \[
-    \tag{21}\;P_N = 50 + Q_N
+    \tag{3}\;P_N = 50 + Q_N
   \]
 
   \vspace{0.5em}
@@ -350,186 +237,112 @@
   \end{itemize}
 \end{frame}
 
-% --- Worked example 2 [107]-[110]: the innovation shifts supply -------------
+% --- Walkthrough 2 [65]-[68]: the innovation shifts the supply curves ------
 % Hand check: MC = 20 + 10q; q = (P - 20)/10 (P >= 20); Q = P - 20,
-% P = 20 + Q. Vertical shift 50 - 20 = 30 at every Q; horizontal:
-% industry (P - 20) - (P - 50) = 30, firm 30/10 = 3
-\begin{frame}[plain,label=w2_09_we2]
+% P = 20 + Q. Vertical shift 50 - 20 = 30 at every Q
+\begin{frame}[plain,label=w2_wt2_innovation]
   \Large
   \[
-    \tag{22}\;MC(q) = \frac{dTC_N}{dq} = 20 + 10q
+    \tag{4}\;MC(q) = \frac{dTC_N}{dq} = 20 + 10q
   \]
   \[
-    \tag{23}\;q(P) = \frac{P - 20}{10}, \quad P \ge 20
+    \tag{5}\;q(P) = \frac{P - 20}{10}, \quad P \ge 20
   \]
   \[
-    \tag{24}\;Q_N = P - 20 \;\Leftrightarrow\; P_N = 20 + Q_N
+    \tag{6}\;Q_N = P - 20 \;\Leftrightarrow\; P_N = 20 + Q_N
   \]
 
   \vspace{0.5em}
   \begin{itemize}\Large
+    \item Steps 1 to 3 with the new cost function
     \item Down by $30$ at every $Q$ (the cost change)
-    \item Right by $30$ units (industry, slope $1$)
-    \item Right by $3$ units (firm, slope $10$)
+    \item A shift of supply, not a movement along it
   \end{itemize}
 \end{frame}
 
-% --- Review note to Question 1.3a-b [104]-[105], answers [T131]-[T132] ------
-% Hand check: P = 90: q = 40/10 = 4, 10*4 = 40 = 90 - 50;
-% P = 120: q = 70/10 = 7, 10*7 = 70 = 120 - 50
-\begin{frame}[plain,label=w2_rn_q13]
-  \Large
-  \[
-    \tag{25}\;P_N = 90: \quad q = \frac{90 - 50}{10} = 4
-  \]
-  \[
-    \tag{26}\;Q_N = 10 \times 4 = 40 = 90 - 50 \;\checkmark
-  \]
-  \[
-    \tag{27}\;P_N = 120: \quad q = \frac{120 - 50}{10} = 7
-  \]
-  \[
-    \tag{28}\;Q_N = 10 \times 7 = 70 = 120 - 50 \;\checkmark
-  \]
-
-  \vspace{0.5em}
-  \begin{itemize}\Large
-    \item Industry $= 10 \times$ one firm, at every price
-    \item Industry curve: $Q_N = P_N - 50$
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Question 1.3c model response [T133] ------------------------------
-% Hand check: Q = 11*(P - 50)/10 = 1.1(P - 50) = 1.1P - 55;
-% P = 50 + Q/1.1, 1/1.1 = 0.909 ~ 0.91; at P = 90: 1.1*40 = 44 vs 40 (+4)
-\ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q13c]
-  \Large
-  \begin{align*}
-    \tag{M11}\;Q_N &= 11 \times \frac{P_N - 50}{10} = 1.1(P_N - 50)\\
-                  &= 1.1P_N - 55
-  \end{align*}
-  \[
-    \tag{M12}\;P_N = 50 + \frac{Q_N}{1.1} \approx 50 + 0.91\,Q_N
-  \]
-  \[
-    \tag{M13}\;P_N = 90: \quad Q_N = 1.1 \times 40 = 44
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Same intercept $50$, flatter curve
-    \item Right by $4$ units at $P_N = 90$
-  \end{itemize}
-\end{frame}
-\fi
-
-% --- Review note to Question 1.4a-b [113]-[114], answers [T145]-[T146] ------
-% Hand check: q = (90 - 20)/10 = 7; Q^S = 90 - 20 = 70 = 10*7;
-% Q^D = 85 - 0.5*90 = 85 - 45 = 40; excess supply 70 - 40 = 30
-\begin{frame}[plain,label=w2_rn_q14]
-  \Large
-  \[
-    \tag{29}\;\text{After, } P_N = 90: \quad q = \frac{90 - 20}{10} = 7
-  \]
-  \[
-    \tag{30}\;Q^S_N = 90 - 20 = 70 \quad (= 10 \times 7)
-  \]
-  \[
-    \tag{31}\;Q^D_N = 85 - 0.5 \times 90 = 40
-  \]
-  \[
-    \tag{32}\;\text{Excess supply} = 70 - 40 = 30
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Unsold nickel: sellers undercut each other
-    \item The price falls until $Q^S_N = Q^D_N$
-  \end{itemize}
-\end{frame}
-
-% --- Worked example 3, inverse form [124] -----------------------------------
+% --- Walkthrough 3 [80]: equilibrium before the innovation -----------------
 % Hand check: 170 - 2Q = 50 + Q => 120 = 3Q => Q = 40; P = 90;
-% demand 170 - 80 = 90
-\begin{frame}[plain,label=w2_10_we3a]
+% demand 170 - 80 = 90; 40/10 = 4 per firm
+\begin{frame}[plain,label=w2_wt3_equilibrium]
   \Large
   \begin{align*}
-    \tag{33}\;170 - 2Q &= 50 + Q\\
+    \tag{7}\;170 - 2Q &= 50 + Q\\
     \Rightarrow 3Q &= 120\\
     \Rightarrow Q_0 &= 40
   \end{align*}
   \begin{align*}
-    \tag{34}\;P_0 &= 50 + 40 = 90\\
+    \tag{8}\;P_0 &= 50 + 40 = 90\\
     \text{Check: } 170 - 2 \times 40 &= 90 \;\checkmark
   \end{align*}
 
   \vspace{0.3em}
   \begin{itemize}\Large
     \item Inverse form: set the two prices equal
+    \item $E_0 = (40, 90)$; $4$ units per firm
   \end{itemize}
 \end{frame}
 
-% --- Worked example 3, direct form [125]-[126] ------------------------------
-% Hand check: 85 - 0.5P = P - 50 => 135 = 1.5P => P = 90; Q = 40;
-% 40/10 = 4 per firm
-\begin{frame}[plain,label=w2_11_we3b]
+% --- Walkthrough 3 [82]: welfare before the innovation ---------------------
+% Hand check: CS = 0.5*40*80 = 1600; PS = 0.5*40*40 = 800; TS = 2400
+% (the per-firm check 10 * 80 = 800 is tutor-only: PS = 80 answers Q1.2c)
+\begin{frame}[plain,label=w2_wt3_welfare]
   \Large
   \begin{align*}
-    \tag{35}\;85 - 0.5P &= P - 50\\
-    \Rightarrow 1.5P &= 135\\
-    \Rightarrow P_0 &= 90
+    \tag{9}\;CS_{N,0} &= \tfrac{1}{2} \times 40 \times (170 - 90)\\
+                     &= \tfrac{1}{2} \times 40 \times 80 = 1{,}600
+  \end{align*}
+  \begin{align*}
+    \tag{10}\;PS_{N,0} &= \tfrac{1}{2} \times 40 \times (90 - 50)\\
+                      &= \tfrac{1}{2} \times 40 \times 40 = 800
   \end{align*}
   \[
-    \tag{36}\;Q_0 = 90 - 50 = 40
+    \tag{11}\;TS_{N,0} = 1{,}600 + 800 = 2{,}400
   \]
 
   \vspace{0.3em}
   \begin{itemize}\Large
-    \item Direct form: set the two quantities equal
-    \item $E_0 = (Q_0, P_0) = (40, 90)$
-    \item $4$ units per firm, as in Exercise 1
+    \item The two triangles in Figure 4
   \end{itemize}
 \end{frame}
 
-% --- Tutor: Question 2.1a model response [T163] -----------------------------
+% --- Tutor: Question 2.1a model response [T102] -----------------------------
 % Hand check: 170 - 2Q = 20 + Q => 150 = 3Q => Q = 50; P = 70;
 % 170 - 100 = 70; q = (70 - 20)/10 = 5
 \ifnum\showanswers=1
 \begin{frame}[plain,label=w2_ans_q21a]
   \Large
   \begin{align*}
-    \tag{M14}\;170 - 2Q &= 20 + Q\\
+    \tag{M11}\;170 - 2Q &= 20 + Q\\
     \Rightarrow 3Q &= 150\\
     \Rightarrow Q_1 &= 50
   \end{align*}
   \begin{align*}
-    \tag{M15}\;P_1 &= 20 + 50 = 70\\
+    \tag{M12}\;P_1 &= 20 + 50 = 70\\
     \text{Check: } 170 - 2 \times 50 &= 70 \;\checkmark
   \end{align*}
   \[
-    \tag{M16}\;q = \frac{70 - 20}{10} = 5 \quad (\text{was } 4)
+    \tag{M13}\;q = \frac{70 - 20}{10} = 5 \quad (\text{was } 4)
   \]
 \end{frame}
 \fi
 
-% --- Tutor: Question 2.1a (direct form) and 2.1c [T163], [T165] -------------
+% --- Tutor: Question 2.1a (direct form) and 2.1b [T102]-[T103] --------------
 % Hand check: 85 - 0.5P = P - 20 => 105 = 1.5P => P = 70; Q = 50;
 % dP = 70 - 90 = -20; dQ = 50 - 40 = 10; MC of 50th unit 20 + 50 = 70
 \ifnum\showanswers=1
 \begin{frame}[plain,label=w2_ans_q21b]
   \Large
   \begin{align*}
-    \tag{M17}\;85 - 0.5P &= P - 20\\
+    \tag{M14}\;85 - 0.5P &= P - 20\\
     \Rightarrow 1.5P &= 105\\
     \Rightarrow P_1 &= 70
   \end{align*}
   \[
-    \tag{M18}\;Q_1 = 70 - 20 = 50
+    \tag{M15}\;Q_1 = 70 - 20 = 50
   \]
   \begin{align*}
-    \tag{M19}\;\Delta P &= 70 - 90 = -20\\
-    \tag{M20}\;\Delta Q &= 50 - 40 = +10
+    \tag{M16}\;\Delta P &= 70 - 90 = -20\\
+    \tag{M17}\;\Delta Q &= 50 - 40 = +10
   \end{align*}
   \begin{itemize}\Large
     \item $MC$ of the 50th unit: $20 + 50 = 70 = P_1$
@@ -537,58 +350,61 @@
 \end{frame}
 \fi
 
-% --- Worked example 4 [130]-[133]: welfare before the innovation ------------
-% Hand check: CS = 0.5*40*80 = 1600; PS = 0.5*40*40 = 800;
-% TS = 2400; 10 firms * 80 = 800
-\begin{frame}[plain,label=w2_12_we4]
-  \Large
-  \begin{align*}
-    \tag{37}\;CS_{N,0} &= \tfrac{1}{2} \times 40 \times (170 - 90)\\
-                      &= \tfrac{1}{2} \times 40 \times 80 = 1{,}600
-  \end{align*}
-  \begin{align*}
-    \tag{38}\;PS_{N,0} &= \tfrac{1}{2} \times 40 \times (90 - 50)\\
-                      &= \tfrac{1}{2} \times 40 \times 40 = 800
-  \end{align*}
-  \[
-    \tag{39}\;TS_{N,0} = 1{,}600 + 800 = 2{,}400
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Check: $10$ firms $\times\ 80 = 800$
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Question 2.2a model response [T174] -----------------------------
+% --- Tutor: Question 2.2a model response [T107] -----------------------------
 % Hand check: CS = 0.5*50*(170 - 70) = 0.5*50*100 = 2500;
 % PS = 0.5*50*(70 - 20) = 0.5*50*50 = 1250; TS = 3750
 \ifnum\showanswers=1
 \begin{frame}[plain,label=w2_ans_q22a]
   \Large
   \begin{align*}
-    \tag{M21}\;CS_{N,1} &= \tfrac{1}{2} \times 50 \times (170 - 70)\\
+    \tag{M18}\;CS_{N,1} &= \tfrac{1}{2} \times 50 \times (170 - 70)\\
                        &= \tfrac{1}{2} \times 50 \times 100 = 2{,}500
   \end{align*}
   \begin{align*}
-    \tag{M22}\;PS_{N,1} &= \tfrac{1}{2} \times 50 \times (70 - 20)\\
+    \tag{M19}\;PS_{N,1} &= \tfrac{1}{2} \times 50 \times (70 - 20)\\
                        &= \tfrac{1}{2} \times 50 \times 50 = 1{,}250
   \end{align*}
   \[
-    \tag{M23}\;TS_{N,1} = 2{,}500 + 1{,}250 = 3{,}750
+    \tag{M20}\;TS_{N,1} = 2{,}500 + 1{,}250 = 3{,}750
   \]
 \end{frame}
 \fi
 
-% --- Tutor: Question 2.2b-c model responses [T175]-[T176] -------------------
+% --- Tutor: Question 2.2a per-firm check [T107] -----------------------------
+% Hand check: TR = 70*5 = 350; TVC = 20*5 + 5*25 = 100 + 125 = 225;
+% PS = 125; 10*125 = 1250
+\ifnum\showanswers=1
+\begin{frame}[plain,label=w2_ans_q22c]
+  \Large
+  \[
+    \tag{M21}\;TR = 70 \times 5 = 350
+  \]
+  \[
+    \tag{M22}\;TVC = 20 \times 5 + 5 \times 5^2 = 225
+  \]
+  \[
+    \tag{M23}\;PS = 350 - 225 = 125
+  \]
+  \[
+    \tag{M24}\;10 \times 125 = 1{,}250 = PS_{N,1} \;\checkmark
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Per firm, after the innovation ($q = 5$)
+  \end{itemize}
+\end{frame}
+\fi
+
+% --- Tutor: Question 2.2b-c model responses [T108]-[T109] -------------------
 % Hand check: 2500 - 1600 = 900; 1250 - 800 = 450; 3750 - 2400 = 1350
 \ifnum\showanswers=1
 \begin{frame}[plain,label=w2_ans_q22b]
   \Large
   \begin{align*}
-    \tag{M24}\;\Delta CS_N &= 2{,}500 - 1{,}600 = +900\\
-    \tag{M25}\;\Delta PS_N &= 1{,}250 - 800 = +450\\
-    \tag{M26}\;\Delta TS_N &= 3{,}750 - 2{,}400 = +1{,}350
+    \tag{M25}\;\Delta CS_N &= 2{,}500 - 1{,}600 = +900\\
+    \tag{M26}\;\Delta PS_N &= 1{,}250 - 800 = +450\\
+    \tag{M27}\;\Delta TS_N &= 3{,}750 - 2{,}400 = +1{,}350
   \end{align*}
 
   \vspace{0.3em}
@@ -599,251 +415,67 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 2.2a per-firm check [T174] -----------------------------
-% Hand check: TR = 70*5 = 350; TVC = 20*5 + 5*25 = 100 + 125 = 225;
-% PS = 125; 10*125 = 1250
-\ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q22c]
-  \Large
-  \[
-    \tag{M27}\;TR = 70 \times 5 = 350
-  \]
-  \[
-    \tag{M28}\;TVC = 20 \times 5 + 5 \times 5^2 = 225
-  \]
-  \[
-    \tag{M29}\;PS = 350 - 225 = 125
-  \]
-  \[
-    \tag{M30}\;10 \times 125 = 1{,}250 = PS_{N,1} \;\checkmark
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Per firm, after the innovation ($q = 5$)
-  \end{itemize}
-\end{frame}
-\fi
-
-% --- Technical box [137]-[141]: definition of the price elasticity ---------
-\begin{frame}[plain,label=w2_13_elast_def]
+% --- Walkthrough 4 [88]: definition of the price elasticity ----------------
+% Hand check: definition only; (dQ/dP)(P/Q) is the limit of (dQ/Q)/(dP/P)
+\begin{frame}[plain,label=w2_wt4_elasticity]
   \Large
   \begin{align*}
-    \tag{40}\;\varepsilon_D &= \frac{\%\Delta Q}{\%\Delta P}
+    \tag{12}\;\varepsilon_D &= \frac{\%\Delta Q}{\%\Delta P}
       = \frac{\Delta Q / Q}{\Delta P / P}\\
     &= \frac{\Delta Q}{\Delta P} \times \frac{P}{Q}
   \end{align*}
   \[
-    \tag{41}\;\varepsilon_D = \frac{dQ}{dP} \times \frac{P}{Q}
+    \tag{13}\;\varepsilon_D = \frac{dQ}{dP} \times \frac{P}{Q}
     \qquad \text{(point elasticity)}
   \]
 
-  \vspace{0.5em}
+  \vspace{0.3em}
   \begin{itemize}\Large
     \item $dQ/dP$: slope of the direct form $Q(P)$
     \item $P/Q$ cancels the units: a pure number
+    \item $\varepsilon_S$: same formula, positive
+    \item $|\varepsilon| > 1$ elastic, $|\varepsilon| < 1$ inelastic
   \end{itemize}
 \end{frame}
 
-% --- Technical box [142], [144]: reading the number, slope vs elasticity ---
-% Check of the slope link at E0 = (40, 90): P/Q = 2.25; b = 2.25/1.125 = 2;
-% s = 2.25/2.25 = 1 (the nickel slopes)
-\begin{frame}[plain,label=w2_14_elast_read]
-  \Large
-  \[
-    \tag{42}\;\varepsilon_S = \frac{dQ^S}{dP} \times \frac{P}{Q} > 0
-  \]
-  \[
-    \tag{43}\;b = \frac{P/Q}{|\varepsilon_D|}, \qquad s = \frac{P/Q}{\varepsilon_S}
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item $b, s$: slopes of the inverse curves
-    \item $|\varepsilon_D|$: elastic $> 1$, unit $= 1$, inelastic $< 1$
-    \item Vertical demand: $\varepsilon_D = 0$ ($b$ infinite)
-    \item Horizontal demand: $\varepsilon_D \to -\infty$ ($b = 0$)
-  \end{itemize}
-\end{frame}
-
-% --- Technical box [143]: constant slope, changing elasticity --------------
-% Hand check: P = 20: Q = 100 - 40 = 60, eps = -2*20/60 = -0.667;
-% P = 40: Q = 100 - 80 = 20, eps = -2*40/20 = -4
-\begin{frame}[plain,label=w2_15_elast_example]
-  \Large
-  \[
-    \tag{44}\;Q = 100 - 2P \;\Rightarrow\; \frac{dQ}{dP} = -2
-  \]
-  \[
-    \tag{45}\;\varepsilon_D\big|_{P = 20} = -2 \times \frac{20}{60} = -0.67
-  \]
-  \[
-    \tag{46}\;\varepsilon_D\big|_{P = 40} = -2 \times \frac{40}{20} = -4
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item $P = 20$: $Q = 60$ (inelastic)
-    \item $P = 40$: $Q = 20$ (elastic)
-    \item One slope, a new elasticity at every point
-  \end{itemize}
-\end{frame}
-
-% --- Worked example 5 [146]-[147]: elasticities of the nickel market at E0 -
-% Hand check: -0.5*90/40 = -0.5*2.25 = -1.125; 1*90/40 = 2.25
-\begin{frame}[plain,label=w2_16_we5]
-  \Large
-  \[
-    \tag{47}\;Q_N = 85 - 0.5P_N \;\Rightarrow\; \frac{dQ}{dP} = -0.5
-  \]
-  \[
-    \tag{48}\;\varepsilon_D = -0.5 \times \frac{90}{40} = -1.125
-  \]
-  \[
-    \tag{49}\;Q_N = P_N - 50 \;\Rightarrow\; \frac{dQ}{dP} = 1
-  \]
-  \[
-    \tag{50}\;\varepsilon_S = 1 \times \frac{90}{40} = 2.25
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Price $+1\%$: demand about $-1.1\%$
-    \item Price $+1\%$: supply about $+2.25\%$
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Question 2.3 model responses [T194]-[T196] ----------------------
+% --- Tutor: Question 2.3a model response [T124] -----------------------------
 % Hand check: 70/50 = 1.4; eps_D = -0.5*1.4 = -0.7; eps_S = 1*1.4 = 1.4;
 % P/Q at E0 = 90/40 = 2.25
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q23]
+\begin{frame}[plain,label=w2_ans_q23a]
   \Large
   \[
-    \tag{M31}\;\varepsilon_D = -0.5 \times \frac{70}{50} = -0.7
+    \tag{M28}\;\varepsilon_D = -0.5 \times \frac{70}{50} = -0.7
   \]
   \[
-    \tag{M32}\;\varepsilon_S = 1 \times \frac{70}{50} = 1.4
+    \tag{M29}\;\varepsilon_S = 1 \times \frac{70}{50} = 1.4
   \]
   \[
-    \tag{M33}\;\frac{P}{Q}: \quad \frac{90}{40} = 2.25 \;\longrightarrow\; \frac{70}{50} = 1.4
+    \tag{M30}\;\frac{P}{Q}: \quad \frac{90}{40} = 2.25 \;\longrightarrow\; \frac{70}{50} = 1.4
   \]
 
   \vspace{0.3em}
   \begin{itemize}\Large
     \item Slopes unchanged; $P/Q$ has fallen
-    \item Sellers more responsive: $1.4 > 0.7$
+    \item Demand now inelastic: $0.7 < 1$
   \end{itemize}
 \end{frame}
 \fi
 
-% --- Worked example 6, step 1 [153]-[154]: the general set-up --------------
-\begin{frame}[plain,label=w2_17_we6a]
-  \Large
-  \[
-    \tag{51}\;\rho = \frac{\text{price fall}}{\text{cost fall}} = \frac{20}{30} = \frac{2}{3}
-  \]
-  \[
-    \tag{52}\;P = A - bQ, \qquad P = u + sQ
-  \]
-  \[
-    \tag{53}\;u \;\longrightarrow\; u - k
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item $b, s \ge 0$: steepness of demand and supply
-    \item Nickel: $A = 170$, $b = 2$, $u = 50$, $s = 1$
-    \item Innovation: $k = 30$
-  \end{itemize}
-\end{frame}
-
-% --- Worked example 6, step 2 [155]-[157]: equilibrium before and after ----
-% Hand check: (170 - 50)/3 = 120/3 = 40; (170 - 50 + 30)/3 = 150/3 = 50
-\begin{frame}[plain,label=w2_18_we6b]
-  \Large
-  \begin{align*}
-    \tag{54}\;A - bQ &= u + sQ\\
-    \Rightarrow (b + s)Q &= A - u\\
-    \Rightarrow Q_0 &= \frac{A - u}{b + s} = \frac{170 - 50}{3} = 40
-  \end{align*}
-  \begin{align*}
-    \tag{55}\;A - bQ &= u - k + sQ\\
-    \Rightarrow Q_1 &= \frac{A - u + k}{b + s} = \frac{170 - 50 + 30}{3} = 50
-  \end{align*}
-\end{frame}
-
-% --- Worked example 6, step 3 [158]: the changes ---------------------------
-% Hand check: dQ = 30/3 = 10; dP = -2*10 = -20 = -30*2/3
-\begin{frame}[plain,label=w2_19_we6c]
-  \Large
-  \[
-    \tag{56}\;\Delta Q = Q_1 - Q_0 = \frac{k}{b + s} = \frac{30}{3} = 10
-  \]
-  \begin{align*}
-    \tag{57}\;\Delta P &= -b \times \Delta Q = -k \times \frac{b}{b + s}\\
-                      &= -30 \times \frac{2}{3} = -20
-  \end{align*}
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Movement along the demand curve (slope $-b$)
-  \end{itemize}
-\end{frame}
-
-% --- Worked example 6, step 4 [159], [161]: the pass-through rate ----------
-% Hand check: rho = 2/(2 + 1) = 2/3; price fall 2/3*30 = 20;
-% extra MC 1/3*30 = 10; 20 + 10 = 30
-\begin{frame}[plain,label=w2_20_we6d]
-  \Large
-  \[
-    \tag{58}\;\rho = \frac{-\Delta P}{k} = \frac{b}{b + s} = \frac{2}{2 + 1} = \frac{2}{3}
-  \]
-  \[
-    \tag{59}\;k = \frac{b}{b + s}\,k + \frac{s}{b + s}\,k = 20 + 10
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item $20$: the fall in the price
-    \item $10$: extra $MC$ of $10$ more units
-    \item Every firm still sets $P = MC$
-  \end{itemize}
-\end{frame}
-
-% --- Worked example 6, step 5 [160]: the same result with elasticities -----
-% Hand check: 2.25 + 1.125 = 3.375; 2.25/3.375 = 0.6667 = 2/3
-\begin{frame}[plain,label=w2_21_we6e]
-  \Large
-  \begin{align*}
-    \tag{60}\;\rho &= \frac{b}{b + s}
-      = \frac{1/|\varepsilon_D|}{1/|\varepsilon_D| + 1/\varepsilon_S}\\
-    &= \frac{\varepsilon_S}{\varepsilon_S + |\varepsilon_D|}
-  \end{align*}
-  \[
-    \tag{61}\;\rho = \frac{2.25}{2.25 + 1.125} = \frac{2.25}{3.375} = \frac{2}{3}
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item $b = (P/Q)/|\varepsilon_D|$, $s = (P/Q)/\varepsilon_S$; $P/Q$ cancels
-    \item More elastic supply: more pass-through
-  \end{itemize}
-\end{frame}
-
-% --- Review note to Question 2.4b [162]-[163], answer [T212] ----------------
+% --- Tutor: Question 2.3c model response [T127]; image slot [T126] ---------
 % Hand check: b/(b + s) = 1/(1 + s/b) -> 1 as b -> infinity; b = 0: 0/s = 0;
-% s = 0: b/b = 1
-\begin{frame}[plain,label=w2_rn_q24b]
+% s = 0: b/b = 1; b = 0: Q = 90 - 20 = 70 (+30 units)
+\ifnum\showanswers=1
+\begin{frame}[plain,label=w2_ans_q23c]
   \Large
   \[
-    \tag{62}\;\rho = \frac{b}{b + s} = \frac{1}{1 + s/b} \xrightarrow{\;b \to \infty\;} 1
+    \tag{M31}\;\rho = \frac{b}{b + s} = \frac{1}{1 + s/b} \xrightarrow{\;b \to \infty\;} 1
   \]
   \[
-    \tag{63}\;b = 0: \quad \rho = \frac{0}{0 + s} = 0
+    \tag{M32}\;b = 0: \quad \rho = \frac{0}{0 + s} = 0
   \]
   \[
-    \tag{64}\;s = 0: \quad \rho = \frac{b}{b + 0} = 1
+    \tag{M33}\;s = 0: \quad \rho = \frac{b}{b + 0} = 1
   \]
 
   \vspace{0.3em}
@@ -853,42 +485,18 @@
     \item $s = 0$: flat supply, constant $MC$
   \end{itemize}
 \end{frame}
+\fi
 
-% --- Review note to Question 2.4c [162]-[163], answer [T213] ----------------
-% Hand check: tax 30 shifts supply up by 30 (u -> u + 30); price rise
-% 30*2/3 = 20; producers receive +20, pay 30: net -10 = -30*1/3
-\begin{frame}[plain,label=w2_rn_q24c]
-  \Large
-  \[
-    \tag{65}\;\text{Tax \pounds 30: } \quad u \;\longrightarrow\; u + 30
-  \]
-  \begin{align*}
-    \tag{66}\;\Delta P &= +30 \times \frac{b}{b + s}\\
-                       &= 30 \times \frac{2}{3} = +20
-  \end{align*}
-  \begin{align*}
-    \tag{67}\;\text{Producers} &= +20 - 30\\
-                               &= -10 \text{ per unit}
-  \end{align*}
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Buyers pay $2/3$ of the tax, producers $1/3$
-    \item A tax is the mirror image of the innovation
-    \item Preview of Tutorial 3
-  \end{itemize}
-\end{frame}
-
-% --- Review note to Question 3.1a-b [170]-[171], answers [T224]-[T225] -----
+% --- Walkthrough 5 [108]: the battery firm's marginal cost and supply ------
 % Hand check: d/dq [20 + (P_N + 50)q + 5q^2] = P_N + 50 + 10q;
 % P_B = P_N + 50 + 10q => 10q = P_B - P_N - 50 => q = (P_B - P_N - 50)/10
-\begin{frame}[plain,label=w2_rn_q31a]
+\begin{frame}[plain,label=w2_wt5_firm]
   \Large
   \[
-    \tag{68}\;MC_B(q) = \frac{dTC_B}{dq} = P_N + 50 + 10q
+    \tag{14}\;MC_B(q) = \frac{dTC_B}{dq} = P_N + 50 + 10q
   \]
   \begin{align*}
-    \tag{69}\;P_B &= P_N + 50 + 10q\\
+    \tag{15}\;P_B &= P_N + 50 + 10q\\
     \Rightarrow 10q &= P_B - P_N - 50\\
     \Rightarrow q &= \frac{P_B - P_N - 50}{10}
   \end{align*}
@@ -900,100 +508,81 @@
   \end{itemize}
 \end{frame}
 
-% --- Review note to Question 3.1a-b [170]-[171], answer [T225] ------------
-% Hand check: Q = 10*(P_B - P_N - 50)/10 = P_B - P_N - 50 => P_B = P_N + 50 + Q;
-% P_N 90 -> 70: intercept 140 -> 120 (down by 20)
-\begin{frame}[plain,label=w2_rn_q31b]
+% --- Walkthrough 5 [108], [111]: the battery industry supply curve ---------
+% Hand check: Q = 10*(P_B - P_N - 50)/10 = P_B - P_N - 50 => P_B = P_N + 50 + Q
+\begin{frame}[plain,label=w2_wt5_industry]
   \Large
   \begin{align*}
-    \tag{70}\;Q_B &= 10 \times \frac{P_B - P_N - 50}{10}\\
+    \tag{16}\;Q_B &= 10 \times \frac{P_B - P_N - 50}{10}\\
                  &= P_B - P_N - 50
   \end{align*}
   \[
-    \tag{71}\;P_B = P_N + 50 + Q_B
+    \tag{17}\;P_B = P_N + 50 + Q_B
   \]
 
   \vspace{0.3em}
   \begin{itemize}\Large
     \item Intercept $P_N + 50$: nickel plus other cost
     \item Slope $1$: rising other marginal cost
+    \item One curve for each nickel price
   \end{itemize}
 \end{frame}
 
-% --- Tutor: Question 3.1c model response [T226] ------------------------------
-% Kept tutor-only: Florian's review note [171] says "d)", but Q3.1 has a-c.
+% --- Tutor: Question 3.1b model response [T146] -----------------------------
 % Hand check: (P_N - 1) + 50 = (P_N + 50) - 1, intercept down by 1;
 % P_N 90 -> 70: intercept 140 -> 120 (down by 20)
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q31c]
+\begin{frame}[plain,label=w2_ans_q31b]
   \Large
   \[
     \tag{M34}\;P_B = (P_N - 1) + 50 + Q_B
   \]
+  \begin{align*}
+    \tag{M35}\;P_N = 90: \quad P_B &= 140 + Q_B\\
+    P_N = 70: \quad P_B &= 120 + Q_B
+  \end{align*}
 
   \vspace{0.3em}
   \begin{itemize}\Large
     \item $P_N$ falls by \pounds 1: curve shifts down by \pounds 1
-    \item $P_N$ from $90$ to $70$: intercept $140 \to 120$
+    \item $P_N$ from $90$ to $70$: down by $20$
+    \item Demand unchanged: $P_B = 220 - Q_B$
   \end{itemize}
 \end{frame}
 \fi
 
-% --- Review note to Question 3.2a-b [174]-[175], answers [T232]-[T233] -----
-% Hand check: 220 - Q = P_N + 50 + Q => 170 - P_N = 2Q => Q = 85 - 0.5P_N;
-% 0.5P_N = 85 - Q => P_N = 170 - 2Q
-\begin{frame}[plain,label=w2_rn_q32]
+% --- Walkthrough 6 [117]: deriving the demand for nickel -------------------
+% Hand check: 220 - Q = P_N + 50 + Q => 170 - P_N = 2Q => P_N = 170 - 2Q;
+% 2Q = 170 - P_N => Q = 85 - 0.5P_N
+\begin{frame}[plain,label=w2_wt6_derived]
   \Large
   \begin{align*}
-    \tag{72}\;220 - Q_B &= P_N + 50 + Q_B\\
+    \tag{18}\;220 - Q_B &= P_N + 50 + Q_B\\
     \Rightarrow 2Q_B &= 170 - P_N\\
-    \Rightarrow Q_B &= 85 - 0.5P_N
-  \end{align*}
-  \begin{align*}
-    \tag{73}\;0.5P_N &= 85 - Q_B\\
     \Rightarrow P_N &= 170 - 2Q_B = 170 - 2Q_N
   \end{align*}
+  \[
+    \tag{19}\;\text{Direct form: } Q_N = 85 - 0.5P_N
+  \]
 
   \vspace{0.3em}
   \begin{itemize}\Large
     \item The nickel demand curve of Exercise 2
+    \item $Q_N = Q_B$: one unit of nickel per battery
   \end{itemize}
 \end{frame}
 
-% --- Worked example 7 [177]-[181]: slope of the derived demand curve -------
-% Hand check: P_N = A - c - bQ - gQ = (A - c) - (b + g)Q;
-% (220 - 50) - (1 + 1)Q = 170 - 2Q
-\begin{frame}[plain,label=w2_22_we7]
-  \Large
-  \begin{align*}
-    \tag{74}\;A - bQ &= P_N + c + gQ\\
-    \Rightarrow P_N &= (A - c) - (b + g)Q
-  \end{align*}
-  \begin{align*}
-    \tag{75}\;P_N &= (220 - 50) - (1 + 1)Q\\
-                  &= 170 - 2Q
-  \end{align*}
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item $-b$: battery demand ($b = 1$)
-    \item $-g$: rising other marginal cost ($g = 1$)
-    \item $A - c = 220 - 50$: value of the first unit
-    \item $A = 220$ here (battery demand), $A = 170$ in WE6 (nickel)
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Question 3.3 before [T248]-[T249] --------------------------------
+% --- Tutor: Question 3.2a-b before [T161] -----------------------------------
 % Hand check: 220 - 40 = 180; 90 + 50 + 40 = 180; q = (180 - 90 - 50)/10 = 40/10 = 4
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q33a]
+\begin{frame}[plain,label=w2_ans_q32a]
   \Large
   \begin{align*}
-    \tag{M35}\;P_{B,0} &= 220 - 40 = 180\\
+    \tag{M36}\;P_{B,0} &= 220 - 40 = 180\\
     \text{Check: } 90 + 50 + 40 &= 180 \;\checkmark
   \end{align*}
   \[
-    \tag{M36}\;q_0 = \frac{180 - 90 - 50}{10} = 4
+    \tag{M37}\;q_0 = \frac{180 - 90 - 50}{10} = 4
   \]
 
   \vspace{0.3em}
@@ -1003,82 +592,39 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 3.3 after [T248]-[T249] ---------------------------------
+% --- Tutor: Question 3.2a-c after [T161] ------------------------------------
 % Hand check: 220 - 50 = 170; 70 + 50 + 50 = 170; q = (170 - 70 - 50)/10 = 50/10 = 5
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q33b]
+\begin{frame}[plain,label=w2_ans_q32b]
   \Large
   \begin{align*}
-    \tag{M37}\;P_{B,1} &= 220 - 50 = 170\\
+    \tag{M38}\;P_{B,1} &= 220 - 50 = 170\\
     \text{Check: } 70 + 50 + 50 &= 170 \;\checkmark
   \end{align*}
   \[
-    \tag{M38}\;q_1 = \frac{170 - 70 - 50}{10} = 5
+    \tag{M39}\;q_1 = \frac{170 - 70 - 50}{10} = 5
   \]
 
   \vspace{0.3em}
   \begin{itemize}\Large
     \item After: $Q_B = 50$, $P_N = 70$
     \item Each battery firm: from $4$ to $5$ units
+    \item $P_B$: $180 \to 170$, as in Walkthrough 7
   \end{itemize}
 \end{frame}
 \fi
 
-% --- Worked example 8 [188]-[191]: the pass-through chain ------------------
-\begin{frame}[plain,label=w2_23_we8a]
-  \Large
-  \[
-    \tag{76}\;\Delta MC_N = -30 \;\longrightarrow\; \Delta P_N = -20
-  \]
-  \[
-    \tag{77}\;\Delta P_N = -20 \;\longrightarrow\; \Delta MC_B = -20
-  \]
-  \[
-    \tag{78}\;\Delta MC_B = -20 \;\longrightarrow\; \Delta P_B = -10
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item One unit of nickel per battery
-    \item Battery supply shifts down by $20$
-  \end{itemize}
-\end{frame}
-
-% --- Worked example 8 [189]-[193]: the three pass-through rates ------------
-% Hand check: 20/30 = 2/3 = 2/(2 + 1); 10/20 = 1/2 = 1/(1 + 1);
-% 10/30 = 1/3 = 2/3 * 1/2; P_B: 180 -> 170
-% Handout [189] writes b/(b + s) with b = 2 (the nickel demand slope);
-% it should say "b + g = 2" (b = 1 from [177] on); the slide uses b + g.
-\begin{frame}[plain,label=w2_24_we8b]
-  \Large
-  \[
-    \tag{79}\;\rho_N = \frac{20}{30} = \frac{2}{3} = \frac{b + g}{(b + g) + s}
-  \]
-  \[
-    \tag{80}\;\rho_B = \frac{10}{20} = \frac{1}{2} = \frac{b}{b + g}
-  \]
-  \[
-    \tag{81}\;\rho_{\text{total}} = \frac{10}{30} = \frac{1}{3}
-  \]
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Nickel demand slope $b + g = 2$; $s = 1$
-    \item Check Question 3.3: $P_B$ from $180$ to $170$
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Worked example 8, tutor note (general formulae) [T259] ---------
+% --- Tutor: Question 3.2, tutor note (general formulae) [T163] -------------
 % Hand check: (220 - 50 - 50)/3 = 120/3 = 40 (u = 50); k/(b + g + s) = 30/3 = 10
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_we8a]
+\begin{frame}[plain,label=w2_ans_q32n1]
   \Large
   \begin{align*}
-    \tag{M39}\;Q &= \frac{A - c - u}{b + g + s}\\
+    \tag{M40}\;Q &= \frac{A - c - u}{b + g + s}\\
                  &= \frac{220 - 50 - 50}{3} = 40
   \end{align*}
   \[
-    \tag{M40}\;\Delta Q = \frac{k}{b + g + s} = \frac{30}{3} = 10
+    \tag{M41}\;\Delta Q = \frac{k}{b + g + s} = \frac{30}{3} = 10
   \]
 
   \vspace{0.3em}
@@ -1089,17 +635,17 @@
 \end{frame}
 \fi
 
-% --- Tutor: Worked example 8, tutor note (general formulae) [T259] ---------
+% --- Tutor: Question 3.2, tutor note (general formulae) [T163] -------------
 % Hand check: -30*2/3 = -20; -30*1/3 = -10; rates 2/3, 1/2, 1/3
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_we8b]
+\begin{frame}[plain,label=w2_ans_q32n2]
   \Large
   \begin{align*}
-    \tag{M41}\;\Delta P_N &= -k\,\frac{b + g}{b + g + s}\\
+    \tag{M42}\;\Delta P_N &= -k\,\frac{b + g}{b + g + s}\\
                           &= -30 \times \frac{2}{3} = -20
   \end{align*}
   \begin{align*}
-    \tag{M42}\;\Delta P_B &= -k\,\frac{b}{b + g + s}\\
+    \tag{M43}\;\Delta P_B &= -k\,\frac{b}{b + g + s}\\
                           &= -30 \times \frac{1}{3} = -10
   \end{align*}
 
@@ -1110,57 +656,43 @@
 \end{frame}
 \fi
 
-% --- Worked example 9 [195]-[198]: battery elasticities --------------------
-% Hand check: 180/40 = 4.5; -1*4.5 = -4.5; 1*4.5 = 4.5; 4.5/(4.5 + 4.5) = 1/2
-\begin{frame}[plain,label=w2_25_we9a]
+% --- Walkthrough 7 [127]: the pass-through chain ---------------------------
+% Hand check: 20/30 = 2/3 = 2/(2 + 1); 10/20 = 1/2 = 1/(1 + 1);
+% 10/30 = 1/3 = 2/3 * 1/2; P_B: 180 -> 170
+\begin{frame}[plain,label=w2_wt7_chain]
   \Large
   \[
-    \tag{82}\;\varepsilon_{D,B} = -1 \times \frac{180}{40} = -4.5
+    \tag{20}\;\Delta MC_N = -30 \;\longrightarrow\; \Delta P_N = -20
   \]
   \[
-    \tag{83}\;\varepsilon_{S,B} = 1 \times \frac{180}{40} = 4.5
+    \tag{21}\;\Delta P_N = -20 \;\longrightarrow\; \Delta MC_B = -20
   \]
   \[
-    \tag{84}\;\rho_B = \frac{4.5}{4.5 + 4.5} = \frac{1}{2}
+    \tag{22}\;\Delta MC_B = -20 \;\longrightarrow\; \Delta P_B = -10
+  \]
+  \[
+    \tag{23}\;\rho = \frac{2}{3} \times \frac{1}{2} = \frac{10}{30} = \frac{1}{3}
   \]
 
   \vspace{0.3em}
   \begin{itemize}\Large
-    \item Demand $Q_B = 220 - P_B$: $dQ/dP = -1$
-    \item Supply $Q_B = P_B - P_N - 50$: $dQ/dP = 1$
+    \item Upstream $2/3$; downstream $b/(b + g) = 1/2$
+    \item $\Delta MC_B = \Delta P_N$: one unit of nickel per battery
   \end{itemize}
 \end{frame}
 
-% --- Worked example 9 [199]-[200]: derived vs final demand -----------------
-% Hand check: -0.5*2.25 = -1.125; -1*4.5 = -4.5; 1/(b + g) = 1/2
-\begin{frame}[plain,label=w2_26_we9b]
-  \Large
-  \begin{align*}
-    \tag{85}\;\varepsilon_{D,N} &= -0.5 \times 2.25 = -1.125\\
-    \tag{86}\;\varepsilon_{D,B} &= -1 \times 4.5 = -4.5
-  \end{align*}
-
-  \vspace{0.3em}
-  \begin{itemize}\Large
-    \item Slope: $-0.5 = -1/(b + g)$ versus $-1$
-    \item Scale $P/Q$: $90/40$ versus $180/40$
-    \item Nickel is half of a battery's $MC$
-    \item Derived demand is less elastic
-  \end{itemize}
-\end{frame}
-
-% --- Tutor: Question 3.4a before [T274] --------------------------------------
+% --- Tutor: Question 3.3a before [T178] --------------------------------------
 % Hand check: 0.5*40*(220 - 180) = 0.5*40*40 = 800;
 % intercept 90 + 50 = 140; 0.5*40*(180 - 140) = 800
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q34a0]
+\begin{frame}[plain,label=w2_ans_q33a0]
   \Large
   \begin{align*}
-    \tag{M43}\;CS_{B,0} &= \tfrac{1}{2} \times 40 \times (220 - 180)\\
+    \tag{M44}\;CS_{B,0} &= \tfrac{1}{2} \times 40 \times (220 - 180)\\
                        &= \tfrac{1}{2} \times 40 \times 40 = 800
   \end{align*}
   \begin{align*}
-    \tag{M44}\;PS_{B,0} &= \tfrac{1}{2} \times 40 \times (180 - 140)\\
+    \tag{M45}\;PS_{B,0} &= \tfrac{1}{2} \times 40 \times (180 - 140)\\
                        &= \tfrac{1}{2} \times 40 \times 40 = 800
   \end{align*}
 
@@ -1171,18 +703,18 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 3.4a after [T274] ---------------------------------------
+% --- Tutor: Question 3.3a after [T178] ---------------------------------------
 % Hand check: 0.5*50*(220 - 170) = 0.5*50*50 = 1250;
 % intercept 70 + 50 = 120; 0.5*50*(170 - 120) = 1250
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q34a1]
+\begin{frame}[plain,label=w2_ans_q33a1]
   \Large
   \begin{align*}
-    \tag{M45}\;CS_{B,1} &= \tfrac{1}{2} \times 50 \times (220 - 170)\\
+    \tag{M46}\;CS_{B,1} &= \tfrac{1}{2} \times 50 \times (220 - 170)\\
                        &= \tfrac{1}{2} \times 50 \times 50 = 1{,}250
   \end{align*}
   \begin{align*}
-    \tag{M46}\;PS_{B,1} &= \tfrac{1}{2} \times 50 \times (170 - 120)\\
+    \tag{M47}\;PS_{B,1} &= \tfrac{1}{2} \times 50 \times (170 - 120)\\
                        &= \tfrac{1}{2} \times 50 \times 50 = 1{,}250
   \end{align*}
 
@@ -1193,20 +725,20 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 3.4b and 3.4e: the ledger [T275]-[T277], [T281] ---------
+% --- Tutor: Question 3.3b and 3.3d: the ledger [T181], [T184] ---------------
 % Hand check: 800*3 = 2400; 1250*3 = 3750; 3750 - 2400 = 1350; 1350/3 = 450
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q34b]
+\begin{frame}[plain,label=w2_ans_q33b]
   \Large
   \begin{align*}
-    \tag{M47}\;NSB_0 &= PS_N + PS_B + CS_B\\
+    \tag{M48}\;NSB_0 &= PS_N + PS_B + CS_B\\
                     &= 800 + 800 + 800 = 2{,}400
   \end{align*}
   \[
-    \tag{M48}\;NSB_1 = 3 \times 1{,}250 = 3{,}750
+    \tag{M49}\;NSB_1 = 3 \times 1{,}250 = 3{,}750
   \]
   \[
-    \tag{M49}\;\Delta NSB = 3{,}750 - 2{,}400 = +1{,}350
+    \tag{M50}\;\Delta NSB = 3{,}750 - 2{,}400 = +1{,}350
   \]
 
   \vspace{0.3em}
@@ -1217,20 +749,20 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 3.4c: no double counting [T278] -------------------------
+% --- Tutor: Question 3.3c: no double counting [T182] -------------------------
 % Hand check: 800 + 800 = 1600; 1250 + 1250 = 2500; 1600 + 2400 = 4000
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q34c]
+\begin{frame}[plain,label=w2_ans_q33c]
   \Large
   \[
-    \tag{M50}\;CS_N = CS_B + PS_B
+    \tag{M51}\;CS_N = CS_B + PS_B
   \]
   \begin{align*}
-    \tag{M51}\;1{,}600 &= 800 + 800\\
-    \tag{M52}\;2{,}500 &= 1{,}250 + 1{,}250
+    \tag{M52}\;1{,}600 &= 800 + 800\\
+    \tag{M53}\;2{,}500 &= 1{,}250 + 1{,}250
   \end{align*}
   \[
-    \tag{M53}\;\text{Wrong: } CS_N + NSB_0 = 4{,}000
+    \tag{M54}\;\text{Wrong: } CS_N + NSB_0 = 4{,}000
   \]
 
   \vspace{0.3em}
@@ -1241,19 +773,19 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 3.4d before [T280] --------------------------------------
+% --- Tutor: Question 3.3c, check via resources, before [T183] ---------------
 % Hand check: 220*40 - 0.5*1600 = 8800 - 800 = 8000;
 % 50*40 + 800 = 2800 (twice); 8000 - 2800 - 2800 = 2400
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q34d0]
+\begin{frame}[plain,label=w2_ans_q33c1]
   \Large
   \begin{align*}
-    \tag{M54}\;V &= 220 \times 40 - \tfrac{1}{2} \times 40^2 = 8{,}000\\
-    \tag{M55}\;C_N &= 50 \times 40 + \tfrac{1}{2} \times 40^2 = 2{,}800\\
-    \tag{M56}\;C_O &= 50 \times 40 + \tfrac{1}{2} \times 40^2 = 2{,}800
+    \tag{M55}\;V &= 220 \times 40 - \tfrac{1}{2} \times 40^2 = 8{,}000\\
+    \tag{M56}\;C_N &= 50 \times 40 + \tfrac{1}{2} \times 40^2 = 2{,}800\\
+    \tag{M57}\;C_O &= 50 \times 40 + \tfrac{1}{2} \times 40^2 = 2{,}800
   \end{align*}
   \[
-    \tag{M57}\;8{,}000 - 2{,}800 - 2{,}800 = 2{,}400 \;\checkmark
+    \tag{M58}\;8{,}000 - 2{,}800 - 2{,}800 = 2{,}400 \;\checkmark
   \]
 
   \vspace{0.3em}
@@ -1265,19 +797,19 @@
 \end{frame}
 \fi
 
-% --- Tutor: Question 3.4d after [T280] ---------------------------------------
+% --- Tutor: Question 3.3c, check via resources, after [T183] ----------------
 % Hand check: 220*50 - 0.5*2500 = 11000 - 1250 = 9750;
 % 20*50 + 1250 = 2250; 50*50 + 1250 = 3750; 9750 - 2250 - 3750 = 3750
 \ifnum\showanswers=1
-\begin{frame}[plain,label=w2_ans_q34d1]
+\begin{frame}[plain,label=w2_ans_q33c2]
   \Large
   \begin{align*}
-    \tag{M58}\;V &= 220 \times 50 - \tfrac{1}{2} \times 50^2 = 9{,}750\\
-    \tag{M59}\;C_N &= 20 \times 50 + \tfrac{1}{2} \times 50^2 = 2{,}250\\
-    \tag{M60}\;C_O &= 50 \times 50 + \tfrac{1}{2} \times 50^2 = 3{,}750
+    \tag{M59}\;V &= 220 \times 50 - \tfrac{1}{2} \times 50^2 = 9{,}750\\
+    \tag{M60}\;C_N &= 20 \times 50 + \tfrac{1}{2} \times 50^2 = 2{,}250\\
+    \tag{M61}\;C_O &= 50 \times 50 + \tfrac{1}{2} \times 50^2 = 3{,}750
   \end{align*}
   \[
-    \tag{M61}\;9{,}750 - 2{,}250 - 3{,}750 = 3{,}750 \;\checkmark
+    \tag{M62}\;9{,}750 - 2{,}250 - 3{,}750 = 3{,}750 \;\checkmark
   \]
 
   \vspace{0.3em}
@@ -1286,5 +818,75 @@
   \end{itemize}
 \end{frame}
 \fi
+
+% --- Appendix A [143]: direct and inverse form -----------------------------
+% Hand check: Q = P - 50 <=> P = 50 + Q; Q = 85 - 0.5P <=> 0.5P = 85 - Q
+% <=> P = 170 - 2Q. Slopes: demand dQ/dP = -0.5, dP/dQ = -2 = 1/(-0.5);
+% supply 1 and 1.
+\begin{frame}[plain,label=w2_appA_forms]
+  \Large
+  \[
+    \tag{24}\;\text{Direct form: } Q^S(P), \quad Q^D(P)
+  \]
+  \[
+    \tag{25}\;\text{Inverse form: } P^S(Q), \quad P^D(Q)
+  \]
+  \[
+    \tag{26}\;Q^S = P - 50 \;\Leftrightarrow\; P = 50 + Q
+  \]
+  \[
+    \tag{27}\;Q^D = 85 - 0.5P \;\Leftrightarrow\; P = 170 - 2Q
+  \]
+
+  \vspace{0.5em}
+  \begin{itemize}\Large
+    \item Valid for $P \ge 50$ (supply), $P \le 170$ (demand)
+    \item Inverse slope $= 1 /$ direct slope
+    \item Demand: $-0.5$ and $-2$; supply: $1$ and $1$
+  \end{itemize}
+\end{frame}
+
+% --- Appendix C [153]: pass-through in elasticities ------------------------
+% Hand check: 2.25 + 1.125 = 3.375; 2.25/3.375 = 0.6667 = 2/3
+\begin{frame}[plain,label=w2_appC_passthrough]
+  \Large
+  \begin{align*}
+    \tag{28}\;\rho &= \frac{b}{b + s}
+      = \frac{1/|\varepsilon_D|}{1/|\varepsilon_D| + 1/\varepsilon_S}\\
+    &= \frac{\varepsilon_S}{\varepsilon_S + |\varepsilon_D|}
+  \end{align*}
+  \[
+    \tag{29}\;\rho = \frac{2.25}{2.25 + 1.125} = \frac{2.25}{3.375} = \frac{2}{3}
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $b = (P/Q)/|\varepsilon_D|$, $s = (P/Q)/\varepsilon_S$; $P/Q$ cancels
+    \item The less elastic side receives more of the saving
+  \end{itemize}
+\end{frame}
+
+% --- Appendix C [157]: general form of the derived demand curve -------------
+% Hand check: P_N = A - c - bQ - gQ = (A - c) - (b + g)Q;
+% (220 - 50) - (1 + 1)Q = 170 - 2Q
+\begin{frame}[plain,label=w2_appC_derived]
+  \Large
+  \begin{align*}
+    \tag{30}\;A - bQ &= P_N + c + gQ\\
+    \Rightarrow P_N &= (A - c) - (b + g)Q
+  \end{align*}
+  \begin{align*}
+    \tag{31}\;P_N &= (220 - 50) - (1 + 1)Q\\
+                  &= 170 - 2Q
+  \end{align*}
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $-b$: battery demand ($b = 1$)
+    \item $-g$: rising other marginal cost ($g = 1$)
+    \item $A - c = 220 - 50$: WTP for the first unit of nickel
+    \item $A = 170$, $b = 2$ in Walkthrough 4 (nickel)
+  \end{itemize}
+\end{frame}
 
 \end{document}

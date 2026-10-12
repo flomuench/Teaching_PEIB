@@ -1,0 +1,444 @@
+% =====================================================================
+% PEIB equation slides: retired frames (archive)
+% Frames removed from peib_main.tex on 2026-10-12 when the week 2 handout
+% (version 4) moved the calculus refresher and the elasticity examples
+% into plain text (Appendix B, Appendix C), replaced the pass-through
+% derivation (old Worked example 6) by a Word table in Walkthrough 4,
+% and dropped Questions 1.3, 1.4 and 2.4 together with their review-note
+% frames. Kept here for reuse; this file is not compiled on its own.
+% To reuse a frame, copy it into peib_main.tex and renumber its tags.
+% Tags and paragraph references [n], [Tn] are those of handout version 3.
+% =====================================================================
+
+% --- Section II.E [76]: derivative of a quadratic ---------------------------
+\begin{frame}[plain,label=w2_02_deriv]
+  \Large
+  \[
+    \tag{5}\;TC(q) = a + bq + cq^2
+  \]
+  \[
+    \tag{6}\;MC(q) = \frac{dTC}{dq} = b + 2cq
+  \]
+
+  \vspace{0.75em}
+  \begin{itemize}\Large
+    \item $a$: fixed cost, disappears in the derivative
+    \item $bq$ contributes $b$; $cq^2$ contributes $2cq$
+    \item $MC$: the cost of one more unit
+  \end{itemize}
+\end{frame}
+
+% --- Section II.E [77]-[78]: from marginal to total, producer surplus -------
+\begin{frame}[plain,label=w2_03_integral]
+  \Large
+  \[
+    \tag{7}\;TVC(q) = \int_0^{q} MC(x)\,dx = bq + cq^2
+  \]
+  \begin{align*}
+    \tag{8}\;PS &= TR - TVC = P \times q - TVC(q)\\
+                &= \int_0^{q} \bigl[P - MC(x)\bigr]\,dx
+  \end{align*}
+
+  \vspace{0.5em}
+  \begin{itemize}\Large
+    \item Integral $=$ area under $MC$, $0$ to $q$
+    \item $PS$: between price line and $MC$
+  \end{itemize}
+\end{frame}
+
+% --- Section II.E [79]: triangles, CS and PS -------------------------------
+\begin{frame}[plain,label=w2_04_triangle]
+  \Large
+  \begin{align*}
+    \tag{9}\;\text{Area of a triangle} &= \tfrac{1}{2} \times \text{base}\\
+                                       &\phantom{=}\; \times \text{height}
+  \end{align*}
+  \[
+    \tag{10}\;CS = \tfrac{1}{2}\, Q^* \,(\text{demand intercept} - P^*)
+  \]
+  \[
+    \tag{11}\;PS = \tfrac{1}{2}\, Q^* \,(P^* - \text{supply intercept})
+  \]
+
+  \vspace{0.75em}
+  \begin{itemize}\Large
+    \item Base $= Q^*$ on the quantity axis
+    \item Height $=$ vertical distance on the price axis
+  \end{itemize}
+\end{frame}
+
+% --- Section II.E [80]: area under a straight line (Question 3.4d) ---------
+% Hand check: 220*40 - 0.5*40^2 = 8800 - 800 = 8000;
+% 50*40 + 0.5*40^2 = 2000 + 800 = 2800
+% A, b and u, s are the intercepts and slopes of the two lines (rectangle
+% minus or plus a triangle), as in Worked example 6.
+\begin{frame}[plain,label=w2_05_arealine]
+  \Large
+  \[
+    \tag{12}\;\int_0^{Q} (A - bx)\,dx = AQ - \tfrac{1}{2} b Q^2
+  \]
+  \[
+    \tag{13}\;\int_0^{Q} (u + sx)\,dx = uQ + \tfrac{1}{2} s Q^2
+  \]
+  \[
+    \tag{14}\;220 \times 40 - \tfrac{1}{2} \times 40^2 = 8{,}800 - 800 = 8{,}000
+  \]
+  \[
+    \tag{15}\;50 \times 40 + \tfrac{1}{2} \times 40^2 = 2{,}800
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Under $P = 220 - Q$ and $MC = 50 + Q$
+    \item Needed in Question 3.4d
+  \end{itemize}
+\end{frame}
+
+% --- Section III [82]-[88]: the model ---------------------------------------
+\begin{frame}[plain,label=w2_06_model]
+  \Large
+  \[
+    \tag{16}\;TC_N(q) = 20 + 50q + 5q^2
+  \]
+  \[
+    \tag{17}\;TC_B(q) = 20 + (P_N + 50)q + 5q^2
+  \]
+  \[
+    \tag{18}\;P_B = 220 - Q_B, \qquad Q_N = Q_B
+  \]
+
+  \vspace{0.5em}
+  \begin{itemize}\Large
+    \item $q$: one firm; $Q$: industry (10 firms)
+    \item $P_N q$: the nickel bill
+    \item Innovation: $TC_N = 20 + 20q + 5q^2$
+  \end{itemize}
+\end{frame}
+
+% --- Review note to Question 1.3a-b [104]-[105], answers [T131]-[T132] ------
+% Hand check: P = 90: q = 40/10 = 4, 10*4 = 40 = 90 - 50;
+% P = 120: q = 70/10 = 7, 10*7 = 70 = 120 - 50
+\begin{frame}[plain,label=w2_rn_q13]
+  \Large
+  \[
+    \tag{22}\;P_N = 90: \quad q = \frac{90 - 50}{10} = 4
+  \]
+  \[
+    \tag{23}\;Q_N = 10 \times 4 = 40 = 90 - 50 \;\checkmark
+  \]
+  \[
+    \tag{24}\;P_N = 120: \quad q = \frac{120 - 50}{10} = 7
+  \]
+  \[
+    \tag{25}\;Q_N = 10 \times 7 = 70 = 120 - 50 \;\checkmark
+  \]
+
+  \vspace{0.5em}
+  \begin{itemize}\Large
+    \item Industry $= 10 \times$ one firm, at every price
+    \item Industry curve: $Q_N = P_N - 50$
+  \end{itemize}
+\end{frame}
+
+% --- Tutor: Question 1.3c model response [T133] ------------------------------
+% Hand check: Q = 11*(P - 50)/10 = 1.1(P - 50) = 1.1P - 55;
+% P = 50 + Q/1.1, 1/1.1 = 0.909 ~ 0.91; at P = 90: 1.1*40 = 44 vs 40 (+4)
+\ifnum\showanswers=1
+\begin{frame}[plain,label=w2_ans_q13c]
+  \Large
+  \begin{align*}
+    \tag{M11}\;Q_N &= 11 \times \frac{P_N - 50}{10} = 1.1(P_N - 50)\\
+                  &= 1.1P_N - 55
+  \end{align*}
+  \[
+    \tag{M12}\;P_N = 50 + \frac{Q_N}{1.1} \approx 50 + 0.91\,Q_N
+  \]
+  \[
+    \tag{M13}\;P_N = 90: \quad Q_N = 1.1 \times 40 = 44
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Same intercept $50$, flatter curve
+    \item Right by $4$ units at $P_N = 90$
+  \end{itemize}
+\end{frame}
+\fi
+
+% --- Review note to Question 1.4a-b [113]-[114], answers [T145]-[T146] ------
+% Hand check: q = (90 - 20)/10 = 7; Q^S = 90 - 20 = 70 = 10*7;
+% Q^D = 85 - 0.5*90 = 85 - 45 = 40; excess supply 70 - 40 = 30
+\begin{frame}[plain,label=w2_rn_q14]
+  \Large
+  \[
+    \tag{29}\;\text{After, } P_N = 90: \quad q = \frac{90 - 20}{10} = 7
+  \]
+  \[
+    \tag{30}\;Q^S_N = 90 - 20 = 70 \quad (= 10 \times 7)
+  \]
+  \[
+    \tag{31}\;Q^D_N = 85 - 0.5 \times 90 = 40
+  \]
+  \[
+    \tag{32}\;\text{Excess supply} = 70 - 40 = 30
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Unsold nickel: sellers undercut each other
+    \item The price falls until $Q^S_N = Q^D_N$
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 3, direct form [125]-[126] ------------------------------
+% Hand check: 85 - 0.5P = P - 50 => 135 = 1.5P => P = 90; Q = 40;
+% 40/10 = 4 per firm
+\begin{frame}[plain,label=w2_11_we3b]
+  \Large
+  \begin{align*}
+    \tag{35}\;85 - 0.5P &= P - 50\\
+    \Rightarrow 1.5P &= 135\\
+    \Rightarrow P_0 &= 90
+  \end{align*}
+  \[
+    \tag{36}\;Q_0 = 90 - 50 = 40
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Direct form: set the two quantities equal
+    \item $E_0 = (Q_0, P_0) = (40, 90)$
+    \item $4$ units per firm, as in Exercise 1
+  \end{itemize}
+\end{frame}
+
+% --- Technical box [142], [144]: reading the number, slope vs elasticity ---
+% Check of the slope link at E0 = (40, 90): P/Q = 2.25; b = 2.25/1.125 = 2;
+% s = 2.25/2.25 = 1 (the nickel slopes)
+\begin{frame}[plain,label=w2_14_elast_read]
+  \Large
+  \[
+    \tag{42}\;\varepsilon_S = \frac{dQ^S}{dP} \times \frac{P}{Q} > 0
+  \]
+  \[
+    \tag{43}\;b = \frac{P/Q}{|\varepsilon_D|}, \qquad s = \frac{P/Q}{\varepsilon_S}
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $b, s$: slopes of the inverse curves
+    \item $|\varepsilon_D|$: elastic $> 1$, unit $= 1$, inelastic $< 1$
+    \item Vertical demand: $\varepsilon_D = 0$ ($b$ infinite)
+    \item Horizontal demand: $\varepsilon_D \to -\infty$ ($b = 0$)
+  \end{itemize}
+\end{frame}
+
+% --- Technical box [143]: constant slope, changing elasticity --------------
+% Hand check: P = 20: Q = 100 - 40 = 60, eps = -2*20/60 = -0.667;
+% P = 40: Q = 100 - 80 = 20, eps = -2*40/20 = -4
+\begin{frame}[plain,label=w2_15_elast_example]
+  \Large
+  \[
+    \tag{44}\;Q = 100 - 2P \;\Rightarrow\; \frac{dQ}{dP} = -2
+  \]
+  \[
+    \tag{45}\;\varepsilon_D\big|_{P = 20} = -2 \times \frac{20}{60} = -0.67
+  \]
+  \[
+    \tag{46}\;\varepsilon_D\big|_{P = 40} = -2 \times \frac{40}{20} = -4
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $P = 20$: $Q = 60$ (inelastic)
+    \item $P = 40$: $Q = 20$ (elastic)
+    \item One slope, a new elasticity at every point
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 5 [146]-[147]: elasticities of the nickel market at E0 -
+% Hand check: -0.5*90/40 = -0.5*2.25 = -1.125; 1*90/40 = 2.25
+\begin{frame}[plain,label=w2_16_we5]
+  \Large
+  \[
+    \tag{47}\;Q_N = 85 - 0.5P_N \;\Rightarrow\; \frac{dQ}{dP} = -0.5
+  \]
+  \[
+    \tag{48}\;\varepsilon_D = -0.5 \times \frac{90}{40} = -1.125
+  \]
+  \[
+    \tag{49}\;Q_N = P_N - 50 \;\Rightarrow\; \frac{dQ}{dP} = 1
+  \]
+  \[
+    \tag{50}\;\varepsilon_S = 1 \times \frac{90}{40} = 2.25
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Price $+1\%$: demand about $-1.1\%$
+    \item Price $+1\%$: supply about $+2.25\%$
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 6, step 1 [153]-[154]: the general set-up --------------
+\begin{frame}[plain,label=w2_17_we6a]
+  \Large
+  \[
+    \tag{51}\;\rho = \frac{\text{price fall}}{\text{cost fall}} = \frac{20}{30} = \frac{2}{3}
+  \]
+  \[
+    \tag{52}\;P = A - bQ, \qquad P = u + sQ
+  \]
+  \[
+    \tag{53}\;u \;\longrightarrow\; u - k
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $b, s \ge 0$: steepness of demand and supply
+    \item Nickel: $A = 170$, $b = 2$, $u = 50$, $s = 1$
+    \item Innovation: $k = 30$
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 6, step 2 [155]-[157]: equilibrium before and after ----
+% Hand check: (170 - 50)/3 = 120/3 = 40; (170 - 50 + 30)/3 = 150/3 = 50
+\begin{frame}[plain,label=w2_18_we6b]
+  \Large
+  \begin{align*}
+    \tag{54}\;A - bQ &= u + sQ\\
+    \Rightarrow (b + s)Q &= A - u\\
+    \Rightarrow Q_0 &= \frac{A - u}{b + s} = \frac{170 - 50}{3} = 40
+  \end{align*}
+  \begin{align*}
+    \tag{55}\;A - bQ &= u - k + sQ\\
+    \Rightarrow Q_1 &= \frac{A - u + k}{b + s} = \frac{170 - 50 + 30}{3} = 50
+  \end{align*}
+\end{frame}
+
+% --- Worked example 6, step 3 [158]: the changes ---------------------------
+% Hand check: dQ = 30/3 = 10; dP = -2*10 = -20 = -30*2/3
+\begin{frame}[plain,label=w2_19_we6c]
+  \Large
+  \[
+    \tag{56}\;\Delta Q = Q_1 - Q_0 = \frac{k}{b + s} = \frac{30}{3} = 10
+  \]
+  \begin{align*}
+    \tag{57}\;\Delta P &= -b \times \Delta Q = -k \times \frac{b}{b + s}\\
+                      &= -30 \times \frac{2}{3} = -20
+  \end{align*}
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Movement along the demand curve (slope $-b$)
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 6, step 4 [159], [161]: the pass-through rate ----------
+% Hand check: rho = 2/(2 + 1) = 2/3; price fall 2/3*30 = 20;
+% extra MC 1/3*30 = 10; 20 + 10 = 30
+\begin{frame}[plain,label=w2_20_we6d]
+  \Large
+  \[
+    \tag{58}\;\rho = \frac{-\Delta P}{k} = \frac{b}{b + s} = \frac{2}{2 + 1} = \frac{2}{3}
+  \]
+  \[
+    \tag{59}\;k = \frac{b}{b + s}\,k + \frac{s}{b + s}\,k = 20 + 10
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $20$: the fall in the price
+    \item $10$: extra $MC$ of $10$ more units
+    \item Every firm still sets $P = MC$
+  \end{itemize}
+\end{frame}
+
+% --- Review note to Question 2.4c [162]-[163], answer [T213] ----------------
+% Hand check: tax 30 shifts supply up by 30 (u -> u + 30); price rise
+% 30*2/3 = 20; producers receive +20, pay 30: net -10 = -30*1/3
+\begin{frame}[plain,label=w2_rn_q24c]
+  \Large
+  \[
+    \tag{65}\;\text{Tax \pounds 30: } \quad u \;\longrightarrow\; u + 30
+  \]
+  \begin{align*}
+    \tag{66}\;\Delta P &= +30 \times \frac{b}{b + s}\\
+                       &= 30 \times \frac{2}{3} = +20
+  \end{align*}
+  \begin{align*}
+    \tag{67}\;\text{Producers} &= +20 - 30\\
+                               &= -10 \text{ per unit}
+  \end{align*}
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Buyers pay $2/3$ of the tax, producers $1/3$
+    \item A tax is the mirror image of the innovation
+    \item Preview of Tutorial 3
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 8 [189]-[193]: the three pass-through rates ------------
+% Hand check: 20/30 = 2/3 = 2/(2 + 1); 10/20 = 1/2 = 1/(1 + 1);
+% 10/30 = 1/3 = 2/3 * 1/2; P_B: 180 -> 170
+% Handout [189] writes b/(b + s) with b = 2 (the nickel demand slope);
+% it should say "b + g = 2" (b = 1 from [177] on); the slide uses b + g.
+\begin{frame}[plain,label=w2_24_we8b]
+  \Large
+  \[
+    \tag{79}\;\rho_N = \frac{20}{30} = \frac{2}{3} = \frac{b + g}{(b + g) + s}
+  \]
+  \[
+    \tag{80}\;\rho_B = \frac{10}{20} = \frac{1}{2} = \frac{b}{b + g}
+  \]
+  \[
+    \tag{81}\;\rho_{\text{total}} = \frac{10}{30} = \frac{1}{3}
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Nickel demand slope $b + g = 2$; $s = 1$
+    \item Check Question 3.3: $P_B$ from $180$ to $170$
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 9 [195]-[198]: battery elasticities --------------------
+% Hand check: 180/40 = 4.5; -1*4.5 = -4.5; 1*4.5 = 4.5; 4.5/(4.5 + 4.5) = 1/2
+\begin{frame}[plain,label=w2_25_we9a]
+  \Large
+  \[
+    \tag{82}\;\varepsilon_{D,B} = -1 \times \frac{180}{40} = -4.5
+  \]
+  \[
+    \tag{83}\;\varepsilon_{S,B} = 1 \times \frac{180}{40} = 4.5
+  \]
+  \[
+    \tag{84}\;\rho_B = \frac{4.5}{4.5 + 4.5} = \frac{1}{2}
+  \]
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Demand $Q_B = 220 - P_B$: $dQ/dP = -1$
+    \item Supply $Q_B = P_B - P_N - 50$: $dQ/dP = 1$
+  \end{itemize}
+\end{frame}
+
+% --- Worked example 9 [199]-[200]: derived vs final demand -----------------
+% Hand check: -0.5*2.25 = -1.125; -1*4.5 = -4.5; 1/(b + g) = 1/2
+\begin{frame}[plain,label=w2_26_we9b]
+  \Large
+  \begin{align*}
+    \tag{85}\;\varepsilon_{D,N} &= -0.5 \times 2.25 = -1.125\\
+    \tag{86}\;\varepsilon_{D,B} &= -1 \times 4.5 = -4.5
+  \end{align*}
+
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Slope: $-0.5 = -1/(b + g)$ versus $-1$
+    \item Scale $P/Q$: $90/40$ versus $180/40$
+    \item Nickel is half of a battery's $MC$
+    \item Derived demand is less elastic
+  \end{itemize}
+\end{frame}
+
