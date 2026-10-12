@@ -104,7 +104,9 @@ ax_supply   <- list(xlim_firm = c(0, 8), xlim_industry = c(0, 80),
 # and the intercepts 170, 50 and 20 are all numbered ticks.
 ax_nickel   <- list(xlim = c(0, 90), ylim = c(0, 180), ticks = c(10, 10))
 ax_linked   <- list(xlim = c(0, 90), ylim_N = c(0, 180), ylim_B = c(0, 240),
-                    ticks = c(10, 20))
+                    # nickel panel: prices every 10 (so 90, 70 and the
+                    # intercepts 170 and 50 are numbered); batteries every 20
+                    ticks = list(c(10, 10), c(10, 20)))
 
 
 # ***********************************************************

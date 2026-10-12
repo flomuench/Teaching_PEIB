@@ -13,5 +13,16 @@ _scratch/
 .DS_Store
 Thumbs.db
 desktop.ini
-# Course slide sources (LaTeX, KCL/Namur/PEIB): kept out of the public site
-Latex slides/
+# Course slide sources (LaTeX): the KCL and Namur decks stay out of the public
+# repo; only the PEIB folder is tracked (so Overleaf can import peib_main.tex).
+Latex slides/*
+!Latex slides/PEIB/
+# PEIB build outputs and exported handout images stay local
+Latex slides/PEIB/png/
+Latex slides/PEIB/*.aux
+Latex slides/PEIB/*.log
+Latex slides/PEIB/*.nav
+Latex slides/PEIB/*.out
+Latex slides/PEIB/*.snm
+Latex slides/PEIB/*.toc
+Latex slides/PEIB/*.synctex.gz

@@ -2825,11 +2825,16 @@ draw_chain_linked <- function(show = c("curves", "welfare"),
                                          chain_fmt(y), ")")) else nm
   }
 
-  # Legend across the figure (welfare figures): same colour = same amount
+  # Legend across the figure (welfare figures): same colour = same amount.
+  # The student version does not state the identity CS_N = CS_B + PS_B
+  # (students discover it in Question 3.4c): only the colours match.
   items <- character(0); fills <- character(0)
   if (shade) {
-    items <- c("CS_B (= upper part of CS_N)", "PS_B (= lower part of CS_N)",
-               "PS_N")
+    items <- if (tutor) {
+      c("CS_B (= upper part of CS_N)", "PS_B (= lower part of CS_N)", "PS_N")
+    } else {
+      c("CS_N (upper part)", "CS_N (lower part)", "PS_N")
+    }
     fills <- c(firm_fill(peib_cols["cs"]), firm_fill(peib_cols["ps"]),
                firm_fill(peib_cols["tr"], 0.6))
   }
@@ -2969,37 +2974,40 @@ draw_chain_linked <- function(show = c("curves", "welfare"),
         top_split <- P + g * Q
         split <- function(x) top_split - g * x
         curves_n <- function(x) c(curves(x), list(split(x)))
-        lab_up <- if (tutor) paste0(chain_fmt(st$CS_B), " (= CS_B)")
-                  else "(= CS_B)"
-        b_up <- chain_label_near(
-          lab_up, c(xlim[1] + pad_x, Q - pad_x), c(P, ylim[2]), Q / 4,
-          (dA + top_split) / 2, curves_n, avoid,
-          ok = function(x, y) y > split(x) && y < dem(x), cex = 0.8,
-          fallback = FALSE)
-        if (is.null(b_up)) {
-          # The upper part is usually too thin for its label: put the label
-          # just above the demand curve, with a leader line to a dot in
-          # the middle of the blue triangle (its centroid)
-          cx <- Q / 3; cy <- (dA + top_split + P) / 3
-          sz <- firm_text_size(lab_up, 0.8, 2)
+        # The two parts of CS_N: labelled in the tutor version only (the
+        # student version shows the colours, not the identity)
+        if (tutor) {
+          lab_up <- paste0(chain_fmt(st$CS_B), " (= CS_B)")
           b_up <- chain_label_near(
-            lab_up, c(cx, xlim[2]), c(cy, ylim[2]),
-            (dA - cy) / dB + 0.04 * rx + sz[["w"]] / 2, cy + 0.06 * ry,
-            curves_n, avoid, ok = function(x, y) y - sz[["h"]] / 2 > dem(x),
-            cex = 0.8, fallback = FALSE)
-          if (!is.null(b_up)) {
-            segments(cx, cy, b_up[["l"]], (b_up[["b"]] + b_up[["t"]]) / 2,
-                     col = "grey15", lwd = 1.2)
-            points(cx, cy, pch = 19, cex = 0.5, col = "grey15")
+            lab_up, c(xlim[1] + pad_x, Q - pad_x), c(P, ylim[2]), Q / 4,
+            (dA + top_split) / 2, curves_n, avoid,
+            ok = function(x, y) y > split(x) && y < dem(x), cex = 0.8,
+            fallback = FALSE)
+          if (is.null(b_up)) {
+            # The upper part is usually too thin for its label: put the label
+            # just above the demand curve, with a leader line to a dot in
+            # the middle of the blue triangle (its centroid)
+            cx <- Q / 3; cy <- (dA + top_split + P) / 3
+            sz <- firm_text_size(lab_up, 0.8, 2)
+            b_up <- chain_label_near(
+              lab_up, c(cx, xlim[2]), c(cy, ylim[2]),
+              (dA - cy) / dB + 0.04 * rx + sz[["w"]] / 2, cy + 0.06 * ry,
+              curves_n, avoid, ok = function(x, y) y - sz[["h"]] / 2 > dem(x),
+              cex = 0.8, fallback = FALSE)
+            if (!is.null(b_up)) {
+              segments(cx, cy, b_up[["l"]], (b_up[["b"]] + b_up[["t"]]) / 2,
+                       col = "grey15", lwd = 1.2)
+              points(cx, cy, pch = 19, cex = 0.5, col = "grey15")
+            }
           }
+          avoid <- firm_add_box(avoid, b_up)
+          avoid <- firm_add_box(avoid, chain_label_near(
+            paste0(chain_fmt(st$PS_B), " (= PS_B)"),
+            c(xlim[1] + pad_x, Q - pad_x), c(P, top_split), Q / 4,
+            (top_split + 2 * P) / 3, curves_n, avoid,
+            ok = function(x, y) y < split(x) && y > P, cex = 0.8,
+            fallback = FALSE))
         }
-        avoid <- firm_add_box(avoid, b_up)
-        avoid <- firm_add_box(avoid, chain_label_near(
-          if (tutor) paste0(chain_fmt(st$PS_B), " (= PS_B)") else "(= PS_B)",
-          c(xlim[1] + pad_x, Q - pad_x), c(P, top_split), Q / 4,
-          (top_split + 2 * P) / 3, curves_n, avoid,
-          ok = function(x, y) y < split(x) && y > P, cex = 0.8,
-          fallback = FALSE))
         avoid <- firm_add_box(avoid, chain_label_near(
           num("PS_N", st$PS_N), c(xlim[1] + pad_x, Q - pad_x), c(i_t, P),
           Q / 3, (max(i_t, ylim[1]) + 2 * P) / 3, curves_n, avoid,
