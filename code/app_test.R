@@ -42,8 +42,16 @@ if (!exists("root")) {
 # ***********************************************************
 # Part 1: Options: which page, which app ----
 # ***********************************************************
-app_qmd   <- "tutorials/tutorial01_market.qmd"  # page, relative to root
-app_chunk <- 1        # which app on that page: 1 = the first app chunk
+# The page and the app can also be chosen in code/master.R, Part 14 (set
+# app_qmd and app_chunk there, just before this script is sourced); the
+# values below are used only if they are not set yet.
+# Pages and their apps:
+#   tutorials/tutorial01_market.qmd          1 = the Tutorial 1 explorer
+#   tutorials/tutorial02_linked_markets.qmd  1 = Explorer A (one market at
+#                                                a time), 2 = Explorer B
+#                                                (the two linked markets)
+if (!exists("app_qmd"))   app_qmd   <- "tutorials/tutorial01_market.qmd"
+if (!exists("app_chunk")) app_chunk <- 1  # which app on that page
 # Run the app at the end? interactive() is TRUE in RStudio. When the script
 # runs non-interactively (e.g. Rscript), the app is only copied and checked,
 # because runApp() would wait forever for a browser.

@@ -187,10 +187,14 @@ if (0) source(file.path(c_code, "website_build.R"))
 # ***********************************************************
 # Part 14: Test an app locally as a normal Shiny app (optional) ----
 # ***********************************************************
-# Copies the app of one tutorial page (choose the page at the top of
-# app_test.R) into a temporary folder and opens it in a browser window.
-# The console is busy while the app runs: stop it with the red Stop sign
-# in the console (or Esc).
+# Copies the app of one tutorial page into a temporary folder and opens it
+# in a browser window. The console is busy while the app runs: stop it with
+# the red Stop sign in the console (or Esc).
+# Choose the page and the app here (app_chunk: 1 = first app on the page):
+#   tutorials/tutorial01_market.qmd          1 = the explorer
+#   tutorials/tutorial02_linked_markets.qmd  1 = Explorer A, 2 = Explorer B
+app_qmd   <- "tutorials/tutorial01_market.qmd"
+app_chunk <- 1
 if (0) source(file.path(c_code, "app_test.R"))
 
 

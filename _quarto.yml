@@ -19,6 +19,8 @@ website:
         menu:
           - href: tutorials/tutorial01_market.qmd
             text: "Tutorial 1 - Markets, equilibrium and welfare"
+          - href: tutorials/tutorial02_linked_markets.qmd
+            text: "Tutorial 2 - Linked markets, pass-through and welfare"
   page-footer:
     center: "UCL SSEES - Florian Münch - 2026/27"
 

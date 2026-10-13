@@ -1970,6 +1970,37 @@ chain_line <- function(a0, slope, label, xlim, ylim, lty = 1,
   invisible(box)
 }
 
+# A VERTICAL line at Q = x0 (a perfectly inelastic demand curve, b = Inf),
+# drawn like the rising lines of chain_line(): from the quantity axis up to
+# 88% of the price range, with its label just above its end. Returns the
+# label's box. chain_vline_curve() describes the same line for the label
+# search (firm_free_spot() takes curves as heights y = f(x), which a
+# vertical line is not): over a label's width that contains x0, the line
+# covers all heights from the axis to its top end.
+chain_vline <- function(x0, label, xlim, ylim, col = peib_cols["demand"],
+                        lwd = 2.5, cex = 1) {
+  if (!is.finite(x0) || x0 <= xlim[1] || x0 >= xlim[2]) {
+    return(invisible(NULL))                 # the line misses the box
+  }
+  rx <- diff(xlim)
+  y1 <- ylim[1] + 0.88 * diff(ylim)
+  segments(x0, ylim[1], x0, y1, col = col, lwd = lwd)
+  if (is.null(label)) return(invisible(NULL))
+  hw <- strwidth(label, cex = cex, font = 2) / 2
+  hh <- strheight(label, cex = cex, font = 2)
+  oy <- 0.4 * strheight("M", cex = cex)
+  xl <- min(max(x0, xlim[1] + hw), xlim[2] - hw - 0.01 * rx)
+  text(xl, y1, label, col = col, font = 2, cex = cex, pos = 3, offset = 0.4)
+  invisible(c(l = xl - hw, r = xl + hw, b = y1 + oy * 0.5,
+              t = y1 + oy + hh * 1.3))
+}
+chain_vline_curve <- function(x0, ylim) {
+  top <- ylim[1] + 0.88 * diff(ylim)
+  function(x) {
+    if (min(x) <= x0 && max(x) >= x0) c(ylim[1], top) else NA_real_
+  }
+}
+
 # Put a label at the free spot closest to (x_pref, y_pref) inside x_rng by
 # y_rng (see firm_free_spot(): it never crosses a curve or a box in
 # 'avoid'). If the label does not fit on one line, the versions in 'alts'
@@ -2252,6 +2283,10 @@ chain_outcomes <- function(A = 220, b = 1, c = 50, g = 1, u = 50, s = 1,
 # u = P0 - s*Q0), so that the starting point always stays at (40, 90).
 # k = cost reduction. Pass-through rho = b / (b + s): b = 0 (flat demand)
 # gives 0, s = 0 (flat supply) gives 1, b + s = 0 is not determined.
+# b = Inf: a VERTICAL (perfectly inelastic) demand curve at Q0. Buyers take
+# Q0 whatever the price, so Q1 = Q0 and the price falls by the whole k
+# (rho = 1). CS is then not defined (the area under a vertical demand curve
+# has no top), so A, CS0 and CS1 are NA; the demand elasticities are 0.
 nickel_market_outcomes <- function(b = 2, s = 1, k = 30, E0 = c(40, 90)) {
   check_firm_number(b, "b", min = 0, what = "demand cannot slope up")
   check_firm_number(s, "s", min = 0, what = "supply cannot slope down")
@@ -2259,28 +2294,43 @@ nickel_market_outcomes <- function(b = 2, s = 1, k = 30, E0 = c(40, 90)) {
   if (!is.numeric(E0) || length(E0) != 2 || any(is.na(E0)) || any(E0 <= 0)) {
     stop("'E0' must be two positive numbers, c(Q0, P0).", call. = FALSE)
   }
+  if (!is.finite(s)) {
+    stop("'s' must be a finite number (only demand can be vertical, b = Inf).",
+         call. = FALSE)
+  }
   Q0 <- E0[1]; P0 <- E0[2]
-  A <- P0 + b * Q0; u <- P0 - s * Q0
+  vertical <- is.infinite(b)
+  A <- if (vertical) NA_real_ else P0 + b * Q0
+  u <- P0 - s * Q0
   na <- NA_real_
   indeterminate <- b + s <= 0
   if (indeterminate) {
     Q1 <- na; P1 <- na
+  } else if (vertical) {
+    # The quantity cannot change; the price slides down the vertical demand
+    # curve to the new supply curve S1: P1 = u - k + s*Q0 = P0 - k
+    Q1 <- Q0
+    P1 <- P0 - k
   } else {
     # A - bQ = u - k + sQ  =>  Q1 = Q0 + k / (b + s), and P1 on demand
     Q1 <- max(0, Q0 + k / (b + s))
     P1 <- if (Q1 > 0) A - b * Q1 else na
   }
   el <- function(dQdP, P, Q) if (is.na(Q) || Q <= 0) na else dQdP * P / Q
+  # (vertical demand: dQ/dP = 0, so its elasticity is 0 at every point)
+  el_D <- function(P, Q) if (vertical) 0 else el(-1 / b, P, Q)
   list(A = A, u = u, u1 = u - k, b = b, s = s, k = k,
        Q0 = Q0, P0 = P0, Q1 = Q1, P1 = P1,
        dQ = Q1 - Q0, dP = P1 - P0,
-       rho = if (indeterminate) na else b / (b + s),
-       CS0 = 0.5 * b * Q0^2, PS0 = 0.5 * s * Q0^2,
-       CS1 = if (is.na(Q1)) na else 0.5 * b * Q1^2,
+       rho = if (indeterminate) na else if (vertical) 1 else b / (b + s),
+       CS0 = if (vertical) na else 0.5 * b * Q0^2, PS0 = 0.5 * s * Q0^2,
+       CS1 = if (is.na(Q1) || vertical) na else 0.5 * b * Q1^2,
        PS1 = if (is.na(Q1)) na else 0.5 * s * Q1^2,
-       eps_D0 = el(-1 / b, P0, Q0), eps_S0 = el(1 / s, P0, Q0),
-       eps_D1 = el(-1 / b, P1, Q1), eps_S1 = el(1 / s, P1, Q1),
+       eps_D0 = el_D(P0, Q0), eps_S0 = el(1 / s, P0, Q0),
+       eps_D1 = el_D(P1, Q1), eps_S1 = el(1 / s, P1, Q1),
        indeterminate = indeterminate,
+       vertical = vertical,                # b = Inf: perfectly inelastic
+       horizontal = b == 0,                # b = 0: perfectly elastic
        # (supply after the innovation starts below zero: the first units
        # would cost less than nothing; possible with a steep s in the app)
        negative_cost = u - k < 0)
@@ -2589,6 +2639,10 @@ draw_chain_supply <- function(what = c("firm_industry", "innovation"),
 # the arrows "-30 (cost)" (between S0 and S1 at Q0) and "-20 (price)" (on
 # the price axis, from P0 to P1). The student version draws S1 but does not
 # mark E1 (Question 2.1b).
+# Extremes (Question 2.3c): b = 0 draws a flat demand curve through E0,
+# labelled "D (perfectly elastic)" (CS = 0); b = Inf a vertical one at Q0,
+# labelled "D (perfectly inelastic)". With a vertical demand curve CS is not
+# defined and never shaded, whatever show_cs says.
 draw_chain_nickel <- function(panel = c("before", "after"), b = 2, s = 1,
                               k = 30, E0 = c(40, 90),
                               xlim = c(0, 90), ylim = c(0, 180), main = NULL,
@@ -2600,6 +2654,7 @@ draw_chain_nickel <- function(panel = c("before", "after"), b = 2, s = 1,
   tutor <- version == "tutor"
   out <- nickel_market_outcomes(b, s, k, E0)
   A <- out$A; u <- out$u
+  vertical <- out$vertical               # b = Inf: vertical demand at Q0
   rx <- diff(xlim); ry <- diff(ylim); pad_x <- 0.015 * rx; pad_y <- 0.02 * ry
   dem <- function(x) A - b * x
   s0  <- function(x) u + s * x
@@ -2611,6 +2666,7 @@ draw_chain_nickel <- function(panel = c("before", "after"), b = 2, s = 1,
   inside <- function(x, y) !is.na(x) && !is.na(y) && x > 0 && x < xlim[2] &&
     y > ylim[1] && y < ylim[2]
   shade <- inside(Q, P)
+  show_cs <- show_cs && !vertical        # CS is not defined: never shaded
 
   items <- character(0); fills <- character(0)
   add <- function(label, col) { items <<- c(items, label); fills <<- c(fills, col) }
@@ -2621,7 +2677,12 @@ draw_chain_nickel <- function(panel = c("before", "after"), b = 2, s = 1,
   firm_canvas(xlim, ylim, main, ylab = "Price of nickel (P_N)",
               xlab = "Quantity of nickel (Q_N)", tick_step = tick_step,
               n_legend = if (fit_top) length(items) else NULL)
-  curves <- function(x) list(dem(x), s0(x), s1(x))
+  if (vertical) {
+    dem_v <- chain_vline_curve(out$Q0, ylim)
+    curves <- function(x) list(dem_v(x), s0(x), s1(x))
+  } else {
+    curves <- function(x) list(dem(x), s0(x), s1(x))
+  }
 
   # Shaded areas first: triangles between the price line and the curves
   # (clip() cuts them at the axes if an intercept lies outside the box)
@@ -2634,8 +2695,14 @@ draw_chain_nickel <- function(panel = c("before", "after"), b = 2, s = 1,
   avoid <- list()
   avoid <- firm_add_box(avoid, chain_line(u - k, s, "S1", xlim, ylim, lty = 2))
   avoid <- firm_add_box(avoid, chain_line(u, s, "S0", xlim, ylim))
-  avoid <- firm_add_box(avoid, chain_line(A, -b, "D", xlim, ylim,
-                                          col = peib_cols["demand"]))
+  if (vertical) {
+    avoid <- firm_add_box(avoid, chain_vline(out$Q0, "D (perfectly inelastic)",
+                                             xlim, ylim))
+  } else {
+    avoid <- firm_add_box(avoid, chain_line(
+      A, -b, if (b == 0) "D (perfectly elastic)" else "D", xlim, ylim,
+      col = peib_cols["demand"]))
+  }
 
   if (out$indeterminate) {
     firm_message(paste0("Both curves are flat (b = s = 0): the new ",
@@ -2673,9 +2740,18 @@ draw_chain_nickel <- function(panel = c("before", "after"), b = 2, s = 1,
   }
   # Arrows (tutor): the cost shift at Q0 and the price change on the axis
   if (tutor) {
-    avoid <- chain_varrow(out$Q0, out$P0, out$P0 - k,
-                          paste0("-", chain_fmt(k), " (cost)"), curves, avoid,
-                          sides = c(1, -1))
+    if (vertical) {
+      # (a vertical demand curve runs along Q0: the cost arrow goes a little
+      # to its right, still from S0 down to S1)
+      xc <- out$Q0 + 0.08 * rx
+      avoid <- chain_varrow(xc, s0(xc), s1(xc),
+                            paste0("-", chain_fmt(k), " (cost)"), curves,
+                            avoid, sides = c(1, -1))
+    } else {
+      avoid <- chain_varrow(out$Q0, out$P0, out$P0 - k,
+                            paste0("-", chain_fmt(k), " (cost)"), curves,
+                            avoid, sides = c(1, -1))
+    }
     if (inside(out$Q1, out$P1) && abs(out$dP) > 1e-9) {
       dp <- out$dP
       # (label just above the arrow in 4a, just below it in 4b: the
@@ -3041,4 +3117,198 @@ draw_chain_linked <- function(show = c("curves", "welfare"),
   chain_fig_legend(items, fills, ncol = min(3, max(1, length(items))))
   chain_fig_title(main, peib_top_margin(pm, n_leg))
   invisible(out)
+}
+
+
+### 22. draw_chain_passthrough_extremes(): the two extreme demand curves ----
+# Question 2.3c: the nickel market of Figure 4 with the two extreme demand
+# curves through E0 = (40, 90), side by side, each with S0, S1 (dashed,
+# k lower), E0 and E1:
+#   left,  vertical demand (perfectly inelastic, b = Inf): the quantity
+#          stays at 40 and the price falls by the whole k (90 to 60):
+#          rho = 1. PS_N at E1 = 800, the same as at E0: producers gain
+#          nothing, the whole saving goes to buyers. CS is not defined.
+#   right, horizontal demand (perfectly elastic, b = 0) at P = 90: the
+#          price stays at 90 and the quantity rises along S1 (40 to 70):
+#          rho = 0. CS = 0; PS_N rises from 800 to 2,450.
+# Arrows: the cost shift "-30 (cost)" between S0 and S1 in both panels, the
+# price change on the price axis (left) and the quantity change on the
+# quantity axis (right). show_ps shades PS_N at E1. The tutor version
+# prints the coordinates of E0 and E1, the sizes of the changes and PS_N in
+# the area; the student version only names them. Each panel has a short
+# note on its pass-through rate. Numbers come from nickel_market_outcomes()
+# (b = Inf and b = 0); returned invisibly as list(vertical, horizontal).
+# tick_step: see chain_tick_step(), e.g. list(c(10, 10), c(10, 10)).
+draw_chain_passthrough_extremes <- function(k = 30, s = 1, E0 = c(40, 90),
+                                            xlim = c(0, 90), ylim = c(0, 180),
+                                            main = NULL, tick_step = NULL,
+                                            fit_top = FALSE,
+                                            version = c("tutor", "student"),
+                                            show_ps = TRUE) {
+  version <- match.arg(version)
+  tutor <- version == "tutor"
+  outs <- list(vertical   = nickel_market_outcomes(Inf, s, k, E0),
+               horizontal = nickel_market_outcomes(0, s, k, E0))
+  rx <- diff(xlim); ry <- diff(ylim); pad_x <- 0.015 * rx; pad_y <- 0.02 * ry
+  inside <- function(x, y) !is.na(x) && !is.na(y) && x > 0 && x < xlim[2] &&
+    y > ylim[1] && y < ylim[2]
+  ok1 <- vapply(outs, function(o) !o$indeterminate && inside(o$Q1, o$P1),
+                logical(1))
+  num <- function(nm, x) if (tutor) paste0(nm, " = ", chain_fmt(x)) else nm
+  e_lab <- function(nm, x, y) {
+    if (tutor) paste0(nm, " = (", chain_fmt(x), ", ", chain_fmt(y), ")") else nm
+  }
+  e_alt <- function(nm, x, y) {
+    if (tutor) c(e_lab(nm, x, y), paste0(nm, "\n(", chain_fmt(x), ", ",
+                                         chain_fmt(y), ")")) else nm
+  }
+  # The note of each panel, with shorter line breaks as fall-backs
+  notes <- list(
+    vertical = c("rho = 1: the whole cost saving\ngoes into the price",
+                 "rho = 1: the whole\ncost saving goes\ninto the price"),
+    horizontal = c("rho = 0: the price is pinned,\nthe whole adjustment is in quantity",
+                   "rho = 0: the price is pinned,\nthe whole adjustment\nis in quantity",
+                   "rho = 0: the price\nis pinned, the whole\nadjustment is\nin quantity"))
+
+  # Legend across the figure: PS_N at E1, if it is shaded in a panel
+  items <- character(0); fills <- character(0)
+  if (show_ps && any(ok1)) {
+    items <- "Producer surplus (PS_N) at E1, after the innovation"
+    fills <- firm_fill(peib_cols["ps"])
+  }
+  n_leg <- if (fit_top) 2 * ceiling(length(items) / 3) else NULL
+  pm <- if (is.null(main)) NULL else ""
+
+  op <- par(c("mfrow", "mar", "las")); on.exit(par(op))
+  par(mfrow = c(1, 2))
+  for (i in 1:2) {
+    o <- outs[[i]]; vert <- i == 1
+    Q0 <- o$Q0; P0 <- o$P0; u <- o$u
+    firm_canvas(xlim, ylim, pm, ylab = "Price of nickel (P_N)",
+                xlab = "Quantity of nickel (Q_N)",
+                tick_step = chain_tick_step(tick_step, i), n_legend = n_leg)
+    s0 <- function(x) u + s * x
+    s1 <- function(x) u - k + s * x
+    dem_c <- if (vert) chain_vline_curve(Q0, ylim)
+             else function(x) rep(P0, length(x))
+    curves <- function(x) list(dem_c(x), s0(x), s1(x))
+
+    # PS_N at E1 first (lines go on top): between the price and S1
+    if (show_ps && ok1[i]) {
+      polygon(c(0, 0, o$Q1), c(o$P1, u - k, o$P1),
+              col = firm_fill(peib_cols["ps"]), border = NA)
+    }
+    # Curves: S1 dashed, S0, then the demand curve
+    avoid <- list()
+    avoid <- firm_add_box(avoid, chain_line(u - k, s, "S1", xlim, ylim, lty = 2))
+    avoid <- firm_add_box(avoid, chain_line(u, s, "S0", xlim, ylim))
+    if (vert) {
+      avoid <- firm_add_box(avoid, chain_vline(Q0, "D (perfectly inelastic)",
+                                               xlim, ylim))
+    } else {
+      # Flat demand: its label goes just above the LEFT part of the line
+      # (at the right end S0 and S1 cross the line and E1 sits there)
+      chain_line(P0, 0, NULL, xlim, ylim, col = peib_cols["demand"])
+      lab_d <- "D (perfectly elastic)"
+      sz_d <- firm_text_size(lab_d, 0.95, 2)
+      avoid <- firm_add_box(avoid, chain_label_near(
+        lab_d, c(xlim[1], xlim[2]), c(P0, P0 + 0.2 * ry),
+        xlim[1] + pad_x + sz_d[["w"]] / 2, P0 + 0.01 * ry + sz_d[["h"]] / 2,
+        curves, avoid, cex = 0.95, col = peib_cols["demand"],
+        alts = c(lab_d, "D (perfectly\nelastic)")))
+    }
+    if (o$indeterminate) {
+      firm_message(paste0("Demand and supply are both flat (s = 0):\n",
+                          "the new equilibrium is not determined"),
+                   xlim, ylim)
+      next
+    }
+
+    # Guides at E0 and E1
+    avoid <- c(avoid, chain_guides(Q0, P0, xlim, ylim))
+    if (ok1[i]) avoid <- c(avoid, chain_guides(o$Q1, o$P1, xlim, ylim))
+    # PS_N label inside its area (tutor: with the value, and the value
+    # before the innovation for comparison)
+    if (show_ps && ok1[i]) {
+      lab <- if (tutor) paste0("PS_N = ", chain_fmt(o$PS1), " (before: ",
+                               chain_fmt(o$PS0), ")") else "PS_N"
+      alts <- unique(c(lab, sub(" (", "\n(", lab, fixed = TRUE)))
+      lo <- max(u - k, ylim[1])
+      b_ps <- chain_label_near(
+        lab, c(xlim[1] + pad_x, o$Q1 - pad_x), c(lo, o$P1), o$Q1 / 3,
+        (lo + 2 * o$P1) / 3, curves, avoid,
+        ok = function(x, y) y > s1(x) && y < o$P1, cex = 0.8, alts = alts,
+        fallback = FALSE)
+      if (is.null(b_ps)) {
+        # The triangle is too small for its label (vertical demand): put
+        # the label below S1, with a leader line to a dot in the middle of
+        # the triangle (its centroid)
+        cx <- o$Q1 / 3; cy <- (2 * o$P1 + u - k) / 3
+        b_ps <- chain_label_near(
+          lab, c(xlim[1] + pad_x, xlim[2]), c(ylim[1], o$P1), cx,
+          ylim[1] + 0.1 * ry, curves, avoid,
+          ok = function(x, y) y < s1(x), cex = 0.8, alts = alts,
+          fallback = FALSE)
+        if (!is.null(b_ps)) {
+          tx <- min(max(cx, b_ps[["l"]]), b_ps[["r"]])
+          segments(cx, cy, tx, b_ps[["t"]], col = "grey15", lwd = 1.2)
+          points(cx, cy, pch = 19, cex = 0.5, col = "grey15")
+        }
+      }
+      if (is.null(b_ps) && tutor) {
+        # Last resort: the value alone, inside the area
+        b_ps <- chain_label_near(
+          num("PS_N", o$PS1), c(xlim[1] + pad_x, o$Q1 - pad_x), c(lo, o$P1),
+          o$Q1 / 3, (lo + 2 * o$P1) / 3, curves, avoid,
+          ok = function(x, y) y > s1(x) && y < o$P1, cex = 0.8,
+          fallback = FALSE)
+      }
+      avoid <- firm_add_box(avoid, b_ps)
+    }
+    # Arrows: the cost shift (both panels; left, a little to the right of
+    # the vertical demand curve, which runs along Q0)
+    xc <- if (vert) Q0 + 0.08 * rx else Q0
+    if (xc < xlim[2]) {
+      avoid <- chain_varrow(xc, s0(xc), s1(xc),
+                            if (tutor) paste0("-", chain_fmt(k), " (cost)")
+                            else "cost falls", curves, avoid, sides = c(1, -1))
+    }
+    if (ok1[i] && vert && abs(o$dP) > 1e-9) {
+      # The price falls by the whole cost saving (on the price axis)
+      avoid <- chain_varrow(xlim[1] + 0.03 * rx, P0, o$P1,
+                            if (tutor) paste0(if (o$dP < 0) "-" else "+",
+                                              chain_fmt(abs(o$dP)), " (price)")
+                            else "price falls", curves, avoid, sides = 1)
+    }
+    if (ok1[i] && !vert && abs(o$dQ) > 1e-9) {
+      # The quantity rises (on the quantity axis); the price does not move
+      avoid <- chain_harrow(Q0, o$Q1, ylim[1] + 0.035 * ry,
+                            if (tutor) paste0("+", chain_fmt(o$dQ),
+                                              " (quantity)")
+                            else "quantity rises", curves, avoid, sides = 1)
+    }
+    # E0 and E1
+    avoid <- chain_point(Q0, P0, e_lab("E0", Q0, P0), curves, avoid,
+                         dir = c(-1, 1), alts = e_alt("E0", Q0, P0))
+    if (ok1[i] && (abs(o$dQ) > 1e-9 || abs(o$dP) > 1e-9)) {
+      # (flat demand: the two-line label first, it fits just below the
+      # line to the right of E1, where S1 has already risen above P0)
+      alt1 <- e_alt("E1", o$Q1, o$P1)
+      if (!vert) alt1 <- rev(alt1)
+      avoid <- chain_point(o$Q1, o$P1, e_lab("E1", o$Q1, o$P1), curves, avoid,
+                           dir = c(1, -1), alts = alt1)
+    }
+    if (!ok1[i]) {
+      firm_message("The new equilibrium lies outside the axes", xlim, ylim)
+    }
+    # The note on the pass-through rate, near the top left of the panel
+    nt <- notes[[i]]
+    avoid <- firm_add_box(avoid, chain_label_near(
+      nt[1], c(xlim[1], xlim[2]), c(ylim[1] + 0.45 * ry, ylim[2]),
+      xlim[1] + 0.3 * rx, ylim[2] - 0.1 * ry, curves, avoid, cex = 0.75,
+      font = 3, col = "grey20", alts = nt))
+  }
+  chain_fig_legend(items, fills, ncol = 1)
+  chain_fig_title(main, peib_top_margin(pm, n_leg))
+  invisible(outs)
 }

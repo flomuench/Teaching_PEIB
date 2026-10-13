@@ -19,3 +19,4 @@ New pages are added week by week as the module progresses.
 ## Tutorials
 
 - [Tutorial 1 - Markets, equilibrium and welfare](tutorials/tutorial01_market.qmd)
+- [Tutorial 2 - Linked markets, pass-through and welfare](tutorials/tutorial02_linked_markets.qmd)

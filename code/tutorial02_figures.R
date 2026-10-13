@@ -11,7 +11,8 @@
 #       Part 3: Figure 1, the value chain schematic
 #       Part 4: Figure 2, one nickel producer
 #       Part 5: Figures 3 and 3b, from the firm to the industry supply
-#       Part 6: Figures 4a and 4b, the nickel market before and after
+#       Part 6: Figures 4a and 4b, the nickel market before and after, and
+#               Figure 4c, pass-through with vertical and horizontal demand
 #       Part 7: Figure 5, slope versus elasticity
 #       Part 8: Figures 6, 7 and 7b, the two linked markets and welfare
 #       Part 9: Overview sheet of all tutor figures (a working file)
@@ -29,7 +30,8 @@
 #     tutorial02_fig03_firm_to_industry.png,
 #     tutorial02_fig03b_innovation_supply.png                (Part 5)
 #     tutorial02_fig04a_nickel_before_student/tutor.png,
-#     tutorial02_fig04b_nickel_after_student/tutor.png       (Part 6)
+#     tutorial02_fig04b_nickel_after_student/tutor.png,
+#     tutorial02_fig04c_passthrough_extremes_student/tutor.png (Part 6)
 #     tutorial02_fig05_elasticity.png                        (Part 7)
 #     tutorial02_fig06_linked_markets_student/tutor.png,
 #     tutorial02_fig07_welfare_E0_student/tutor.png,
@@ -53,7 +55,7 @@
   # show exactly the same curves.
   #
   # Sizes: one-panel figures 6 x 4.5 inches, two-panel figures (Figures 3,
-  # 3b, 6, 7, 7b) 8 x 4.5 inches, the schematic (Figure 1) 8 x 3 inches; in
+  # 3b, 4c, 6, 7, 7b) 8 x 4.5 inches, the schematic (Figure 1) 8 x 3 inches; in
   # Word set the width to 15 cm (one panel) or 16 cm (two panels) with
   # "Lock aspect ratio" ticked.
 
@@ -221,7 +223,7 @@ f3b <- save_png("fig03b_innovation_supply", size_two, function()
 
 
 # ***********************************************************
-# Part 6: Figures 4a and 4b, the nickel market before and after ----
+# Part 6: Figures 4a, 4b and 4c, the nickel market ----
 # ***********************************************************
 # Demand P_N = 170 - 2Q, supply S0: 50 + Q and S1: 20 + Q (dashed).
 # 4a shades CS_N and PS_N at E0 = (40, 90), 4b at E1 = (50, 70).
@@ -241,6 +243,24 @@ for (v in versions) {
   f4[[paste0("b_", v)]] <- save_png(paste0("fig04b_nickel_after_", v),
     size_one, function() do.call(draw_chain_nickel,
       c(list(panel = "after", version = v), nickel_args)))
+}
+
+### Figure 4c: pass-through with the two extreme demand curves ----
+# Question 2.3c (model responses): the same supply curves (S0: 50 + Q,
+# S1: 20 + Q) with a vertical demand curve at Q = 40 (left: Q stays 40, the
+# price falls by the whole 30 from 90 to 60, rho = 1, PS_N 800 -> 800, CS
+# not defined) and a horizontal one at P = 90 (right: the price stays 90,
+# Q rises from 40 to 70, rho = 0, CS = 0, PS_N 800 -> 2,450). Two panels,
+# ticks every 10 on both axes of both panels, axes as Figure 4. The tutor
+# version goes into the model responses; the student version is made too.
+f4c <- list()
+for (v in versions) {
+  f4c[[v]] <- save_png(paste0("fig04c_passthrough_extremes_", v), size_two,
+    function() draw_chain_passthrough_extremes(
+      k = chain02$k, s = chain02$s, E0 = c(40, 90), xlim = ax_nickel$xlim,
+      ylim = ax_nickel$ylim,
+      tick_step = list(ax_nickel$ticks, ax_nickel$ticks), fit_top = TRUE,
+      version = v))
 }
 
 
@@ -305,6 +325,8 @@ overview <- list(
   c("fig03b_innovation_supply",     "Fig 3b - the innovation shifts supply"),
   c("fig04a_nickel_before_tutor",   "Fig 4a - nickel market before"),
   c("fig04b_nickel_after_tutor",    "Fig 4b - nickel market after"),
+  c("fig04c_passthrough_extremes_tutor",
+    "Fig 4c - pass-through: vertical and horizontal demand"),
   c("fig05_elasticity",             "Fig 5 - slope versus elasticity"),
   c("fig06_linked_markets_tutor",   "Fig 6 - two linked markets"),
   c("fig07_welfare_E0_tutor",       "Fig 7 - welfare at E0"),
@@ -405,3 +427,10 @@ print(round(c(at_P20 = elasticity_point(-2, 100, 20)$elasticity,
 print(round(c(dQ = ak$dQ, dP_N = ak$dP_N, dP_B = ak$dP_B,
               rho_upstream = ak$rho_N, rho_downstream = ak$rho_B,
               rho_total = ak$rho_total), 3))
+
+### Pass-through extremes (Question 2.3c, Figure 4c) ----
+# Vertical demand (b = Inf) and horizontal demand (b = 0) through E0 =
+# (40, 90); CS is NA (not defined) with vertical demand, 0 with horizontal
+print(round(sapply(f4c$tutor, function(o) unlist(
+  o[c("Q0", "P0", "Q1", "P1", "dQ", "dP", "rho", "CS0", "CS1", "PS0",
+      "PS1")])), 2))
