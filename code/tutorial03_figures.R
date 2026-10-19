@@ -189,9 +189,10 @@ f5 <- save_png("fig05_learning_breakeven", size_one, function()
   #   temporary): E2 = (42, 58), CS = PS = 882, G = 0, net surplus 1,764.
   #   The equilibrium is named E2 (e0_name) to set it apart from E0 of
   #   period 1; Figure 7 uses the same name for the same point.
-  # Figure 7 (Question 3.6d): the subsidy KEPT in period 2: E1 = (52, 48)
+  # Figure 7 (Question 3.6d): the subsidy KEPT in period 2: E3 = (52, 48)
   #   with PP = 68, CS = PS = 1,352, G = 1,040, consumers and producers
   #   each gain 470 relative to E2 and the DWL of 100 returns.
+  #   The subsidised point is named E3 (e1_name), the handout name.
 f6 <- list(); f7 <- list()
 for (v in versions) {
   f6[[v]] <- save_png(paste0("fig06_period2_market_", v), size_one,
@@ -200,7 +201,8 @@ for (v in versions) {
                                        market_args(sub03_p2))))
   f7[[v]] <- save_png(paste0("fig07_period2_subsidy_welfare_", v), size_one,
     function() do.call(draw_subsidy, c(list(view = "welfare_changes",
-                                            version = v, e0_name = "E2"),
+                                            version = v, e0_name = "E2",
+                                            e1_name = "E3"),
                                        market_args(sub03_p2))))
 }
 

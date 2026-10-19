@@ -3512,6 +3512,9 @@ sub_leader <- function(x0, y0, box, dot = TRUE) {
 # accepted as aliases of "answers" and "noanswers").
 # e0_name: the name of the equilibrium without the subsidy, "E0" by default
 # ("E2" for the period-2 market after learning, handout Figure 6).
+# e1_name: the name of the equilibrium with the subsidy, "E1" by default
+# ("E3" for the period-2 market with the subsidy kept, handout Figure 6
+# of the answers version, file fig07).
 draw_subsidy <- function(view = c("market", "shift", "welfare_levels",
                                   "welfare_changes"),
                          a = 100, b = 1, c = 20, d = 1, s = 20,
@@ -3520,11 +3523,15 @@ draw_subsidy <- function(view = c("market", "shift", "welfare_levels",
                          xlim = c(0, 100), ylim = c(0, 100), main = NULL,
                          tick_step = NULL, fit_top = FALSE,
                          show_cs = TRUE, show_ps = TRUE, show_g = TRUE,
-                         show_dwl = TRUE, e0_name = "E0") {
+                         show_dwl = TRUE, e0_name = "E0",
+                         e1_name = "E1") {
   view <- match.arg(view)
   version <- match.arg(version)
   if (!is.character(e0_name) || length(e0_name) != 1) {
     stop("'e0_name' must be one short text, e.g. \"E0\".", call. = FALSE)
+  }
+  if (!is.character(e1_name) || length(e1_name) != 1) {
+    stop("'e1_name' must be one short text, e.g. \"E1\".", call. = FALSE)
   }
   # The old names are aliases: "tutor" = "answers", "student" = "noanswers"
   if (version == "tutor")   version <- "answers"
@@ -3741,7 +3748,7 @@ draw_subsidy <- function(view = c("market", "shift", "welfare_levels",
   # answers version only (students find it themselves)
   if (after && ok1) {
     if (tutor) {
-      avoid <- chain_point(Q1, PC, e_lab("E1", Q1, PC), curves, avoid,
+      avoid <- chain_point(Q1, PC, e_lab(e1_name, Q1, PC), curves, avoid,
                            dir = c(1, -1))
     } else {
       points(Q1, PC, pch = 19, cex = 1)
