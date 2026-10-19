@@ -15,6 +15,10 @@
 #               nickel_market_outcomes(), elasticity_point(),
 #               draw_chain_firm(), draw_chain_supply(), draw_chain_nickel(),
 #               draw_chain_elasticity(), draw_chain_linked())
+#       Part 6: Model E, Tutorial 3: a per-unit producer subsidy in one
+#               market (solar panels), and learning curves
+#               (subsidy_outcomes(), draw_subsidy(), learning_cost(),
+#               draw_learning())
 #
 # Authors: Florian Münch
 # Requires: base R only (the packages graphics and grDevices, which every
@@ -3311,4 +3315,692 @@ draw_chain_passthrough_extremes <- function(k = 30, s = 1, E0 = c(40, 90),
   chain_fig_legend(items, fills, ncol = 1)
   chain_fig_title(main, peib_top_margin(pm, n_leg))
   invisible(outs)
+}
+
+
+# ***********************************************************
+# Part 6: Model E, Tutorial 3: a per-unit subsidy in one market, and ----
+#         learning curves
+# ***********************************************************
+# Solar panels in a closed market (no trade with other countries).
+#
+#   Demand:              P = a - b * Q
+#   Supply (= MC):       P = c + d * Q   (ten identical firms with
+#                        MC_i = 20 + 10 q_i add up to P = 20 + Q)
+#   Producer subsidy:    the government pays s per panel to the seller.
+#                        Buyers pay PC (consumer price), sellers receive
+#                        PP = PC + s (producer price).
+#
+# In a diagram with the CONSUMER price on the vertical axis, the subsidy
+# moves the supply curve DOWN by s: a seller who needs c + d*Q per panel
+# is happy with a consumer price of c + d*Q - s, because the government
+# adds s. The new supply curve is "S - s": PC = (c - s) + d * Q.
+#
+# Handout numbers (a = 100, b = 1, c = 20, d = 1, s = 20):
+#   E0 (no subsidy):   Q0 = 40, P0 = 60, CS0 = 800, PS0 = 800
+#   E1 (subsidy 20):   Q1 = 50, PC = 50, PP = 70, CS1 = 1,250,
+#                      PS1 = 1,250, G = 1,000, DWL = 100
+#   Period 2 (learning lowers the cost intercept c from 20 to 16): the
+#   same model with c = 16.
+#
+# Learning-by-doing: the unit cost falls with cumulative experience E
+# (all panels made so far): c(E) = cbar + (c0 - cbar) * E^(-beta). These
+# figures are conceptual (no numbers on the axes), as steps 1 and 2 of
+# Tutorial 1.
+#
+# The drawing functions have the same layout arguments as Parts 3 to 5
+# (xlim, ylim, main, tick_step, fit_top). draw_subsidy() has a 'version'
+# switch named after the two versions of this course's handouts:
+# "answers" (handed out after the tutorial: numbers in the areas and E1
+# labelled) and "noanswers" (handed out before it: the same curves without
+# numbers). The Part 5 names "tutor" and "student" are still accepted as
+# aliases ("tutor" = "answers", "student" = "noanswers"), so that code
+# written with them keeps working. The functions return their outcomes
+# invisibly.
+
+
+### 23. subsidy_outcomes(): equilibria, surpluses and the subsidy bill ----
+# Returns a named list, e.g. out <- subsidy_outcomes(); out$DWL
+subsidy_outcomes <- function(a = 100, b = 1, c = 20, d = 1, s = 20, n = 10,
+                             FC = 50) {
+  # Defensive checks: every argument a single finite number
+  args <- list(a = a, b = b, c = c, d = d, s = s, n = n, FC = FC)
+  for (nm in names(args)) {
+    x <- args[[nm]]
+    if (!is.numeric(x) || length(x) != 1 || is.na(x) || !is.finite(x)) {
+      stop("'", nm, "' must be a single number, not ", deparse(x), ".",
+           call. = FALSE)
+    }
+  }
+  if (b <= 0) stop("Demand slope 'b' must be positive (demand slopes down).",
+                   call. = FALSE)
+  if (d <= 0) stop("Supply slope 'd' must be positive (supply slopes up).",
+                   call. = FALSE)
+  if (s < 0) stop("The subsidy 's' cannot be negative (that would be a ",
+                  "tax, see market_outcomes()).", call. = FALSE)
+  if (n < 1) stop("The number of firms 'n' must be at least 1.",
+                  call. = FALSE)
+
+  # No trade: if the keenest buyer (a) values a panel no more than the
+  # cheapest seller's cost (c), nothing is traded without a subsidy; with
+  # the subsidy, the seller's cost net of the subsidy is c - s.
+  no_trade0 <- a <= c
+  no_trade1 <- a <= c - s
+
+  # E0, no subsidy: a - b*Q = c + d*Q, so Q0 = (a - c) / (b + d); the
+  # price is read off the demand curve
+  Q0 <- max(0, (a - c) / (b + d))
+  P0 <- a - b * Q0
+
+  # E1, with the subsidy: buyers' willingness to pay equals the sellers'
+  # cost MINUS the subsidy, a - b*Q = c + d*Q - s, so
+  # Q1 = (a - c + s) / (b + d). Buyers pay PC (on the demand curve),
+  # sellers receive PP = PC + s (on the original supply curve).
+  Q1 <- max(0, (a - c + s) / (b + d))
+  PC <- a - b * Q1
+  PP <- PC + s
+
+  # Surpluses. The curves are straight lines, so the areas are triangles:
+  #   CS = triangle between demand and the consumer price: 1/2 * Q * (a - PC)
+  #        and a - PC = b * Q, so CS = 1/2 * b * Q^2
+  #   PS = triangle between the producer price and supply:  1/2 * Q * (PP - c)
+  #        and PP - c = d * Q, so PS = 1/2 * d * Q^2
+  CS0 <- 0.5 * b * Q0^2
+  PS0 <- 0.5 * d * Q0^2
+  CS1 <- 0.5 * b * Q1^2
+  PS1 <- 0.5 * d * Q1^2
+
+  # The subsidy bill: s on every panel sold, a rectangle s x Q1
+  G <- s * Q1
+
+  # Deadweight loss: what the subsidy costs taxpayers minus what consumers
+  # and producers gain. With trade before the subsidy (Q0 > 0) this is the
+  # triangle between the curves from Q0 to Q1: 1/2 * (Q1 - Q0) * s. The
+  # extra panels cost more to make (on S) than buyers value them (on D).
+  dCS <- CS1 - CS0
+  dPS <- PS1 - PS0
+  DWL <- G - dCS - dPS
+
+  # Net surplus: consumers + producers - taxpayers (the government)
+  NS0 <- CS0 + PS0
+  NS1 <- CS1 + PS1 - G
+
+  list(
+    Q0 = Q0, P0 = P0, Q1 = Q1, PC = PC, PP = PP,
+    dQ = Q1 - Q0,
+    dPC = PC - P0,        # change of the price buyers pay  (-b s / (b + d))
+    dPP = PP - P0,        # change of the price sellers get (+d s / (b + d))
+    share_cons = b / (b + d),   # share of s that reaches buyers
+    share_prod = d / (b + d),   # share of s that reaches sellers
+    CS0 = CS0, PS0 = PS0, CS1 = CS1, PS1 = PS1,
+    dCS = dCS, dPS = dPS, G = G, DWL = DWL,
+    NS0 = NS0, NS1 = NS1, dNS = NS1 - NS0,
+    # One of n identical firms: quantity, producer surplus and profit
+    # (profit = PS - fixed cost, because PS = revenue - variable cost)
+    q0_firm = Q0 / n, q1_firm = Q1 / n,
+    PS0_firm = PS0 / n, PS1_firm = PS1 / n,
+    profit0_firm = PS0 / n - FC, profit1_firm = PS1 / n - FC,
+    no_trade0 = no_trade0, no_trade1 = no_trade1
+  )
+}
+
+
+### 24. Small helpers for the subsidy and learning figures ----
+
+# Signed numbers for changes: "+450", "-100"
+sub_signed <- function(x) paste0(if (x >= 0) "+" else "", chain_fmt(x))
+
+# Like chain_label_near(), but with an optional white background box
+# (bg = "white") so that a label stays readable on HATCHED areas. Tries
+# the label on one line, then broken after "=". Returns the label's box or
+# NULL (nothing drawn) if it does not fit anywhere.
+sub_label <- function(lab, x_rng, y_rng, x_pref, y_pref, curves,
+                      avoid = list(), ok = function(x, y) TRUE, cex = 0.85,
+                      font = 2, col = "black", bg = NULL) {
+  alts <- if (is.character(lab)) unique(c(lab, sub(" = ", "\n= ", lab,
+                                                   fixed = TRUE))) else list(lab)
+  for (txt in alts) {
+    sz <- firm_text_size(txt, cex, font)
+    sp <- firm_free_spot(sz, x_rng, y_rng, x_pref, y_pref, curves, avoid, ok)
+    if (is.null(sp)) next
+    box <- c(l = sp[["x"]] - sz[["w"]] / 2, r = sp[["x"]] + sz[["w"]] / 2,
+             b = sp[["y"]] - sz[["h"]] / 2, t = sp[["y"]] + sz[["h"]] / 2)
+    if (!is.null(bg)) rect(box[["l"]], box[["b"]], box[["r"]], box[["t"]],
+                           col = adjustcolor(bg, 0.85), border = NA)
+    text(sp[["x"]], sp[["y"]], txt, cex = cex, font = font, col = col)
+    return(box)
+  }
+  NULL
+}
+
+# A thin leader line from the point (x0, y0) to the nearest point of a
+# label's box, with a small dot at (x0, y0): used when a label cannot sit
+# inside a small area (the DWL triangle) or right next to its curve.
+# Nothing is drawn if the box already touches the point. dot = FALSE
+# leaves out the dot (when the point is already marked, e.g. break-even).
+sub_leader <- function(x0, y0, box, dot = TRUE) {
+  if (is.null(box)) return(invisible(NULL))
+  usr <- par("usr")
+  tx <- min(max(x0, box[["l"]]), box[["r"]])
+  ty <- min(max(y0, box[["b"]]), box[["t"]])
+  gap <- sqrt(((tx - x0) / (usr[2] - usr[1]))^2 +
+              ((ty - y0) / (usr[4] - usr[3]))^2)
+  if (gap > 0.015) {
+    segments(x0, y0, tx, ty, col = "grey30", lwd = 1)
+    if (dot) points(x0, y0, pch = 19, cex = 0.45, col = "grey30")
+  }
+  invisible(NULL)
+}
+
+
+### 25. draw_subsidy(): the solar-panel market with a subsidy (Figs 1, 2) ----
+# view = "market":          D and S = MC, E0, CS0 and PS0 (Figure 1)
+#        "shift":           the subsidy moves supply down to S - s; E0, E1,
+#                           the consumer price PC, the producer price PP
+#                           and the wedge s between them (Figure 2a)
+#        "welfare_levels":  "shift" plus CS1, PS1, the subsidy bill G
+#                           (hatched) and the DWL (an extra view of the
+#                           website app, not a handout figure). CS1, PS1
+#                           and G overlap by construction: the G rectangle
+#                           lies partly inside CS1 and PS1.
+#        "welfare_changes": "shift" plus the CHANGES: the consumers' gain,
+#                           the producers' gain and the DWL, which together
+#                           fill the G rectangle exactly (handout Figure 2;
+#                           Figure 7 with c = 16)
+# version = "answers" prints the numbers; "noanswers" the same curves
+# without numbers, and E1 as an unlabelled dot ("tutor" and "student" are
+# accepted as aliases of "answers" and "noanswers").
+# e0_name: the name of the equilibrium without the subsidy, "E0" by default
+# ("E2" for the period-2 market after learning, handout Figure 6).
+draw_subsidy <- function(view = c("market", "shift", "welfare_levels",
+                                  "welfare_changes"),
+                         a = 100, b = 1, c = 20, d = 1, s = 20,
+                         version = c("answers", "noanswers", "tutor",
+                                     "student"),
+                         xlim = c(0, 100), ylim = c(0, 100), main = NULL,
+                         tick_step = NULL, fit_top = FALSE,
+                         show_cs = TRUE, show_ps = TRUE, show_g = TRUE,
+                         show_dwl = TRUE, e0_name = "E0") {
+  view <- match.arg(view)
+  version <- match.arg(version)
+  if (!is.character(e0_name) || length(e0_name) != 1) {
+    stop("'e0_name' must be one short text, e.g. \"E0\".", call. = FALSE)
+  }
+  # The old names are aliases: "tutor" = "answers", "student" = "noanswers"
+  if (version == "tutor")   version <- "answers"
+  if (version == "student") version <- "noanswers"
+  tutor <- version == "answers"   # TRUE: print the numbers
+  out <- subsidy_outcomes(a, b, c, d, s)
+  for (lim in list(xlim, ylim)) {
+    if (!is.numeric(lim) || length(lim) != 2 || any(is.na(lim)) ||
+        lim[2] <= lim[1]) {
+      stop("'xlim' and 'ylim' must be two increasing numbers, e.g. ",
+           "c(0, 100).", call. = FALSE)
+    }
+  }
+  rx <- diff(xlim); ry <- diff(ylim); pad_x <- 0.015 * rx; pad_y <- 0.02 * ry
+  dem  <- function(x) a - b * x            # demand
+  sup  <- function(x) c + d * x            # supply = marginal cost
+  ssub <- function(x) c - s + d * x        # supply with the subsidy, S - s
+  Q0 <- out$Q0; P0 <- out$P0; Q1 <- out$Q1; PC <- out$PC; PP <- out$PP
+  after <- view != "market"
+  inside <- function(x, y) x > xlim[1] && x < xlim[2] && y > ylim[1] &&
+    y < ylim[2]
+  ok0 <- !out$no_trade0 && inside(Q0, P0)
+  # E1 must lie inside the box, and PP may at most touch its top edge
+  ok1 <- !out$no_trade1 && inside(Q1, PC) && PP <= ylim[2] + 1e-9
+  num <- function(nm, x) if (tutor) paste0(nm, " = ", chain_fmt(x)) else nm
+  e_lab <- function(nm, x, y) {
+    if (tutor) paste0(nm, " = (", chain_fmt(x), ", ", chain_fmt(y), ")") else nm
+  }
+
+  # Which areas are shaded (each needs its equilibrium inside the box)
+  sh_cs0 <- view == "market" && ok0 && show_cs
+  sh_ps0 <- view == "market" && ok0 && show_ps
+  lv <- view == "welfare_levels" && ok1
+  ch <- view == "welfare_changes" && ok0 && ok1
+  sh_cs1 <- lv && show_cs
+  sh_ps1 <- lv && show_ps
+  sh_g   <- lv && show_g && s > 0
+  sh_dcs <- ch && show_cs
+  sh_dps <- ch && show_ps
+  sh_dwl <- (lv || ch) && ok0 && show_dwl && out$DWL > 1e-9
+
+  # Legend entries: label, fill, hatching density (NA = solid), border
+  items <- character(0); fills <- character(0); dens <- numeric(0)
+  bords <- character(0)
+  add <- function(label, col, density = NA_real_, border = NA) {
+    items <<- c(items, label); fills <<- c(fills, col)
+    dens <<- c(dens, density); bords <<- c(bords, border)
+  }
+  if (sh_cs0 || sh_cs1) add("Consumer surplus (CS)", firm_fill(peib_cols["cs"]))
+  if (sh_ps0 || sh_ps1) add("Producer surplus (PS)", firm_fill(peib_cols["ps"]))
+  if (sh_dcs) add(if (tutor) paste0("Gain for consumers (",
+                                    sub_signed(out$dCS), ")")
+                  else "Gain for consumers", firm_fill(peib_cols["cs"]))
+  if (sh_dps) add(if (tutor) paste0("Gain for producers (",
+                                    sub_signed(out$dPS), ")")
+                  else "Gain for producers", firm_fill(peib_cols["ps"]))
+  if (sh_g) add("Cost of the subsidy (G)", peib_cols["tax"], density = 30,
+                border = peib_cols["tax"])
+  # (changes view: the number in the answers version, plain words in the
+  # noanswers version; levels view: "(DWL)", the label used in the plot)
+  if (sh_dwl) add(if (ch && tutor) paste0("Deadweight loss (",
+                                          chain_fmt(out$DWL), ")")
+                  else if (ch) "Deadweight loss"
+                  else "Deadweight loss (DWL)",
+                  firm_fill(peib_cols["dwl"], 0.6))
+
+  op <- par(c("mar", "las")); on.exit(par(op))
+  firm_canvas(xlim, ylim, main, ylab = "Price (P)",
+              xlab = "Quantity of panels (Q)", tick_step = tick_step,
+              n_legend = if (fit_top) length(items) else NULL)
+  curves <- if (after) function(x) list(dem(x), sup(x), ssub(x))
+            else function(x) list(dem(x), sup(x))
+
+  # Shaded areas first, lines on top. Every area is a polygon through the
+  # corner points named in the comments (clip() cuts them at the axes).
+  if (sh_cs0) polygon(c(0, 0, Q0), c(P0, a, P0),     # between D and P0
+                      col = firm_fill(peib_cols["cs"]), border = NA)
+  if (sh_ps0) polygon(c(0, 0, Q0), c(P0, c, P0),     # between P0 and S
+                      col = firm_fill(peib_cols["ps"]), border = NA)
+  if (sh_cs1) polygon(c(0, 0, Q1), c(PC, a, PC),     # between D and PC
+                      col = firm_fill(peib_cols["cs"]), border = NA)
+  if (sh_ps1) polygon(c(0, 0, Q1), c(PP, c, PP),     # between PP and S
+                      col = firm_fill(peib_cols["ps"]), border = NA)
+  # The three changes tile the rectangle 0..Q1 x PC..PP: consumers gain
+  # the strip between P0 and PC left of D, producers the strip between P0
+  # and PP left of S, and the triangle E0-E1-(Q1, PP) is the DWL
+  if (sh_dcs) polygon(c(0, Q0, Q1, 0), c(P0, P0, PC, PC),
+                      col = firm_fill(peib_cols["cs"]), border = NA)
+  if (sh_dps) polygon(c(0, Q0, Q1, 0), c(P0, P0, PP, PP),
+                      col = firm_fill(peib_cols["ps"]), border = NA)
+  if (sh_dwl) polygon(c(Q0, Q1, Q1), c(P0, PC, PP),
+                      col = firm_fill(peib_cols["dwl"], 0.6), border = NA)
+  # The subsidy bill G = s x Q1, hatched on top of the fills, so that the
+  # CS and PS colours still show through
+  if (sh_g) rect(0, PC, Q1, PP, density = 14, angle = 45, lwd = 1.1,
+                 col = peib_cols["tax"], border = peib_cols["tax"])
+
+  # Curves: S = MC, D, then S - s (dashed). With steep supply curves the
+  # two supply lines end close together, so the "S - s" label is placed
+  # with the free-spot search (near the end of its line, avoiding the
+  # "S = MC" label) instead of always above the end of the line.
+  avoid <- list()
+  avoid <- firm_add_box(avoid, chain_line(c, d, "S = MC", xlim, ylim))
+  avoid <- firm_add_box(avoid, chain_line(a, -b, "D", xlim, ylim,
+                                          col = peib_cols["demand"]))
+  if (after) {
+    chain_line(c - s, d, NULL, xlim, ylim, lty = 2)
+    # the end of the dashed line, as chain_line() computes it
+    x_end <- min(xlim[1] + 0.92 * rx, (ylim[1] + 0.88 * ry - (c - s)) / d)
+    y_end <- ssub(x_end)
+    sz <- firm_text_size("S - s", 1, 2)
+    avoid <- firm_add_box(avoid, chain_label_near(
+      "S - s", x_end + c(-0.25, 0.25) * rx, y_end + c(-0.3, 0.12) * ry,
+      x_end, y_end + 0.015 * ry + sz[["h"]] / 2, curves, avoid, cex = 1,
+      col = peib_cols["supply"], alts = "S - s"))
+  }
+
+  # Degenerate cases: say so on the chart
+  if (out$no_trade0) {
+    firm_message(paste0("No trade without the subsidy: the highest ",
+                        "willingness to pay (a)\nis not above the lowest ",
+                        "cost (c)"), xlim, ylim)
+    firm_legend(items, fills, xlim, ylim)
+    return(invisible(out))
+  }
+  if (!ok0 || (after && !ok1)) {
+    msg <- if (after && !out$no_trade1 && inside(Q1, PC) && PP > ylim[2]) {
+      paste0("The producer price PP = ", chain_fmt(PP),
+             " lies above the price axis")
+    } else "The equilibrium lies outside the axes"
+    firm_message(msg, xlim, ylim)
+  }
+
+  # Dashed guides from E0 (and E1) to both axes, and from PP to the price
+  # axis
+  if (ok0) avoid <- c(avoid, chain_guides(Q0, P0, xlim, ylim))
+  if (after && ok1) {
+    avoid <- c(avoid, chain_guides(Q1, PC, xlim, ylim))
+    segments(xlim[1], PP, Q1, PP, lty = 2, col = "grey30")
+    avoid <- firm_add_box(avoid, c(l = xlim[1], r = Q1, b = PP, t = PP))
+    # Price labels next to the price axis: PC just below its guide, PP
+    # just above its guide
+    for (k in 1:2) {
+      lab <- if (k == 1) num("PC", PC) else num("PP", PP)
+      yv  <- if (k == 1) PC else PP
+      sz  <- firm_text_size(lab, 0.8, 2)
+      y_rng <- if (k == 1) c(yv - 3 * sz[["h"]], yv) else c(yv, yv + 3 * sz[["h"]])
+      avoid <- firm_add_box(avoid, chain_label_near(
+        lab, c(xlim[1] + pad_x, max(Q1, xlim[1] + 0.3 * rx)), y_rng,
+        xlim[1] + pad_x + sz[["w"]] / 2,
+        yv + (if (k == 1) -1 else 1) * 0.6 * sz[["h"]], curves, avoid,
+        cex = 0.8))
+    }
+    # The wedge s between PC and PP at Q1 (the vertical distance between
+    # S = MC and S - s)
+    avoid <- chain_varrow(Q1, PC, PP, num("s", s), curves, avoid,
+                          sides = c(1, -1))
+  }
+
+  # Area labels
+  pl <- function(lab, x_rng, y_rng, x_pref, y_pref, ok, bg = NULL) {
+    b <- sub_label(lab, x_rng, y_rng, x_pref, y_pref, curves, avoid, ok,
+                   cex = 0.9, bg = bg)
+    avoid <<- firm_add_box(avoid, b)
+    b
+  }
+  if (sh_cs0) pl(num("CS", out$CS0), c(xlim[1] + pad_x, Q0), c(P0, ylim[2]),
+                 Q0 / 3, (min(a, ylim[2]) + 2 * P0) / 3,
+                 function(x, y) y < dem(x) && y > P0)
+  if (sh_ps0) pl(num("PS", out$PS0), c(xlim[1] + pad_x, Q0), c(ylim[1], P0),
+                 Q0 / 3, (max(c, ylim[1]) + 2 * P0) / 3,
+                 function(x, y) y > sup(x) && y < P0)
+  if (sh_cs1) {
+    # The part of CS above PP is not covered by G
+    bx <- pl(num("CS", out$CS1), c(xlim[1] + pad_x, Q1), c(PP, ylim[2]),
+            Q1 / 5, (min(a, ylim[2]) + PP) / 2,
+            function(x, y) y < dem(x) && y > PP)
+    if (is.null(bx)) pl(num("CS", out$CS1), c(xlim[1] + pad_x, Q1),
+                       c(PC, ylim[2]), Q1 / 4, (min(a, ylim[2]) + 2 * PC) / 3,
+                       function(x, y) y < dem(x) && y > PC, bg = "white")
+  }
+  if (sh_ps1) {
+    # The part of PS below PC is not covered by G
+    bx <- pl(num("PS", out$PS1), c(xlim[1] + pad_x, Q1), c(ylim[1], PC),
+            Q1 / 4, (max(c, ylim[1]) + 2 * PC) / 3,
+            function(x, y) y > sup(x) && y < PC)
+    if (is.null(bx)) pl(num("PS", out$PS1), c(xlim[1] + pad_x, Q1),
+                       c(ylim[1], PP), Q1 / 4, (max(c, ylim[1]) + 2 * PP) / 3,
+                       function(x, y) y > sup(x) && y < PP, bg = "white")
+  }
+  if (sh_g) pl(num("G", out$G), c(xlim[1] + pad_x, Q1), c(PC, PP),
+               Q1 / 4, (PC + PP) / 2,
+               function(x, y) y > PC && y < PP, bg = "white")
+  if (sh_dcs && tutor) pl(sub_signed(out$dCS), c(xlim[1] + pad_x, Q1),
+                          c(PC, P0), Q0 / 3, (PC + P0) / 2,
+                          function(x, y) y < dem(x) && y > PC && y < P0)
+  if (sh_dps && tutor) pl(sub_signed(out$dPS), c(xlim[1] + pad_x, Q1),
+                          c(P0, PP), Q0 / 3, (P0 + PP) / 2,
+                          function(x, y) y > sup(x) && y > P0 && y < PP)
+  # The DWL triangle is small: its label sits right of Q1 with a leader
+  # line to the triangle's centre (levels view; in the changes view the
+  # legend carries the number)
+  if (sh_dwl && lv) {
+    lab <- num("DWL", out$DWL)
+    sz <- firm_text_size(lab, 0.85, 2)
+    bx <- sub_label(lab, c(Q1 + pad_x, xlim[2]), ylim,
+                   Q1 + 0.05 * rx + sz[["w"]] / 2, (PC + PP) / 2, curves,
+                   avoid, cex = 0.85)
+    sub_leader((Q0 + 2 * Q1) / 3, (P0 + PC + PP) / 3, bx)
+    avoid <- firm_add_box(avoid, bx)
+  }
+
+  # Equilibrium points: E0 labelled in both versions, E1 labelled in the
+  # answers version only (students find it themselves)
+  if (after && ok1) {
+    if (tutor) {
+      avoid <- chain_point(Q1, PC, e_lab("E1", Q1, PC), curves, avoid,
+                           dir = c(1, -1))
+    } else {
+      points(Q1, PC, pch = 19, cex = 1)
+    }
+  }
+  if (ok0 && !after) {
+    avoid <- chain_point(Q0, P0, e_lab(e0_name, Q0, P0), curves, avoid,
+                         dir = c(1, 1))
+  } else if (ok0) {
+    # After the subsidy, E0 lies inside the rectangle 0..Q1 x PC..PP (the
+    # subsidy bill). Its label goes OUTSIDE that rectangle, preferably just
+    # above it, so that it never sits on the hatching or the shaded strips.
+    points(Q0, P0, pch = 19, cex = 1)
+    avoid <- firm_add_box(avoid, c(l = Q0 - 0.01 * rx, r = Q0 + 0.01 * rx,
+                                   b = P0 - 0.015 * ry, t = P0 + 0.015 * ry))
+    lab <- e_lab(e0_name, Q0, P0)
+    sz <- firm_text_size(lab, 0.85, 2)
+    off_rect <- function(x, y) {
+      y - sz[["h"]] / 2 > PP + 0.005 * ry || y + sz[["h"]] / 2 < PC ||
+        x - sz[["w"]] / 2 > Q1
+    }
+    avoid <- firm_add_box(avoid, chain_label_near(
+      lab, Q0 + c(-0.45, 0.45) * rx, c(ylim[1], ylim[2]), Q0,
+      PP + 0.03 * ry + sz[["h"]] / 2, curves, avoid, ok = off_rect,
+      cex = 0.85))
+  }
+
+  # The accounting identity behind the welfare changes (answers version)
+  if (ch && tutor) {
+    note <- paste0("G = ", chain_fmt(out$G), " = ", chain_fmt(out$dCS),
+                   " + ", chain_fmt(out$dPS), " + ", chain_fmt(out$DWL))
+    avoid <- firm_add_box(avoid, chain_label_near(
+      note, xlim, c(ylim[1] + 0.5 * ry, ylim[2]), xlim[1] + 0.75 * rx,
+      ylim[1] + 0.95 * ry, curves, avoid, cex = 0.8, font = 3,
+      col = "grey20", alts = note))
+  }
+
+  firm_legend(items, fills, xlim, ylim, borders = bords,
+              density = if (any(!is.na(dens))) dens else NULL)
+  invisible(out)
+}
+
+
+### 26. learning_cost(): the learning curve ----
+# Unit cost after cumulative experience E (all units made so far):
+#   c(E) = cbar + (c0 - cbar) * E^(-beta)
+# c0 is the cost of the first unit (E = 1), cbar the mature cost the curve
+# flattens towards, and beta the speed of learning (larger beta = faster).
+# E must be positive: E^(-beta) is not defined at E = 0.
+learning_cost <- function(E, c0 = 20, beta = 1, cbar = 0) {
+  if (!is.numeric(E) || length(E) == 0 || any(is.na(E)) || any(E <= 0)) {
+    stop("'E' (cumulative experience) must be positive numbers: ",
+         "E^(-beta) is not defined at E = 0.", call. = FALSE)
+  }
+  for (nm in c("c0", "beta", "cbar")) {
+    x <- get(nm)
+    if (!is.numeric(x) || length(x) != 1 || is.na(x)) {
+      stop("'", nm, "' must be a single number.", call. = FALSE)
+    }
+  }
+  if (beta < 0) stop("'beta' cannot be negative (costs would rise with ",
+                     "experience).", call. = FALSE)
+  if (c0 < cbar) stop("'c0' (first unit) cannot be below 'cbar' (mature ",
+                      "cost).", call. = FALSE)
+  cbar + (c0 - cbar) * E^(-beta)
+}
+
+
+### 27. draw_learning(): learning curves, conceptual (Figures 3 to 5) ----
+# view = "curve":     one learning curve c(E) and the mature cost (Fig. 3)
+#        "spillover": internal learning (own experience only) versus
+#                     spillovers (own plus industry experience): the
+#                     second curve is lower at every own-experience level
+#                     (Figure 4). The firm's effective experience is
+#                     E + spill * E: it also learns from a share 'spill' of
+#                     the experience of the rest of the industry, which is
+#                     assumed to grow as fast as its own.
+#        "breakeven": a fast learner (beta) whose cost falls below the
+#                     price P, and a slow learner (beta_slow) whose cost
+#                     stays above it over the horizon shown (Figure 5).
+#                     Loss area red (cost above P), gain area green.
+# No numbers on the axes (arrow axes): the shapes carry the message. Every
+# curve starts at the first unit, E = 1, where own learning gives the cost
+# c0 (fast and slow learners start from the same cost); it falls steeply
+# first and then flattens. A curve that starts above 90% of the cost axis
+# starts where it enters the box instead. price = NULL puts the price 35%
+# of the way from the mature cost up to c0.
+draw_learning <- function(view = c("curve", "spillover", "breakeven"),
+                          c0 = 20, beta = 1, cbar = 4, beta_slow = 0.3,
+                          price = NULL, spill = 0.6, E_max = 10,
+                          xlim = c(0, 10), ylim = c(0, 25), main = NULL,
+                          fit_top = FALSE) {
+  view <- match.arg(view)
+  for (nm in c("beta_slow", "spill", "E_max")) {
+    x <- get(nm)
+    if (!is.numeric(x) || length(x) != 1 || is.na(x) || x < 0) {
+      stop("'", nm, "' must be a single number, zero or above.",
+           call. = FALSE)
+    }
+  }
+  if (E_max <= 1 || xlim[1] >= 1) {
+    stop("The experience axis must start below the first unit (E = 1) and ",
+         "'E_max' must be above 1.", call. = FALSE)
+  }
+  learning_cost(1, c0, beta, cbar)                 # checks c0, beta, cbar
+  if (is.null(price)) price <- cbar + 0.35 * (c0 - cbar)
+  rx <- diff(xlim); ry <- diff(ylim)
+  y_top <- ylim[1] + 0.9 * ry                      # curves start here
+
+  # The cost curves as functions of own experience E. safe() returns NA
+  # where a curve is not drawn (before the first unit, after E_max, or
+  # above y_top), so that the label search only avoids the visible part.
+  fast  <- function(E) learning_cost(E, c0, beta, cbar)
+  slow  <- function(E) learning_cost(E, c0, beta_slow, cbar)
+  spl   <- function(E) learning_cost((1 + spill) * E, c0, beta, cbar)
+  safe <- function(f) function(x) {
+    y <- rep(NA_real_, length(x)); okx <- x >= 1 & x <= E_max
+    y[okx] <- f(x[okx]); y[!is.na(y) & y > y_top] <- NA; y
+  }
+  E_grid <- seq(1, E_max, length.out = 800)
+  draw_lc <- function(f, col, lty = 1) {
+    y <- f(E_grid); k <- y <= y_top
+    lines(E_grid[k], y[k], col = col, lwd = 2.5, lty = lty)
+  }
+
+  # Break-even: the experience E* at which the cost falls to the price,
+  # c(E*) = P, so E* = ((P - cbar) / (c0 - cbar))^(-1 / beta)
+  E_star <- function(b) {
+    if (price <= cbar || b == 0) return(Inf)
+    ((price - cbar) / (c0 - cbar))^(-1 / b)
+  }
+  Ef <- E_star(beta); Es <- E_star(beta_slow)
+  be_fast <- view == "breakeven" && Ef <= E_max
+  be_slow <- Es <= E_max
+
+  items <- character(0); fills <- character(0)
+  if (view == "breakeven") {
+    items <- c("Loss (unit cost above the price)",
+               if (be_fast) "Gain (unit cost below the price)")
+    fills <- c(firm_fill(peib_cols["loss"]),
+               if (be_fast) firm_fill(peib_cols["tax"]))
+  }
+
+  op <- par(c("mar", "las")); on.exit(par(op))
+  firm_canvas(xlim, ylim, main, ylab = "Unit cost (c)",
+              xlab = "Cumulative experience (E)", numbers = FALSE,
+              n_legend = if (fit_top) length(items) else NULL)
+
+  # Which curves are drawn, for the label search
+  crv <- switch(view,
+    curve     = list(safe(fast)),
+    spillover = list(safe(fast), safe(spl)),
+    breakeven = list(safe(fast), safe(slow)))
+  hl <- c(cbar, if (view == "breakeven") price)    # horizontal lines
+  curves <- function(x) c(lapply(crv, function(f) f(x)),
+                          lapply(hl, function(h) rep(h, length(x))))
+
+  # Areas first (break-even view): loss while the cost is above P, gain
+  # after the break-even point
+  if (view == "breakeven") {
+    # (only where the fast learner's curve is drawn: from its start to E*)
+    E1 <- E_grid[E_grid <= min(Ef, E_max)]
+    yl <- fast(E1); k <- yl > price & yl <= y_top
+    if (any(k)) polygon(c(E1[k], rev(E1[k])), c(yl[k], rep(price, sum(k))),
+                        col = firm_fill(peib_cols["loss"]), border = NA)
+    if (be_fast) {
+      E2 <- E_grid[E_grid >= Ef]
+      polygon(c(E2, rev(E2)), c(rep(price, length(E2)), rev(fast(E2))),
+              col = firm_fill(peib_cols["tax"]), border = NA)
+    }
+  }
+
+  # Mature cost: dashed, labelled below the line at the LEFT, where the
+  # space under the curves is always free (above the line if it is close
+  # to the axis)
+  avoid <- list()
+  segments(xlim[1], cbar, E_max, cbar, lty = 2, col = "grey35", lwd = 1.5)
+  mlab <- expression(bar(c) ~ "(mature cost)")
+  below <- cbar - ylim[1] > 0.09 * ry
+  mw <- strwidth(mlab, cex = 0.85); mh <- strheight(mlab, cex = 0.85)
+  xm <- xlim[1] + 0.02 * rx
+  ym <- if (below) cbar - 0.025 * ry - mh / 2 else cbar + 0.025 * ry + mh / 2
+  text(xm, ym, mlab, adj = c(0, 0.5), cex = 0.85, col = "grey20")
+  avoid <- firm_add_box(avoid, c(l = xm, r = xm + mw, b = ym - mh,
+                                 t = ym + mh))
+
+  # A curve label with a leader line to the point at E = x_at on curve f
+  # (dot = FALSE: no extra dot at that point)
+  lab_curve <- function(lab, f, x_at, x_pref, y_pref, ok = function(x, y) TRUE,
+                        col = "black", dot = TRUE) {
+    b <- sub_label(lab, xlim, ylim, x_pref, y_pref, curves, avoid, ok,
+                   cex = 0.85, col = col)
+    sub_leader(x_at, f(x_at), b, dot = dot)
+    avoid <<- firm_add_box(avoid, b)
+  }
+
+  if (view == "curve") {
+    draw_lc(fast, peib_cols["supply"])
+    x_at <- xlim[1] + 0.25 * rx
+    lab_curve("c(E)", fast, x_at, x_at + 0.06 * rx, fast(x_at) + 0.07 * ry,
+              col = peib_cols["supply"])
+  }
+
+  if (view == "spillover") {
+    draw_lc(fast, peib_cols["demand"])
+    draw_lc(spl, peib_cols["cs"], lty = 5)
+    x1 <- xlim[1] + 0.3 * rx
+    lab_curve("own learning only", fast, x1, x1 + 0.22 * rx,
+              fast(x1) + 0.12 * ry, ok = function(x, y) y > fast(x),
+              col = peib_cols["demand"])
+    # The two curves come close at high experience, so the spillover label
+    # goes below the mature-cost line, with a leader line up to its curve
+    x2 <- xlim[1] + 0.62 * rx
+    lab_curve("own + industry experience (spillover)", spl, x2,
+              x2, cbar - 0.07 * ry,
+              ok = function(x, y) y < cbar, col = peib_cols["cs"])
+  }
+
+  if (view == "breakeven") {
+    # Price line, labelled "P" at its right end
+    segments(xlim[1], price, E_max, price, col = "grey20", lwd = 2)
+    draw_lc(slow, peib_cols["supply"], lty = 5)
+    draw_lc(fast, peib_cols["demand"])
+    avoid <- firm_add_box(avoid, sub_label(
+      "P", c(xlim[1] + 0.9 * rx, xlim[2]), c(price, price + 0.1 * ry),
+      xlim[2] - 0.03 * rx, price + 0.03 * ry, curves, avoid, cex = 1))
+    # Area labels
+    avoid <- firm_add_box(avoid, sub_label(
+      "Loss", xlim, c(price, y_top), (xlim[1] + min(Ef, E_max)) / 2,
+      price + 0.06 * ry, curves, avoid,
+      ok = function(x, y) y > price && x < Ef && y < fast(x), cex = 0.9))
+    if (be_fast) {
+      avoid <- firm_add_box(avoid, sub_label(
+        "Gain", xlim, c(ylim[1], price), (Ef + E_max) / 2,
+        price - 0.05 * ry, curves, avoid,
+        ok = function(x, y) y < price && x > Ef && y > fast(x), cex = 0.9))
+      # The break-even point
+      points(Ef, price, pch = 19, cex = 1)
+      avoid <- firm_add_box(avoid, c(l = Ef - 0.01 * rx, r = Ef + 0.01 * rx,
+                                     b = price - 0.015 * ry,
+                                     t = price + 0.015 * ry))
+      lab_curve("Break-even", function(x) rep(price, length(x)), Ef,
+                Ef + 0.12 * rx, price + 0.07 * ry,
+                ok = function(x, y) y > price, dot = FALSE)
+    }
+    # "Fast learner" between the two curves, near the steep part
+    x1 <- xlim[1] + 0.22 * rx
+    lab_curve("Fast learner", fast, x1, x1 + 0.1 * rx, fast(x1) + 0.06 * ry,
+              ok = function(x, y) y > fast(x) && y < slow(x),
+              col = peib_cols["demand"])
+    x2 <- xlim[1] + 0.55 * rx
+    lab_curve(if (be_slow) "Slow learner (breaks even later)"
+              else "Slow learner (does not break even)", slow, x2,
+              x2 + 0.1 * rx, slow(x2) + 0.12 * ry,
+              ok = function(x, y) y > slow(x), col = peib_cols["supply"])
+  }
+
+  firm_legend(items, fills, xlim, ylim)
+  invisible(list(view = view, price = price, E_star_fast = Ef,
+                 E_star_slow = Es, cost_fast_end = fast(E_max),
+                 cost_slow_end = slow(E_max), cost_spill_end = spl(E_max)))
 }

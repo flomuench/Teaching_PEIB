@@ -50,6 +50,7 @@ if (!exists("root")) {
 #   tutorials/tutorial02_linked_markets.qmd  1 = Explorer A (one market at
 #                                                a time), 2 = Explorer B
 #                                                (the two linked markets)
+#   tutorials/tutorial03_subsidy.qmd         1 = the Tutorial 3 explorer
 if (!exists("app_qmd"))   app_qmd   <- "tutorials/tutorial01_market.qmd"
 if (!exists("app_chunk")) app_chunk <- 1  # which app on that page
 # Run the app at the end? interactive() is TRUE in RStudio. When the script

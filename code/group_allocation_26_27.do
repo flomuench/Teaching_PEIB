@@ -170,6 +170,16 @@ forvalues w = 4(1)11 {
 **# 	PART 5: 	Allocate students into seminar group presentation
 ***********************************************************************
 {
+/*
+keeping track of student changes (not yet included in the code, only in the Excel file)
+1: Hemeng exchanged presentation slots with  Mingshi (she was due to present on the 23/10 and he on 30/10;); below updated version.
+1	Fri, 11-12	Xu	Hemeng	26034233	hemeng.xu.25@ucl.ac.uk	3	3	30/10/2026
+1	Fri, 11-12	Yang	Mingshi	26037661	mingshi.yang.25@ucl.ac.uk	2	4	23/10/2026
+
+
+
+*/	
+	
 * initial allocation
 randtreat, gen(group_presentation_assignment) replace setseed(10032025) multiple(5) misfits(strata) strata(group_number)
 replace group_presentation_assignment = 5 if group_presentation_assignment == 0

@@ -14,6 +14,9 @@
 % Tutor version (\showanswers = 1, 34 pages, tutor frames interleaved
 % after the question they answer; file names = labels in file order):
 %   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main.pdf --out png/week2_tutor --size-factor 0.83 --names w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_wt1_firm,w2_wt1_industry,w2_wt2_innovation,w2_wt3_equilibrium,w2_wt3_welfare,w2_ans_q21a,w2_ans_q21b,w2_ans_q22a,w2_ans_q22c,w2_ans_q22b,w2_wt4_elasticity,w2_ans_q23a,w2_ans_q23c,w2_wt5_firm,w2_wt5_industry,w2_ans_q31b,w2_wt6_derived,w2_ans_q32a,w2_ans_q32b,w2_ans_q32n1,w2_ans_q32n2,w2_wt7_chain,w2_ans_q33a0,w2_ans_q33a1,w2_ans_q33b,w2_ans_q33c,w2_ans_q33c1,w2_ans_q33c2,w2_appA_forms,w2_appC_passthrough,w2_appC_derived
+% Week 3 (26 frames, no answer frames: model responses stay text):
+%   py "$HOME/.claude/skills/latex-teaching/scripts/build.py" peib_main.tex --runs 1 --frames w3_setup_tc,w3_setup_demand,w3_wt1_mc,w3_wt1_rule,w3_wt2_equilibrium,w3_wt2_cs_def,w3_wt2_ps_def,w3_wt2_welfare,w3_wt2_ts,w3_cs_step1,w3_cs_step2,w3_cs_step3,w3_cs_step4,w3_cs_step5,w3_cs_step6,w3_learning_curve,w3_production,w3_production_log,w3_production_spill,w3_cost_E,w3_wt3_experience,w3_wt3_cost,w3_wt4_supply,w3_wt5_ledger,w3_appA_incidence,w3_appA_example
+%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main_frames.pdf --out png/week3 --size-factor 0.83 --names w3_setup_tc,w3_setup_demand,w3_wt1_mc,w3_wt1_rule,w3_wt2_equilibrium,w3_wt2_cs_def,w3_wt2_ps_def,w3_wt2_welfare,w3_wt2_ts,w3_cs_step1,w3_cs_step2,w3_cs_step3,w3_cs_step4,w3_cs_step5,w3_cs_step6,w3_learning_curve,w3_production,w3_production_log,w3_production_spill,w3_cost_E,w3_wt3_experience,w3_wt3_cost,w3_wt4_supply,w3_wt5_ledger,w3_appA_incidence,w3_appA_example
 % Compile one week only: uncomment the matching \includeonlyframes line below.
 %
 % Student vs tutor version: frames inside \ifnum\showanswers=1 (labels
@@ -886,6 +889,403 @@
     \item $-g$: rising other marginal cost ($g = 1$)
     \item $A - c = 220 - 50$: WTP for the first unit of nickel
     \item $A = 170$, $b = 2$ in Walkthrough 4 (nickel)
+  \end{itemize}
+\end{frame}
+
+
+
+%========================
+% WEEK 3: Government subsidies and learning-by-doing (Tutorial 3).
+% Handout structure: Exercise 1 (set-up, Walkthrough 1 with Questions
+% 1.1-1.3, Walkthrough 2 with Question 1.4), Exercise 2 (Questions
+% 2.1-2.5, Walkthrough consumer subsidy Steps 1-7, Question 2.6),
+% Exercise 3 (A: learning curves, Questions 3.1-3.3; B: Walkthroughs
+% 3-5 with Questions 3.4-3.8), Appendix A (general incidence).
+% Source: seminar3_handout_with_model_responses.docx (2026-10-19).
+% Only formulas from the student-facing text (set-up, walkthroughs,
+% Exercise 3 text, Appendix A) are frames; model responses stay text in
+% both handout versions (Florian, 19 Oct 2026). One frame per run of
+% consecutive equation paragraphs; the image replaces that run. Tags
+% (1), (2), ... run in handout order. Export (26 pages, see the header):
+%   py build.py peib_main.tex --frames <the w3_ labels below>
+%   py export_frames.py peib_main_frames.pdf --out png/week3 --size-factor 0.83 --names <labels>
+%========================
+\section{Week 3}
+
+% --- Exercise 1 set-up: the cost function ----------------------------------
+% Hand check: ten identical firms, F = fixed cost
+\begin{frame}[plain,label=w3_setup_tc]
+  \Large
+  \[
+    \tag{1}\;TC_i(q_i) = F + 20\,q_i + 5\,q_i^2
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $i$: one of the ten firms; $q_i$: its output; $F$: fixed cost
+  \end{itemize}
+\end{frame}
+
+% --- Exercise 1 set-up: direct demand -----------------------------------------
+\begin{frame}[plain,label=w3_setup_demand]
+  \Large
+  \[
+    \tag{2}\;Q^D(P) = 100 - P
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $Q$: industry quantity ($Q = q_1 + \dots + q_{10}$)
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 1: from the cost function to marginal cost ---------------
+% Hand check: d/dq (F + 20q + 5q^2) = 20 + 10q
+\begin{frame}[plain,label=w3_wt1_mc]
+  \Large
+  \[
+    TC_i(q_i) = F + 20\,q_i + 5\,q_i^2
+  \]
+  \[
+    \tag{3}\;MC_i(q_i) = \frac{dTC_i}{dq_i} = 20 + 10\,q_i
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $MC$: the cost of one more panel; $F$ drops out
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 1: the supply rule of a price-taker -------------------------
+% Hand check: AVC = 20 + 5q, minimum 20 at q = 0
+\begin{frame}[plain,label=w3_wt1_rule]
+  \Large
+  \[
+    \tag{4}\;P = MC_i(q_i) = 20 + 10\,q_i, \quad P \ge 20
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Price-taker: produce where $P = MC_i$
+    \item Below $P = 20$ no panel covers its variable cost
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 2: equilibrium ---------------------------------------------
+% Hand check: 100 - Q = 20 + Q => 2Q = 80 => Q = 40; P = 60; 100 - 40 = 60;
+% 40/10 = 4 per firm
+\begin{frame}[plain,label=w3_wt2_equilibrium]
+  \Large
+  \begin{align*}
+    \tag{5}\;100 - Q &= 20 + Q\\
+    \Rightarrow 2Q &= 80\\
+    \Rightarrow Q_0 &= 40
+  \end{align*}
+  \begin{align*}
+    \tag{6}\;P_0 &= 20 + 40 = 60\\
+    \text{Check: } 100 - 40 &= 60 \;\checkmark
+  \end{align*}
+  \vspace{0.2em}
+  \begin{itemize}\Large
+    \item $E_0 = (40, 60)$; per firm $q_i = 40/10 = 4$
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 2: the consumer surplus formula (Question 1.4 text) ------
+\begin{frame}[plain,label=w3_wt2_cs_def]
+  \Large
+  \[
+    \tag{7}\;CS = \tfrac{1}{2} \times Q_0 \times \bigl(\text{max.\ willingness to pay} - P_0\bigr)
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Max.\ willingness to pay $= 100$ (demand intercept)
+    \item Added up over all $Q_0$ panels bought
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 2: the producer surplus formula ---------------------------
+\begin{frame}[plain,label=w3_wt2_ps_def]
+  \Large
+  \[
+    \tag{8}\;PS = \tfrac{1}{2} \times Q_0 \times \bigl(P_0 - \text{min.\ supply price}\bigr)
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Min.\ supply price $= 20$ (supply intercept, $MC$ of the first panel)
+    \item Added up over all $Q_0$ panels sold
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 2: welfare at E0 -------------------------------------------
+% Hand check: 0.5*40*40 = 800 each; 1,600 in total
+\begin{frame}[plain,label=w3_wt2_welfare]
+  \Large
+  \[
+    \tag{9}\;CS_0 = \tfrac{1}{2} \times 40 \times (100 - 60) = 800
+  \]
+  \[
+    \tag{10}\;PS_0 = \tfrac{1}{2} \times 40 \times (60 - 20) = 800
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item The two triangles of Figure 1, base $Q_0 = 40$
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 2: total surplus -------------------------------------------
+\begin{frame}[plain,label=w3_wt2_ts]
+  \Large
+  \[
+    \tag{11}\;TS_0 = CS_0 + PS_0 = 800 + 800 = 1{,}600
+  \]
+\end{frame}
+
+% --- Consumer subsidy walkthrough, Step 1: two prices ----------------------
+\begin{frame}[plain,label=w3_cs_step1]
+  \Large
+  \[
+    \tag{12}\;P_C = P_P - s = P_P - 20
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $P_P$: the shop price, received by firms
+    \item $P_C$: what consumers pay net of the $20$ they get back
+  \end{itemize}
+\end{frame}
+
+% --- Step 2: demand in terms of the producer price -------------------------
+% Hand check: 100 - (P_P - 20) = 120 - P_P
+\begin{frame}[plain,label=w3_cs_step2]
+  \Large
+  \[
+    \tag{13}\;Q^D(P_P) = 100 - (P_P - 20) = 120 - P_P
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Replace $P_C$ by $P_P - 20$ in $Q^D = 100 - P_C$
+    \item At every shop price consumers buy $20$ more panels
+  \end{itemize}
+\end{frame}
+
+% --- Step 3: inverse demand -------------------------------------------------
+\begin{frame}[plain,label=w3_cs_step3]
+  \Large
+  \[
+    \tag{14}\;P_P^D(Q) = 120 - Q
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item The shop price at which consumers buy $Q$ panels
+    \item Demand shifts up by $s = 20$ in the $(Q, P_P)$ diagram
+  \end{itemize}
+\end{frame}
+
+% --- Step 4: supply is unchanged --------------------------------------------
+\begin{frame}[plain,label=w3_cs_step4]
+  \Large
+  \[
+    \tag{15}\;P_P^S(Q) = 20 + Q
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Firms receive $P_P$; costs have not changed (Walkthrough 1)
+  \end{itemize}
+\end{frame}
+
+% --- Step 5: equilibrium quantity -------------------------------------------
+% Hand check: 120 - Q = 20 + Q => 2Q = 100 => Q = 50
+\begin{frame}[plain,label=w3_cs_step5]
+  \Large
+  \begin{align*}
+    \tag{16}\;120 - Q &= 20 + Q\\
+    \Rightarrow 2Q &= 100\\
+    \Rightarrow Q &= 50
+  \end{align*}
+  \vspace{0.2em}
+  \begin{itemize}\Large
+    \item Both prices in producer-price terms, so they can be set equal
+  \end{itemize}
+\end{frame}
+
+% --- Step 6: the two prices ---------------------------------------------------
+% Hand check: 20 + 50 = 70; 70 - 20 = 50; demand 100 - 50 = 50
+\begin{frame}[plain,label=w3_cs_step6]
+  \Large
+  \[
+    \tag{17}\;P_P = 20 + 50 = 70
+  \]
+  \begin{align*}
+    \tag{18}\;P_C &= 70 - 20 = 50\\
+    \text{Check: } 100 - 50 &= 50 \;\checkmark
+  \end{align*}
+  \vspace{0.2em}
+  \begin{itemize}\Large
+    \item Same $Q$, $P_C$ and $P_P$ as the producer subsidy (Question 2.3)
+  \end{itemize}
+\end{frame}
+
+% --- Exercise 3A: the learning curve ----------------------------------------
+% Hand check: doubling E multiplies c by 2^(-beta); beta = 0.32: 0.80;
+% beta = 1: 0.5
+\begin{frame}[plain,label=w3_learning_curve]
+  \Large
+  \[
+    \tag{19}\;c(E) = c_0 \times E^{-\beta}
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $c_0$: unit cost at the reference experience ($E = 1$)
+    \item $E$: cumulative experience relative to that reference
+    \item $\beta > 0$: learning parameter; each doubling of $E$ multiplies cost by $2^{-\beta}$
+  \end{itemize}
+\end{frame}
+
+% --- Exercise 3A: production function with experience ----------------------
+\begin{frame}[plain,label=w3_production]
+  \Large
+  \[
+    \tag{20}\;Y_{it} = A_i \times K_{it}^{\alpha} \times L_{it}^{1-\alpha} \times E_{it}^{\gamma}
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $Y$: output; $K$: capital; $L$: labour; $E$: experience
+    \item $A_i$: the firm's productivity level (Lecture 2)
+  \end{itemize}
+\end{frame}
+
+% --- Exercise 3A: the log form -------------------------------------------------
+% Hand check: ln(A K^a L^(1-a) E^g) = ln A + a ln K + (1-a) ln L + g ln E
+\begin{frame}[plain,label=w3_production_log]
+  \Large
+  \begin{align*}
+    \tag{21}\;\ln Y_{it} &= \ln A_i + \alpha \ln K_{it} + (1-\alpha) \ln L_{it}\\
+                         &\quad + \gamma \ln E_{it}
+  \end{align*}
+  \vspace{0.2em}
+  \begin{itemize}\Large
+    \item Products become sums: the form estimated with data
+    \item $\gamma$: \% rise in output per 1\% more experience
+  \end{itemize}
+\end{frame}
+
+% --- Exercise 3A: internal and external learning ----------------------------
+\begin{frame}[plain,label=w3_production_spill]
+  \Large
+  \begin{align*}
+    \tag{22}\;\ln Y_{it} &= \ln A_i + \alpha \ln K_{it} + (1-\alpha) \ln L_{it}\\
+                         &\quad + \gamma_{int} \ln E_{it} + \gamma_{ext} \ln E^{I}_{t}
+  \end{align*}
+  \vspace{0.2em}
+  \begin{itemize}\Large
+    \item $E_{it}$: the firm's own experience; $E^{I}_{t}$: the rest of the industry's
+    \item $\gamma_{int}$: internal learning; $\gamma_{ext}$: the spillover ($= 0$ if internal only)
+  \end{itemize}
+\end{frame}
+
+% --- Exercise 3B set-up: costs at a given level of experience --------------
+\begin{frame}[plain,label=w3_cost_E]
+  \Large
+  \[
+    \tag{23}\;TC_i(q_i \mid E) = F + c(E) \times q_i + 5\,q_i^2
+  \]
+  \[
+    \tag{24}\;MC_i(q_i \mid E) = c(E) + 10\,q_i
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $c(E)$ replaces the intercept $20$; the slope $10$ is unchanged
+    \item At $E = 1$: the costs of Exercises 1 and 2
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 3: experience with the subsidy -----------------------------
+% Hand check: 50/40 = 1.25
+\begin{frame}[plain,label=w3_wt3_experience]
+  \Large
+  \[
+    \tag{25}\;E = \frac{50}{40} = 1.25
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Period-1 output $50$ with the subsidy, $40$ without
+    \item $E = 1$: the no-subsidy path; only the extra output counts
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 3: the new cost intercept ----------------------------------
+% Hand check: 20 * 1.25^(-1) = 20/1.25 = 16
+\begin{frame}[plain,label=w3_wt3_cost]
+  \Large
+  \[
+    \tag{26}\;c(E) = 20 \times 1.25^{-1} = \frac{20}{1.25} = 16
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $\beta = 1$: a doubling of $E$ would halve the cost
+    \item Every firm's cost intercept falls by $4$
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 4: industry supply in period 2 (no subsidy) ----------------
+% Hand check: 10*(P - 16)/10 = P - 16; P = 16 + Q
+\begin{frame}[plain,label=w3_wt4_supply]
+  \Large
+  \[
+    \tag{27}\;Q^S(P) = 10 \times \frac{P - 16}{10} = P - 16
+  \]
+  \[
+    \tag{28}\;P^S(Q) = 16 + Q
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Exercise 1 had $P = 20 + Q$: the curve shifts down by the saving of $4$
+  \end{itemize}
+\end{frame}
+
+% --- Walkthrough 5: surpluses and the ledger in period 2 (no subsidy) ------
+% Hand check: E = (42, 58); 0.5*42*42 = 882 each; G = 0; 1,764
+\begin{frame}[plain,label=w3_wt5_ledger]
+  \Large
+  \[
+    \tag{29}\;CS = \tfrac{1}{2} \times 42 \times (100 - 58) = 882
+  \]
+  \[
+    \tag{30}\;PS = \tfrac{1}{2} \times 42 \times (58 - 16) = 882
+  \]
+  \[
+    \tag{31}\;G = 0
+  \]
+  \begin{align*}
+    \tag{32}\;CS + PS - G &= 882 + 882 - 0\\
+                 &= 1{,}764
+  \end{align*}
+\end{frame}
+
+% --- Appendix A: who gets the subsidy, general linear case -----------------
+% Hand check: a - bQ = c + dQ - s => Q1 = (a - c + s)/(b + d);
+% dQ = s/(b + d); dP_C = -b dQ; dP_P = dP_C + s = d s/(b + d)
+\begin{frame}[plain,label=w3_appA_incidence]
+  \Large
+  \begin{align*}
+    \tag{33}\;\Delta Q &= \frac{s}{b + d}\\
+    \Delta P_C &= -\frac{b\,s}{b + d}\\
+    \Delta P_P &= +\frac{d\,s}{b + d}
+  \end{align*}
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item Consumers' share $b/(b + d)$, producers' share $d/(b + d)$
+    \item The steeper (less elastic) side receives more
+  \end{itemize}
+\end{frame}
+
+% --- Appendix A: the handout numbers ------------------------------------------
+% Hand check: b = d = 1, s = 20: dQ = 10, dP_C = -10, dP_P = +10
+\begin{frame}[plain,label=w3_appA_example]
+  \Large
+  \[
+    \tag{34}\;\Delta Q = 20/2 = 10, \quad \Delta P_C = -10, \quad \Delta P_P = +10
+  \]
+  \vspace{0.3em}
+  \begin{itemize}\Large
+    \item $b = d = 1$ and $s = 20$, as in Question 2.3
+    \item With $s < 0$ the same formulas describe a per-unit tax
   \end{itemize}
 \end{frame}
 
