@@ -19,6 +19,11 @@
 #               market (solar panels), and learning curves
 #               (subsidy_outcomes(), draw_subsidy(), learning_cost(),
 #               draw_learning())
+#       Part 7: Model F, Tutorial 4: an open economy (Home and Foreign),
+#               a Home production subsidy and international
+#               learning-by-doing (open_outcomes(), open_two_period(),
+#               draw_open_market(), draw_open_period2(),
+#               draw_open_learning(), draw_open_bars())
 #
 # Authors: Florian Münch
 # Requires: base R only (the packages graphics and grDevices, which every
@@ -4010,4 +4015,1018 @@ draw_learning <- function(view = c("curve", "spillover", "breakeven"),
   invisible(list(view = view, price = price, E_star_fast = Ef,
                  E_star_slow = Es, cost_fast_end = fast(E_max),
                  cost_slow_end = slow(E_max), cost_spill_end = spl(E_max)))
+}
+
+
+# ***********************************************************
+# Part 7: Model F, Tutorial 4: an open economy, a Home production ----
+#         subsidy and international learning-by-doing
+# ***********************************************************
+# Solar panels in a world of two countries, Home (H) and Foreign (F), that
+# trade freely: one world price P_W, no transport costs, a homogeneous good.
+#
+#   Firms:   ten identical firms per country, TC = F + c_j q + 5 q^2, so
+#            MC = c_j + 10 q and firm supply q = (P - c_j) / 10. With n
+#            firms the industry supply is Q_j^S = k (P - c_j), k = n / 10
+#            (k = 1 for the handout: Q_H^S = P - 20, Q_F^S = P - 40).
+#   Demand:  Q_j^D = a - P in each country (a = 100).
+#   World:   demand 2 (a - P); supply = Q_H^S + Q_F^S, piecewise: only the
+#            cheaper country produces between the two cost intercepts.
+#   Subsidy: Home pays s per panel MADE in Home (sold at home or exported).
+#            A Home firm receives P_HP = P_W + s, so in a diagram with the
+#            world price on the vertical axis Home's supply moves DOWN by
+#            s: Q_H^S = k (P_W + s - c_H) ("S - s", as in Tutorial 3).
+#
+# Handout numbers (a = 100, c_H = 20, c_F = 40, n = 10):
+#   Free trade:   P_W = 65, Q_W = 70; Home makes 45, buys 35 (exports 10);
+#                 Foreign makes 25, buys 35 (imports 10)
+#   Subsidy 20:   P_W = 60, P_HP = 80; Home 60 / 40, Foreign 20 / 40,
+#                 exports 20; welfare changes Home -225, Foreign +75,
+#                 World -150. The world loss is the triangle (45, 65),
+#                 (60, 80), (60, 60) in the Home panel: between Home's MC
+#                 and the demand Home's firms face on the world market
+#                 (world demand minus Foreign supply, P = 80 - Q/3), over
+#                 Home's 15 extra panels: 1/2 x 20 x 15 = 150.
+#   General s (both countries produce): P_W = 65 - s/4,
+#                 P_HP = 65 + 3s/4, Q_H^S = 45 + 3s/4, Q_F^S = 25 - s/4.
+#
+# Period 2 (open_two_period()): the subsidy is withdrawn, but Home's extra
+# period-1 output has lowered Home's cost intercept by learning-by-doing,
+# c_H,2 = c_H E^(-beta) with E = Home output with the subsidy / without it
+# (60/45 = 4/3; beta is calibrated so that s = 20 lowers c_H from 20 to 16,
+# beta = ln(20/16) / ln(4/3) = 0.776). A share theta of Home's cost
+# reduction reaches Foreign: c_F,2 = c_F - theta (c_H - c_H,2), 38 for
+# theta = 0.5. Main case theta = 0.5: P_2 = 63.5, Home 47.5, Foreign 25.5,
+# consumption 36.5 each; period-2 welfare changes +169.25, +66.25, +235.5.
+#
+# Environmental extension: each NEW installation (consumption Q^D, not
+# production) avoids local air pollution worth bAP = 6 to the installing
+# country and greenhouse gases worth bGHG = 12 to the world, split
+# alpha_H = 0.5 / 0.5 between the two countries (bookkeeping only).
+#
+# The figures follow the Tutorial 3 conventions: version = "noanswers"
+# (curves only) or "answers" (numbers, equilibria, shaded areas); xlim,
+# ylim, tick_step and fit_top as in Parts 3 to 6.
+
+
+### 28. open_outcomes(): world equilibrium, trade and welfare ----
+# Returns a named list, e.g. open_outcomes(s = 20)$P_W. Names: P_W (world
+# price), P_HP (price Home producers receive), Q_HS, Q_FS (production),
+# Q_HD, Q_FD (consumption), Q_W (world quantity), X (Home net exports =
+# Foreign net imports; negative if Home imports), CS_H, CS_F, PS_H, PS_F,
+# G_H (Home's subsidy bill), W_H, W_F, W_W (welfare), the autarky prices
+# P_aut_H, P_aut_F, and flags home_produces, foreign_produces, no_market
+# (nothing is made or bought) and trade ("Home exports", "Foreign exports"
+# or "no trade").
+open_outcomes <- function(a = 100, cH = 20, cF = 40, s = 0, n = 10) {
+  check_firm_number(a, "a", min = 0, what = "the highest willingness to pay")
+  check_firm_number(cH, "cH", min = 0, what = "Home's cost intercept")
+  check_firm_number(cF, "cF", min = 0, what = "Foreign's cost intercept")
+  check_firm_number(s, "s", min = 0,
+                    what = "a negative subsidy would be a tax")
+  check_firm_number(n, "n", min = 1, what = "the number of firms per country")
+  k <- n / 10                   # slope of each industry supply curve, Q = k (P - c)
+  e <- c(H = cH - s, F = cF)    # cost intercepts in world-price terms
+
+  # The world price solves world demand = world supply,
+  #   2 (a - P) = k * sum over the producing countries of (P - e_j).
+  # Which countries produce is not known in advance, so each case is tried:
+  # both, only Home, only Foreign. A case is right if every producing
+  # country's intercept is below the price, every other country's at or
+  # above it, and buyers still buy (P below a).
+  P <- NA_real_
+  for (act in list(c(TRUE, TRUE), c(TRUE, FALSE), c(FALSE, TRUE))) {
+    Pc <- (2 * a + k * sum(e[act])) / (2 + k * sum(act))
+    if (all(Pc >= e[act]) && all(Pc <= e[!act]) && Pc < a) { P <- Pc; break }
+  }
+  no_market <- is.na(P)
+  if (!no_market && P < 0) {
+    stop("The subsidy is so large that the world price would fall below ",
+         "zero. Choose a smaller subsidy 's'.", call. = FALSE)
+  }
+  if (no_market) {
+    # Nobody is willing to pay what the cheapest producer needs: nothing is
+    # made, bought or traded (shown as "no trade" in tables, never as
+    # negative quantities)
+    z <- 0
+    return(list(P_W = NA_real_, P_HP = NA_real_, Q_HS = z, Q_FS = z,
+                Q_HD = z, Q_FD = z, Q_W = z, X = z, CS_H = z, CS_F = z,
+                PS_H = z, PS_F = z, G_H = z, W_H = z, W_F = z, W_W = z,
+                P_aut_H = NA_real_, P_aut_F = NA_real_,
+                home_produces = FALSE, foreign_produces = FALSE,
+                no_market = TRUE, trade = "no trade", k = k, s = s))
+  }
+  P_HP <- P + s
+  Q_HS <- k * max(0, P - e[["H"]])
+  Q_FS <- k * max(0, P - e[["F"]])
+  Q_HD <- max(0, a - P); Q_FD <- max(0, a - P)
+  X <- Q_HS - Q_HD                       # = Q_FD - Q_FS (world market clears)
+  X <- if (abs(X) < 1e-9) 0 else X
+
+  # Welfare: CS = triangle between demand and the world price; PS =
+  # triangle between the price a producer RECEIVES and its supply curve
+  # (Home: P_HP); G = s on every panel made in Home, exports included
+  CS_H <- 0.5 * (a - P) * Q_HD
+  CS_F <- 0.5 * (a - P) * Q_FD
+  PS_H <- 0.5 * (P_HP - cH) * Q_HS
+  PS_F <- 0.5 * (P - cF) * Q_FS
+  G_H  <- s * Q_HS
+  W_H <- CS_H + PS_H - G_H
+  W_F <- CS_F + PS_F
+
+  # Autarky (no trade) prices, for comparison: a - P = k (P - c)
+  aut <- function(c) if (a <= c) NA_real_ else (a + k * c) / (1 + k)
+
+  list(P_W = P, P_HP = P_HP, Q_HS = Q_HS, Q_FS = Q_FS, Q_HD = Q_HD,
+       Q_FD = Q_FD, Q_W = Q_HS + Q_FS, X = X,
+       CS_H = CS_H, CS_F = CS_F, PS_H = PS_H, PS_F = PS_F, G_H = G_H,
+       W_H = W_H, W_F = W_F, W_W = W_H + W_F,
+       P_aut_H = aut(cH), P_aut_F = aut(cF),
+       home_produces = Q_HS > 0, foreign_produces = Q_FS > 0,
+       no_market = FALSE,
+       trade = if (X > 0) "Home exports" else if (X < 0) "Foreign exports"
+               else "no trade",
+       k = k, s = s)
+}
+
+
+### 29. open_two_period(): subsidy, learning and environment ----
+# Period 1: the Home subsidy s (Path B) versus free trade (Path A).
+# Period 2: no subsidy on either path; on Path B learning has lowered the
+# cost intercepts to c_H,2 = c_H E^(-beta) and c_F,2 = c_F - theta (c_H -
+# c_H,2), E = Home's period-1 output with the subsidy / without it. beta is
+# calibrated so that the subsidy s_cal (20) lowers c_H by 'learn' (4), as in
+# Tutorial 3; other subsidies give other E and so other cost reductions
+# (s = 0: no learning). delta weights period 2 (1 = no discounting).
+# Returns a list: beta, E, cH2, cF2, the four equilibria (A1, B1, A2, B2),
+# the changes per period ($d1, $d2: named vectors), the installations
+# ($dQD1, $dQD2) and $table, a matrix with rows
+#   p1 (period 1: subsidy), p2 (period 2: learning, times delta), total,
+#   env_ap, env_ghg, env (both periods, period 2 times delta), total_env
+# and columns Home, Foreign, World.
+open_two_period <- function(s = 20, theta = 0.5, delta = 1, bAP = 6,
+                            bGHG = 12, learn = 4, s_cal = 20, alpha_H = 0.5,
+                            a = 100, cH = 20, cF = 40, n = 10) {
+  check_firm_number(theta, "theta", min = 0, what = "the spillover share")
+  if (theta > 1) stop("'theta' (the share of Home's learning that reaches ",
+                      "Foreign) must be between 0 and 1.", call. = FALSE)
+  check_firm_number(delta, "delta", min = 0, what = "the weight of period 2")
+  check_firm_number(bAP, "bAP", min = 0)
+  check_firm_number(bGHG, "bGHG", min = 0)
+  check_firm_number(learn, "learn", min = 0)
+  check_firm_number(s_cal, "s_cal", min = 0)
+  check_firm_number(alpha_H, "alpha_H", min = 0)
+  if (alpha_H > 1) stop("'alpha_H' (Home's share of the climate benefit) ",
+                        "must be between 0 and 1.", call. = FALSE)
+  if (learn >= cH) stop("'learn' must be smaller than Home's cost ",
+                        "intercept cH.", call. = FALSE)
+
+  A1 <- open_outcomes(a, cH, cF, 0, n)          # period 1, free trade
+  B1 <- open_outcomes(a, cH, cF, s, n)          # period 1, Home subsidy
+  if (A1$no_market || A1$Q_HS <= 0) {
+    stop("Home makes no panels under free trade, so there is no Home ",
+         "learning to measure.", call. = FALSE)
+  }
+  # Calibration: the subsidy s_cal lowers Home's cost intercept by 'learn'
+  E_cal <- open_outcomes(a, cH, cF, s_cal, n)$Q_HS / A1$Q_HS
+  beta <- if (learn == 0) 0 else {
+    if (E_cal <= 1) stop("'s_cal' must raise Home's output, so that the ",
+                         "learning rate can be calibrated.", call. = FALSE)
+    log(cH / (cH - learn)) / log(E_cal)
+  }
+  E   <- B1$Q_HS / A1$Q_HS                      # relative experience
+  cH2 <- learning_cost(E, c0 = cH, beta = beta, cbar = 0)
+  cF2 <- cF - theta * (cH - cH2)
+  A2 <- A1                                      # period 2 without learning
+  B2 <- open_outcomes(a, cH2, cF2, 0, n)        # period 2 after learning
+
+  vars <- c("P_W", "Q_HS", "Q_FS", "Q_HD", "Q_FD", "X", "CS_H", "PS_H",
+            "G_H", "W_H", "CS_F", "PS_F", "W_F", "W_W")
+  diff_of <- function(B, A) vapply(vars, function(v) B[[v]] - A[[v]], 0)
+  d1 <- diff_of(B1, A1); d2 <- diff_of(B2, A2)
+
+  # Environment: new installations = consumption, per country and period
+  dQD1 <- c(H = d1[["Q_HD"]], F = d1[["Q_FD"]])
+  dQD2 <- c(H = d2[["Q_HD"]], F = d2[["Q_FD"]])
+  env <- function(dQD) {
+    ap  <- bAP * dQD                            # local, stays at home
+    ghg <- bGHG * sum(dQD)                      # global, counted once
+    rbind(ap = c(ap, W = sum(ap)),
+          ghg = c(H = alpha_H * ghg, F = (1 - alpha_H) * ghg, W = ghg))
+  }
+  e1 <- env(dQD1); e2 <- env(dQD2)
+
+  p1 <- c(d1[["W_H"]], d1[["W_F"]], d1[["W_W"]])
+  p2 <- delta * c(d2[["W_H"]], d2[["W_F"]], d2[["W_W"]])
+  env_ap  <- e1["ap", ]  + delta * e2["ap", ]
+  env_ghg <- e1["ghg", ] + delta * e2["ghg", ]
+  tab <- rbind(p1 = p1, p2 = p2, total = p1 + p2, env_ap = env_ap,
+               env_ghg = env_ghg, env = env_ap + env_ghg,
+               total_env = p1 + p2 + env_ap + env_ghg)
+  colnames(tab) <- c("Home", "Foreign", "World")
+
+  list(s = s, theta = theta, delta = delta, beta = beta, E = E,
+       cH2 = cH2, cF2 = cF2, A1 = A1, B1 = B1, A2 = A2, B2 = B2,
+       d1 = d1, d2 = d2, dQD1 = dQD1, dQD2 = dQD2,
+       env1 = e1, env2 = e2, table = tab)
+}
+
+
+### 30. Small helpers for the open-economy figures ----
+
+# World supply in INVERSE form: the price at which the two industries
+# together offer Q panels, with cost intercepts eH, eF (in world-price
+# terms) and slope k each. Below the higher intercept only the cheaper
+# country produces (P = e1 + Q/k); above it both do (Q = k (2P - e1 - e2)).
+open_world_supply_inv <- function(Q, eH, eF, k = 1) {
+  e1 <- min(eH, eF); e2 <- max(eH, eF)
+  ifelse(Q <= k * (e2 - e1), e1 + Q / k, (Q / k + e1 + e2) / 2)
+}
+
+# A rising curve y = f(x) (here: the kinked world supply), drawn like the
+# straight lines of chain_line(): from the quantity axis up to 88% of the
+# price range (or 92% of the quantity range), its label above its end.
+# The kink is an exact corner because x_knots are added to the grid.
+# Returns the label's box.
+open_curve <- function(f, label, xlim, ylim, x_knots = numeric(0),
+                       col = peib_cols["supply"], lty = 1, lwd = 2.5,
+                       cex = 0.85) {
+  rx <- diff(xlim); ry <- diff(ylim)
+  xs <- sort(unique(c(seq(xlim[1], xlim[1] + 0.92 * rx, length.out = 600),
+                      x_knots[x_knots > xlim[1] & x_knots < xlim[2]])))
+  ys <- f(xs)
+  keep <- ys >= ylim[1] & ys <= ylim[1] + 0.88 * ry & xs <= xlim[1] + 0.92 * rx
+  if (!any(keep)) return(invisible(NULL))
+  xs <- xs[keep]; ys <- ys[keep]
+  lines(xs, ys, col = col, lty = lty, lwd = lwd)
+  if (is.null(label)) return(invisible(NULL))
+  x1 <- xs[length(xs)]; y1 <- ys[length(ys)]
+  hw <- strwidth(label, cex = cex, font = 2) / 2
+  hh <- strheight(label, cex = cex, font = 2)
+  oy <- 0.4 * strheight("M", cex = cex)
+  xl <- min(max(x1, xlim[1] + hw), xlim[2] - hw - 0.01 * rx)
+  text(xl, y1, label, col = col, font = 2, cex = cex, pos = 3, offset = 0.4)
+  invisible(c(l = xl - hw, r = xl + hw, b = y1 + oy * 0.5,
+              t = y1 + oy + hh * 1.3))
+}
+
+# One empty panel of a multi-panel figure: fixed axes, numbered ticks
+# (tick_step: NULL = R's automatic numbers, else one number or c(x, y)),
+# axis titles, and the panel's name in bold just above the box (the name
+# says which country the panel shows; it is not a figure title).
+open_panel <- function(xlim, ylim, name, xlab = "Quantity of panels (Q)",
+                       ylab = "Price (P)", tick_step = NULL,
+                       cex.axis = 0.75) {
+  plot(NA, xlim = xlim, ylim = ylim, xaxs = "i", yaxs = "i",
+       axes = is.null(tick_step), bty = "l", ann = FALSE,
+       cex.axis = cex.axis)
+  if (!is.null(tick_step)) peib_axes(xlim, ylim, tick_step, cex.axis = cex.axis)
+  title(xlab = xlab, ylab = ylab, line = 2.2, cex.lab = 0.9)
+  if (!is.null(name)) mtext(name, side = 3, line = 0.35, font = 2, cex = 0.85)
+  clip(xlim[1], xlim[2], ylim[1], ylim[2])
+}
+
+# Legend across the top of a multi-panel figure (in the outer margin, one
+# row). Areas: 'fills'; lines: 'lty' with 'line_cols'. It shrinks the text
+# if the legend would be wider than the figure. Call it while any panel is
+# active.
+open_fig_legend <- function(items, fills = NULL, lty = NULL,
+                            line_cols = NULL, cex = 0.8) {
+  if (length(items) == 0) return(invisible(NULL))
+  dev_x <- grconvertX(c(0, 1), "ndc", "user")
+  dev_y <- grconvertY(c(0, 1), "ndc", "user")
+  do.call("clip", as.list(c(dev_x, dev_y)))
+  x <- grconvertX(0.5, "ndc", "user"); y <- grconvertY(0.995, "ndc", "user")
+  args <- list(x = x, y = y, xjust = 0.5, yjust = 1, legend = items,
+               ncol = length(items), x.intersp = 0.6, bty = "n", xpd = NA)
+  if (is.null(lty)) {
+    args$fill <- fills; args$border <- NA
+  } else {
+    args$col <- line_cols; args$lty <- lty; args$lwd <- 2.5
+    args$seg.len <- 3
+  }
+  for (i in 1:5) {
+    lg <- do.call(legend, c(args, list(cex = cex, plot = FALSE)))
+    if (lg$rect$w <= 0.96 * diff(dev_x) || cex <= 0.55) break
+    cex <- max(0.55, cex * 0.96 * diff(dev_x) / lg$rect$w)
+  }
+  do.call(legend, c(args, list(cex = cex)))
+}
+
+# tick_step of a multi-panel figure: NULL (automatic), one number or c(x, y)
+# for every panel, or a list with one entry per panel
+open_ticks <- function(tick_step, i) {
+  if (is.null(tick_step)) return(NULL)
+  if (is.list(tick_step)) return(tick_step[[min(i, length(tick_step))]])
+  tick_step
+}
+
+# Price labels with subscripts: P_W = 65, P_H,P = 80 (plotmath)
+open_pw_lab  <- function(v) bquote(P[W] == .(chain_fmt(v)))
+open_php_lab <- function(v) bquote(P[list(H, P)] == .(chain_fmt(v)))
+
+# Signed numbers for welfare changes: "+187.5", "-1,200", "0"
+open_signed <- function(x) {
+  if (is.na(x)) return("n/a")
+  if (round(x, 2) > 0) paste0("+", chain_fmt(x)) else chain_fmt(x)
+}
+
+
+### 31. draw_open_market(): Home | World | Foreign (Figures 1 and 2) ----
+# Three panels side by side with the same price axis:
+#   Home:    D (P = a - Q), S = MC (P = cH + Q/k) and, with the subsidy, the
+#            supply in world-price terms S - s (dashed)
+#   World:   world demand (P = a - Q/2) and world supply (kinked: only Home
+#            produces between cH and cF); with the subsidy also the world
+#            supply with Home's subsidised supply (dashed)
+#   Foreign: D and S = MC (P = cF + Q/k), never shifted
+# state = "free" (Figure 1) or "subsidy" (Figure 2, subsidy s).
+# version = "noanswers": the curves only (no price line, no quantities);
+# "answers": the world price line through all panels, each country's
+# production and consumption, Home's exports and Foreign's imports as
+# shaded strips (the same width: the world market clears), the
+# equilibria in the World panel and, with the subsidy, the price Home's
+# producers receive (P_H,P), the wedge s and the world loss (red
+# triangle: between Home's MC and the demand Home's firms face on the
+# world market, over Home's extra panels). show_resid = TRUE (answers with
+# the world loss only) adds that demand as a thin dashed line in the Home
+# panel, labelled "World demand for Home's panels", so the triangle's lower
+# edge is visible. The loss number sits inside the triangle when it fits.
+# Handout size 9 x 4 inches. Returns the outcomes invisibly:
+# list(free = ..., subsidy = ..., shown = the state drawn).
+draw_open_market <- function(state = c("free", "subsidy"),
+                             version = c("noanswers", "answers"),
+                             a = 100, cH = 20, cF = 40, s = 20, n = 10,
+                             xlim_c = c(0, 100), xlim_w = c(0, 120),
+                             ylim = c(0, 100), tick_step = NULL,
+                             fit_top = FALSE, show_trade = TRUE,
+                             show_dwl = TRUE, show_resid = TRUE) {
+  state <- match.arg(state); version <- match.arg(version)
+  tutor <- version == "answers"
+  sub <- state == "subsidy"
+  for (lim in list(xlim_c, xlim_w, ylim)) {
+    if (!is.numeric(lim) || length(lim) != 2 || any(is.na(lim)) ||
+        lim[2] <= lim[1]) {
+      stop("'xlim_c', 'xlim_w' and 'ylim' must be two increasing numbers, ",
+           "e.g. c(0, 100).", call. = FALSE)
+    }
+  }
+  o0 <- open_outcomes(a, cH, cF, 0, n)                 # free trade
+  o1 <- open_outcomes(a, cH, cF, if (sub) s else 0, n) # the state drawn
+  k  <- o0$k
+  se <- if (sub) s else 0                              # subsidy in force
+  ok <- !o1$no_market
+  P  <- o1$P_W
+
+  # Shaded areas shown (answers only), for the legend
+  sh_trade <- tutor && ok && show_trade && abs(o1$X) > 1e-9
+  dW <- o1$W_W - o0$W_W
+  sh_dwl <- tutor && sub && ok && !o0$no_market && show_dwl && -dW > 1e-9 &&
+    o0$home_produces && o1$foreign_produces && o0$foreign_produces
+  items <- character(0); fills <- character(0)
+  if (sh_trade) {
+    items <- c(items, if (o1$X > 0) "Home's exports = Foreign's imports"
+                      else "Foreign's exports = Home's imports")
+    fills <- c(fills, firm_fill(peib_cols["tr"], 0.35))
+  }
+  if (sh_dwl) {
+    items <- c(items, "World loss (deadweight loss)")
+    fills <- c(fills, firm_fill(peib_cols["dwl"], 0.6))
+  }
+  top <- if (fit_top) (if (length(items) > 0) 1.5 else 0) else 1.5
+  op <- par(mfrow = c(1, 3), oma = c(0, 0, top, 0),
+            mar = c(3.4, 3.4, 1.6, 0.8), mgp = c(2.2, 0.55, 0), las = 1)
+  on.exit(par(op))
+
+  # One country panel. j = "H" or "F"
+  country_panel <- function(j, ts) {
+    xl <- xlim_c; rx <- diff(xl); ry <- diff(ylim)
+    c0 <- if (j == "H") cH else cF
+    shifted <- j == "H" && sub && se > 0
+    open_panel(xl, ylim, if (j == "H") "Home" else "Foreign", tick_step = ts)
+    dem  <- function(x) a - x
+    sup  <- function(x) c0 + x / k
+    sups <- function(x) c0 - se + x / k
+    hl <- if (tutor && ok) P else numeric(0)
+    hl <- c(hl, if (tutor && ok && shifted) o1$P_HP)
+    # Answers with the world loss: the demand Home's firms face on the world
+    # market (world demand minus Foreign's supply, valid while Foreign
+    # produces): Q_H = 2 (a - P) - k (P - cF), i.e. P = (2a + k cF - Q) / (2 + k).
+    # It is the lower edge of the red triangle (P = 80 - Q/3 in the handout).
+    show_res <- j == "H" && sh_dwl && show_resid
+    res <- function(x) (2 * a + k * cF - x) / (2 + k)
+    # Drawn from where it meets Home's own demand (Q = k (a - cF) / (1 + k),
+    # 30 in the handout: at higher prices Foreign would export) to a little
+    # beyond Home's output with the subsidy
+    res_x <- if (show_res) c(max(xl[1], k * (a - cF) / (1 + k)),
+                             min(xl[2], o1$Q_HS + 0.15 * rx)) else NULL
+    curves <- function(x) c(list(dem(x), sup(x)),
+                            if (shifted) list(sups(x)),
+                            if (show_res) list(ifelse(x >= res_x[1] & x <= res_x[2],
+                                                      res(x), NA_real_)),
+                            lapply(hl, function(h) rep(h, length(x))))
+    QS <- if (j == "H") o1$Q_HS else o1$Q_FS
+    QD <- if (j == "H") o1$Q_HD else o1$Q_FD
+    QS0 <- if (j == "H") o0$Q_HS else o0$Q_FS
+
+    # Areas first: the trade strip between consumption and production
+    if (sh_trade) {
+      rect(min(QS, QD), ylim[1], max(QS, QD), P, border = NA,
+           col = firm_fill(peib_cols["tr"], 0.35))
+    }
+    if (j == "H" && sh_dwl) {
+      polygon(c(QS0, QS, QS), c(o0$P_W, o1$P_HP, P),
+              col = firm_fill(peib_cols["dwl"], 0.6), border = NA)
+    }
+    if (show_res) {
+      segments(res_x[1], res(res_x[1]), res_x[2], res(res_x[2]),
+               col = peib_cols["demand"], lty = 2, lwd = 1.4)
+    }
+    # Curves and their labels
+    avoid <- list()
+    avoid <- firm_add_box(avoid, chain_line(c0, 1 / k, "S = MC", xl, ylim,
+                                            cex = 0.85))
+    if (shifted) {
+      avoid <- firm_add_box(avoid, chain_line(c0 - se, 1 / k, NULL, xl, ylim,
+                                              lty = 2))
+      # label just right of the end of the dashed line, below it
+      x_end <- min(xl[1] + 0.92 * rx, (ylim[1] + 0.88 * ry - (c0 - se)) * k)
+      avoid <- firm_add_box(avoid, chain_label_near(
+        "S - s", x_end + c(-0.3, 0.12) * rx, sups(x_end) + c(-0.3, 0.1) * ry,
+        x_end + 0.02 * rx, sups(x_end) - 0.06 * ry, curves, avoid, cex = 0.85,
+        col = peib_cols["supply"], alts = "S - s"))
+    }
+    avoid <- firm_add_box(avoid, chain_line(a, -1, "D", xl, ylim,
+                                            col = peib_cols["demand"],
+                                            cex = 0.85))
+    if (!ok) {
+      firm_message("Nothing is traded:\nno buyer pays the lowest cost",
+                   xl, ylim, cex = 0.75)
+      return(invisible(NULL))
+    }
+    if (!tutor) return(invisible(NULL))
+
+    # Answers: the world price, quantities and the trade strip label
+    segments(xl[1], P, xl[2], P, col = "grey20", lwd = 2)
+    avoid <- firm_add_box(avoid, c(l = xl[1], r = xl[2], b = P - 0.005 * ry,
+                                   t = P + 0.005 * ry))
+    for (q in unique(c(QD, QS))) {
+      if (q > xl[1] && q < xl[2]) {
+        segments(q, ylim[1], q, P, lty = 2, col = "grey30")
+        points(q, P, pch = 19, cex = 0.8)
+        avoid <- firm_add_box(avoid, c(l = q - 0.005 * rx, r = q + 0.005 * rx,
+                                       b = ylim[1], t = P))
+      }
+    }
+    # Quantity numbers just above the axis: consumption on the left of its
+    # guide if it is the smaller quantity, production on the right (and the
+    # other way round for an importer)
+    lab_q <- function(q, right, txt) {
+      if (q <= xl[1] || q >= xl[2]) return(NULL)
+      sz <- firm_text_size(txt, 0.75, 2)
+      xc <- if (right) q + 0.012 * rx + sz[["w"]] / 2 else
+        q - 0.012 * rx - sz[["w"]] / 2
+      yc <- ylim[1] + 0.035 * ry + sz[["h"]] / 2
+      text(xc, yc, txt, cex = 0.75, font = 2)
+      c(l = xc - sz[["w"]] / 2, r = xc + sz[["w"]] / 2,
+        b = yc - sz[["h"]] / 2, t = yc + sz[["h"]] / 2)
+    }
+    if (abs(QS - QD) > 1e-9) {
+      avoid <- firm_add_box(avoid, lab_q(QD, QD > QS, paste0("buy ", chain_fmt(QD))))
+      avoid <- firm_add_box(avoid, lab_q(QS, QS > QD, paste0("make ", chain_fmt(QS))))
+    } else {
+      avoid <- firm_add_box(avoid, lab_q(QS, TRUE, chain_fmt(QS)))
+    }
+    if (sh_trade) {
+      txt <- if ((j == "H") == (o1$X > 0)) paste0("exports ", chain_fmt(abs(o1$X)))
+             else paste0("imports ", chain_fmt(abs(o1$X)))
+      avoid <- firm_add_box(avoid, chain_label_near(
+        txt, c(xl[1], xl[2]), c(ylim[1] + 0.1 * ry, P),
+        (QS + QD) / 2, ylim[1] + 0.3 * ry, curves, avoid, cex = 0.8,
+        alts = c(txt, sub(" ", "\n", txt))))
+    }
+    # Price labels: P_W above its line, P_H,P (Home, subsidy) above its own
+    avoid <- firm_add_box(avoid, chain_label_near(
+      open_pw_lab(P), c(xl[1], xl[2]), c(P, P + 0.15 * ry),
+      xl[1] + 0.14 * rx, P + 0.05 * ry, curves, avoid, cex = 0.8,
+      alts = list(open_pw_lab(P))))
+    if (shifted) {
+      segments(xl[1], o1$P_HP, QS, o1$P_HP, lty = 2, col = "grey30")
+      points(QS, o1$P_HP, pch = 19, cex = 0.8)
+      avoid <- firm_add_box(avoid, c(l = xl[1], r = QS, b = o1$P_HP,
+                                     t = o1$P_HP))
+      # preferred spot: just above the dashed line, halfway between
+      # demand and the end of the line (left of it demand crosses)
+      avoid <- firm_add_box(avoid, chain_label_near(
+        open_php_lab(o1$P_HP), c(xl[1], xl[2]),
+        c(o1$P_HP, o1$P_HP + 0.15 * ry), (max(xl[1], a - o1$P_HP) + QS) / 2,
+        o1$P_HP + 0.04 * ry, curves, avoid, cex = 0.8,
+        alts = list(open_php_lab(o1$P_HP))))
+      avoid <- chain_varrow(QS, P, o1$P_HP, paste0("s = ", chain_fmt(se)),
+                            curves, avoid, cex = 0.75, sides = c(1, -1))
+      if (sh_dwl) {
+        # The loss number sits INSIDE the triangle when it fits (the legend
+        # names the area); otherwise "World loss ..." outside with a leader.
+        xc <- (QS0 + 2 * QS) / 3; yc <- (o0$P_W + o1$P_HP + P) / 3
+        num <- chain_fmt(-dW)
+        sz <- firm_text_size(num, 0.75, 2)
+        tri_x <- c(QS0, QS, QS); tri_y <- c(o0$P_W, o1$P_HP, P)
+        in_tri <- function(x, y) {            # point inside the triangle?
+          d <- (tri_y[2] - tri_y[3]) * (tri_x[1] - tri_x[3]) +
+            (tri_x[3] - tri_x[2]) * (tri_y[1] - tri_y[3])
+          l1 <- ((tri_y[2] - tri_y[3]) * (x - tri_x[3]) +
+                   (tri_x[3] - tri_x[2]) * (y - tri_y[3])) / d
+          l2 <- ((tri_y[3] - tri_y[1]) * (x - tri_x[3]) +
+                   (tri_x[1] - tri_x[3]) * (y - tri_y[3])) / d
+          l1 >= 0 && l2 >= 0 && l1 + l2 <= 1
+        }
+        hw <- sz[["w"]] / 2 + 0.005 * rx; hh <- sz[["h"]] / 2 + 0.005 * ry
+        fits <- all(mapply(in_tri, xc + c(-hw, hw, -hw, hw),
+                           yc + c(-hh, -hh, hh, hh)))
+        if (fits) {
+          text(xc, yc, num, cex = 0.75, font = 2)
+          avoid <- firm_add_box(avoid, c(l = xc - hw, r = xc + hw,
+                                         b = yc - hh, t = yc + hh))
+        } else {
+          lab <- paste0("World loss ", num)
+          szl <- firm_text_size(lab, 0.75, 2)
+          bx <- sub_label(lab, c(QS, xl[2]), c(ylim[1], ylim[2]),
+                          QS + 0.04 * rx + szl[["w"]] / 2,
+                          (P + o1$P_HP) / 2 - 0.12 * ry, curves, avoid,
+                          cex = 0.75, bg = "white")
+          sub_leader(xc, yc, bx)
+          avoid <- firm_add_box(avoid, bx)
+        }
+      }
+      if (show_res) {
+        # Label of the residual demand line, just right of its end
+        lab <- "World demand for\nHome's panels"
+        xe <- res_x[2]
+        szr <- firm_text_size(lab, 0.68, 3)
+        avoid <- firm_add_box(avoid, chain_label_near(
+          lab, xe + c(-0.25, 0.3) * rx, res(xe) + c(-0.3, 0.05) * ry,
+          xe + 0.02 * rx + szr[["w"]] / 2, res(xe) - 0.02 * ry, curves,
+          avoid, cex = 0.68,
+          font = 3, col = peib_cols["demand"], alts = lab))
+      }
+    }
+    invisible(NULL)
+  }
+
+  world_panel <- function(ts) {
+    xl <- xlim_w; rx <- diff(xl); ry <- diff(ylim)
+    open_panel(xl, ylim, "World", tick_step = ts)
+    demW <- function(x) a - x / 2
+    s0 <- function(x) open_world_supply_inv(x, cH, cF, k)
+    s1 <- function(x) open_world_supply_inv(x, cH - se, cF, k)
+    knots0 <- k * abs(cF - cH); knots1 <- k * abs(cF - (cH - se))
+    shifted <- sub && se > 0
+    hl <- if (tutor && ok) P else numeric(0)
+    curves <- function(x) c(list(demW(x), s0(x)), if (shifted) list(s1(x)),
+                            lapply(hl, function(h) rep(h, length(x))))
+    avoid <- list()
+    avoid <- firm_add_box(avoid, open_curve(s0, "S", xl, ylim, knots0))
+    if (shifted) {
+      open_curve(s1, NULL, xl, ylim, knots1, lty = 2)
+      # label below the end of the dashed line
+      xs <- seq(xl[1], xl[1] + 0.92 * rx, length.out = 400)
+      ys <- s1(xs); kk <- which(ys <= ylim[1] + 0.88 * ry)
+      x_end <- xs[max(kk)]
+      avoid <- firm_add_box(avoid, chain_label_near(
+        "S with s", x_end + c(-0.35, 0.1) * rx, s1(x_end) + c(-0.3, 0.05) * ry,
+        x_end - 0.02 * rx, s1(x_end) - 0.08 * ry, curves, avoid, cex = 0.85,
+        col = peib_cols["supply"], alts = c("S with s", "S\nwith s")))
+    }
+    avoid <- firm_add_box(avoid, chain_line(a, -1 / 2, "D", xl, ylim,
+                                            col = peib_cols["demand"],
+                                            cex = 0.85))
+    if (!ok || !tutor) return(invisible(NULL))
+    segments(xl[1], P, xl[2], P, col = "grey20", lwd = 2)
+    avoid <- firm_add_box(avoid, c(l = xl[1], r = xl[2], b = P - 0.005 * ry,
+                                   t = P + 0.005 * ry))
+    # Equilibria first (E0 free trade and, with the subsidy, E1), then the
+    # price label, so that it avoids their labels. E0 after the subsidy is
+    # an open circle with a dotted guide to the quantity axis only.
+    pt <- function(Q, Pv, nm, dir, open = FALSE) {
+      segments(Q, ylim[1], Q, Pv, lty = if (open) 3 else 2,
+               col = if (open) "grey40" else "grey30")
+      avoid <<- firm_add_box(avoid, c(l = Q - 0.005 * rx, r = Q + 0.005 * rx,
+                                      b = ylim[1], t = Pv))
+      lab <- paste0(nm, " = (", chain_fmt(Q), ", ", chain_fmt(Pv), ")")
+      avoid <<- chain_point(Q, Pv, lab, curves, avoid, dir = dir, cex = 0.75)
+      if (open) points(Q, Pv, pch = 21, bg = "white", cex = 1)
+    }
+    if (shifted && !o0$no_market) {
+      pt(o0$Q_W, o0$P_W, "E0", c(-1, 1), open = TRUE)
+      pt(o1$Q_W, P, "E1", c(1, -1))
+    } else {
+      pt(o1$Q_W, P, "E0", c(1, 1))
+    }
+    avoid <- firm_add_box(avoid, chain_label_near(
+      open_pw_lab(P), c(xl[1], xl[2]), c(P, P + 0.15 * ry),
+      xl[1] + 0.14 * rx, P + 0.05 * ry, curves, avoid, cex = 0.8,
+      alts = list(open_pw_lab(P))))
+    invisible(NULL)
+  }
+
+  country_panel("H", open_ticks(tick_step, 1))
+  world_panel(open_ticks(tick_step, 2))
+  country_panel("F", open_ticks(tick_step, 3))
+  open_fig_legend(items, fills)
+  invisible(list(free = o0, subsidy = if (sub) o1 else NULL,
+                 shown = state, world_loss = -dW))
+}
+
+
+### 32. draw_open_period2(): period 1 versus period 2, world market ----
+# (Figure 5) Two World panels with the same axes:
+#   left  = period 1: the world supply with true costs (S) and the supply
+#           with Home's subsidy (S with s): a POLICY WEDGE (green, dashed);
+#           the price falls 65 -> 60 (Home producers receive 80)
+#   right = period 2: the subsidy is gone, learning has lowered the true
+#           costs (c_H 20 -> 16, c_F 40 -> 38 for theta = 0.5): LOWER COST
+#           (blue, dash-dot); the price falls 65 -> 63.5
+# version = "noanswers": the curves only; "answers": the equilibria and
+# the note on Home's producer price. With s = 0 nothing moves: only S, D
+# (and E0) are drawn, with the note "No subsidy, so no extra learning".
+# fit_top = TRUE removes the top margin when no legend is shown (s = 0).
+# Handout size 9 x 4 inches. Returns open_two_period()'s list invisibly.
+draw_open_period2 <- function(version = c("noanswers", "answers"),
+                              theta = 0.5, s = 20, a = 100, cH = 20,
+                              cF = 40, n = 10, learn = 4, s_cal = 20,
+                              xlim = c(0, 120), ylim = c(0, 100),
+                              tick_step = NULL, fit_top = FALSE) {
+  version <- match.arg(version); tutor <- version == "answers"
+  tp <- open_two_period(s = s, theta = theta, learn = learn, s_cal = s_cal,
+                        a = a, cH = cH, cF = cF, n = n)
+  k <- tp$A1$k
+  col_w <- peib_cols["tax"]; col_l <- peib_cols["cs"]
+  # s = 0: no subsidy, so period 1 is free trade and there is no learning;
+  # the "shifted" curves would lie on top of S (and E1, E2 on top of E0)
+  no_sub <- s <= 0
+  top <- if (fit_top && no_sub) 0 else 1.5   # the legend needs the margin
+  op <- par(mfrow = c(1, 2), oma = c(0, 0, top, 0),
+            mar = c(3.4, 3.4, 1.6, 0.8), mgp = c(2.2, 0.55, 0), las = 1)
+  on.exit(par(op))
+  rx <- diff(xlim); ry <- diff(ylim)
+  demW <- function(x) a - x / 2
+  s0 <- function(x) open_world_supply_inv(x, cH, cF, k)
+
+  panel <- function(i) {
+    p1 <- i == 1
+    pname <- if (no_sub) (if (p1) "Period 1: no subsidy" else
+                            "Period 2: costs unchanged")
+             else if (p1) "Period 1: Home subsidy"
+             else "Period 2: subsidy withdrawn, costs lower"
+    open_panel(xlim, ylim, pname, tick_step = open_ticks(tick_step, i))
+    s1 <- if (p1) function(x) open_world_supply_inv(x, cH - s, cF, k)
+          else function(x) open_world_supply_inv(x, tp$cH2, tp$cF2, k)
+    kn1 <- if (p1) k * abs(cF - cH + s) else k * abs(tp$cF2 - tp$cH2)
+    B <- if (p1) tp$B1 else tp$B2
+    curves <- function(x) list(demW(x), s0(x), s1(x))
+    if (no_sub) curves <- function(x) list(demW(x), s0(x))
+    avoid <- list()
+    avoid <- firm_add_box(avoid, open_curve(s0, "S", xlim, ylim,
+                                            k * abs(cF - cH)))
+    if (!no_sub) {
+      open_curve(s1, NULL, xlim, ylim, kn1, col = if (p1) col_w else col_l,
+                 lty = if (p1) 2 else 4)
+      xs <- seq(xlim[1], xlim[1] + 0.92 * rx, length.out = 400)
+      x_end <- xs[max(which(s1(xs) <= ylim[1] + 0.88 * ry))]
+      lab1 <- if (p1) "S with s" else "S after learning"
+      avoid <- firm_add_box(avoid, chain_label_near(
+        lab1, x_end + c(-0.45, 0.1) * rx, s1(x_end) + c(-0.35, 0.05) * ry,
+        x_end - 0.06 * rx, s1(x_end) - 0.1 * ry, curves, avoid, cex = 0.85,
+        col = if (p1) col_w else col_l,
+        alts = c(lab1, sub(" ", "\n", lab1))))
+    }
+    avoid <- firm_add_box(avoid, chain_line(a, -1 / 2, "D", xlim, ylim,
+                                            col = peib_cols["demand"],
+                                            cex = 0.85))
+    if (no_sub) {
+      # Plain-word note instead of a second curve (both versions)
+      note0 <- "No subsidy, so no extra learning:\nnothing moves"
+      avoid <- firm_add_box(avoid, chain_label_near(
+        note0, xlim, c(ylim[1], ylim[1] + 0.45 * ry), xlim[1] + 0.7 * rx,
+        ylim[1] + 0.2 * ry, curves, avoid, cex = 0.75, font = 3,
+        col = "grey20", alts = note0))
+    }
+    if (!tutor || B$no_market || tp$A1$no_market) return(invisible(NULL))
+    # E0 (free trade, period 1 = period 2 without the subsidy) and the new
+    # equilibrium (E1 with the subsidy, E2 after learning)
+    A <- tp$A1
+    segments(A$Q_W, ylim[1], A$Q_W, A$P_W, lty = 3, col = "grey40")
+    segments(xlim[1], A$P_W, A$Q_W, A$P_W, lty = 3, col = "grey40")
+    if (!no_sub) {
+      segments(B$Q_W, ylim[1], B$Q_W, B$P_W, lty = 2, col = "grey30")
+      segments(xlim[1], B$P_W, B$Q_W, B$P_W, lty = 2, col = "grey30")
+    }
+    avoid <- c(avoid, list(c(l = A$Q_W, r = A$Q_W, b = ylim[1], t = A$P_W),
+                           c(l = xlim[1], r = A$Q_W, b = A$P_W, t = A$P_W),
+                           c(l = B$Q_W, r = B$Q_W, b = ylim[1], t = B$P_W),
+                           c(l = xlim[1], r = B$Q_W, b = B$P_W, t = B$P_W)))
+    lab <- function(nm, Q, Pv) paste0(nm, " = (", chain_fmt(Q), ", ",
+                                      chain_fmt(Pv), ")")
+    if (no_sub) {                       # one equilibrium only: E0
+      avoid <- chain_point(A$Q_W, A$P_W, lab("E0", A$Q_W, A$P_W), curves,
+                           avoid, dir = c(1, 1), cex = 0.75)
+      return(invisible(NULL))
+    }
+    avoid <- chain_point(A$Q_W, A$P_W, lab("E0", A$Q_W, A$P_W), curves,
+                         avoid, dir = c(-1, 1), cex = 0.75)
+    points(A$Q_W, A$P_W, pch = 21, bg = "white", cex = 1)
+    avoid <- chain_point(B$Q_W, B$P_W, lab(if (p1) "E1" else "E2", B$Q_W,
+                                           B$P_W), curves, avoid,
+                         dir = c(1, -1), cex = 0.75)
+    if (p1) {
+      note <- paste0("Home producers receive ", chain_fmt(B$P_HP), "\n(",
+                     chain_fmt(B$P_W), " + s, s = ", chain_fmt(s), ")")
+      avoid <- firm_add_box(avoid, chain_label_near(
+        note, xlim, c(ylim[1], ylim[1] + 0.45 * ry), xlim[1] + 0.75 * rx,
+        ylim[1] + 0.2 * ry, curves, avoid, cex = 0.72, font = 3,
+        col = "grey20", alts = note))
+    } else {
+      note <- paste0("Costs: Home ", chain_fmt(cH), " \u2192 ", chain_fmt(tp$cH2),
+                     ",\nForeign ", chain_fmt(cF), " \u2192 ", chain_fmt(tp$cF2),
+                     " (\u03b8 = ", chain_fmt(theta), ")")
+      avoid <- firm_add_box(avoid, chain_label_near(
+        note, xlim, c(ylim[1], ylim[1] + 0.45 * ry), xlim[1] + 0.75 * rx,
+        ylim[1] + 0.2 * ry, curves, avoid, cex = 0.72, font = 3,
+        col = "grey20", alts = note))
+    }
+    invisible(NULL)
+  }
+  panel(1); panel(2)
+  if (!no_sub) {
+    open_fig_legend(c("Policy wedge: subsidy (period 1)",
+                      "Lower cost: learning (period 2)"),
+                    lty = c(2, 4), line_cols = c(col_w, col_l))
+  }
+  invisible(tp)
+}
+
+
+### 33. draw_open_learning(): Home's learning and the spillover (Fig 4) ----
+# Home's cost intercept as a function of its relative experience E:
+# c_H(E) = 20 E^(-beta), beta = 0.776, through (1, 20) and (4/3, 16).
+# Foreign's intercept moves with HOME's experience through the spillover:
+# c_F(E) = 40 - theta (20 - c_H(E)), through (1, 40) and (4/3, 38) for
+# theta = 0.5. One version (the four points are given in the handout).
+# With s = 0 (E = 1) only the two points at E = 1 are drawn, with the note
+# "No subsidy, so no extra learning". Handout size 6 x 4.5 inches. Returns beta, E and the two intercepts.
+draw_open_learning <- function(theta = 0.5, s = 20, a = 100, cH = 20,
+                               cF = 40, n = 10, learn = 4, s_cal = 20,
+                               xlim = c(0.8, 2), ylim = c(0, 45),
+                               tick_step = c(0.2, 5), main = NULL,
+                               fit_top = FALSE) {
+  tp <- open_two_period(s = s, theta = theta, learn = learn, s_cal = s_cal,
+                        a = a, cH = cH, cF = cF, n = n)
+  b <- tp$beta; E1 <- tp$E
+  fH <- function(E) learning_cost(E, c0 = cH, beta = b, cbar = 0)
+  fF <- function(E) cF - theta * (cH - fH(E))
+  op <- par(c("mar", "las")); on.exit(par(op))
+  firm_canvas(xlim, ylim, main, ylab = "Cost intercept (c)",
+              xlab = "Home's relative experience (E)", tick_step = tick_step,
+              n_legend = if (fit_top) 0 else NULL)
+  rx <- diff(xlim); ry <- diff(ylim)
+  Eg <- seq(1, xlim[2], length.out = 400)
+  lines(Eg, fH(Eg), col = peib_cols["supply"], lwd = 2.5)
+  lines(Eg, fF(Eg), col = peib_cols["cs"], lwd = 2.5, lty = 5)
+  curves <- function(x) {
+    y1 <- rep(NA_real_, length(x)); y2 <- y1; k <- x >= 1
+    if (any(k)) { y1[k] <- fH(x[k]); y2[k] <- fF(x[k]) }
+    list(y1, y2)
+  }
+  avoid <- list()
+  no_learn <- abs(E1 - 1) < 1e-9          # s = 0: no extra experience
+  # E = 1 (free trade) and E = 4/3 (with the subsidy): dashed guides
+  for (E in if (no_learn) 1 else c(1, E1)) {
+    segments(E, ylim[1], E, fF(E), lty = 2, col = "grey40")
+    avoid <- firm_add_box(avoid, c(l = E - 0.004 * rx, r = E + 0.004 * rx,
+                                   b = ylim[1], t = fF(E)))
+  }
+  pts <- list(c(1, fH(1)), c(E1, fH(E1)), c(1, fF(1)), c(E1, fF(E1)))
+  if (no_learn) pts <- pts[c(1, 3)]      # only the two points at E = 1
+  for (p in pts) {
+    points(p[1], p[2], pch = 19, cex = 1)
+    avoid <- firm_add_box(avoid, c(l = p[1] - 0.012 * rx, r = p[1] + 0.012 * rx,
+                                   b = p[2] - 0.02 * ry, t = p[2] + 0.02 * ry))
+  }
+  # The two cost reductions: a dotted line at the old intercept from E = 1
+  # to just right of E1, and an arrow down to the new intercept there
+  xa <- E1 + 0.025 * rx
+  drops <- list(c(fH(1), fH(E1)), c(fF(1), fF(E1)))
+  dlab <- c(paste0("-", chain_fmt(cH - fH(E1))),
+            paste0("-", chain_fmt(fF(1) - fF(E1)), " (= \u03b8 x ",
+                   chain_fmt(cH - fH(E1)), ")"))
+  if (no_learn) {
+    note <- "No subsidy, so no extra learning:\nHome's experience stays at E = 1"
+    avoid <- firm_add_box(avoid, chain_label_near(
+      note, xlim, c(ylim[1] + 0.45 * ry, ylim[1] + 0.75 * ry),
+      xlim[1] + 0.55 * rx, ylim[1] + 0.6 * ry, curves, avoid, cex = 0.8,
+      font = 3, col = "grey20", alts = note))
+  }
+  for (i in seq_len(if (no_learn) 0 else 2)) {
+    segments(1, drops[[i]][1], xa, drops[[i]][1], lty = 3, col = "grey30")
+    avoid <- firm_add_box(avoid, c(l = 1, r = xa, b = drops[[i]][1],
+                                   t = drops[[i]][1]))
+    avoid <- chain_varrow(xa, drops[[i]][1], drops[[i]][2], dlab[i], curves,
+                          avoid, cex = 0.8, code = 2, sides = 1)
+  }
+  # Point labels: left of the points at E = 1, below and right of the
+  # points at E1 (below, so that the label of the new intercept is not read
+  # as belonging to the dotted line at the old one)
+  E_lab <- if (abs(E1 - 4/3) < 1e-9) "4/3" else chain_fmt(E1, 3)
+  for (i in seq_along(pts)) {
+    p <- pts[[i]]; left <- no_learn || i %% 2 == 1
+    lab <- paste0("(", if (left) "1" else E_lab, ", ", chain_fmt(p[2]), ")")
+    sz <- firm_text_size(lab, 0.8, 2)
+    xp <- if (left) p[1] - 0.02 * rx - sz[["w"]] / 2 else
+      p[1] + 0.015 * rx + sz[["w"]] / 2
+    yp <- if (left) p[2] else p[2] - 0.07 * ry
+    avoid <- firm_add_box(avoid, chain_label_near(
+      lab, p[1] + c(-0.3, 0.2) * rx, p[2] + c(-0.15, 0.15) * ry, xp, yp,
+      curves, avoid, cex = 0.8, alts = lab))
+  }
+  # Curve labels (with the formulas)
+  labH <- bquote("Home:" ~ c[H](E) == .(chain_fmt(cH)) ~ E^{-.(chain_fmt(b, 3))})
+  avoid <- firm_add_box(avoid, chain_label_near(
+    labH, c(xlim[1] + 0.35 * rx, xlim[2]), c(ylim[1], fH(xlim[2]) - 0.01 * ry),
+    xlim[1] + 0.72 * rx, fH(xlim[2]) - 0.1 * ry, curves, avoid, cex = 0.85,
+    col = peib_cols["supply"], alts = list(labH)))
+  labF <- bquote("Foreign:" ~ c[F] == .(chain_fmt(cF)) - theta ~
+                   "(" * .(chain_fmt(cH)) - c[H](E) * ")" * "," ~
+                   theta == .(chain_fmt(theta)))
+  avoid <- firm_add_box(avoid, chain_label_near(
+    labF, c(xlim[1] + 0.2 * rx, xlim[2]), c(fF(xlim[2]) + 0.01 * ry, ylim[2]),
+    xlim[1] + 0.62 * rx, fF(xlim[2]) + 0.1 * ry, curves, avoid, cex = 0.85,
+    col = peib_cols["cs"], alts = list(labF)))
+  invisible(list(beta = b, E = E1, cH2 = fH(E1), cF2 = fF(E1)))
+}
+
+
+### 34. draw_open_bars(): welfare changes as bars (Figures 3, 6, 7) ----
+# type = "ex1"        (Figure 3): diverging horizontal bars of the five
+#                     period-1 changes (Home consumers, Home producers, Home
+#                     government, Foreign consumers, Foreign producers); the
+#                     totals Home, Foreign and World are printed beside the
+#                     bars (they are sums of the bars, not extra bars)
+#        "two_period" (Figure 6): three panels Home | Foreign | World with
+#                     the bars period 1, period 2 (times delta) and total
+#        "env"        (Figure 7): a waterfall for the world: period 1,
+#                     period 2, air pollution, climate, ending at the total
+# version = "answers" prints the numbers on the bars; "noanswers" leaves
+# them out. ylim (xlim for "ex1") NULL = a fixed range for the handout
+# values. Handout sizes: "ex1" and "env" 6 x 4.5, "two_period" 9 x 4.
+# Returns open_two_period()'s list invisibly.
+draw_open_bars <- function(type = c("ex1", "two_period", "env"),
+                           version = c("answers", "noanswers"),
+                           s = 20, theta = 0.5, delta = 1, bAP = 6,
+                           bGHG = 12, a = 100, cH = 20, cF = 40, n = 10,
+                           lim = NULL, tick = NULL, fit_top = FALSE) {
+  type <- match.arg(type); version <- match.arg(version)
+  tutor <- version == "answers"
+  tp <- open_two_period(s = s, theta = theta, delta = delta, bAP = bAP,
+                        bGHG = bGHG, a = a, cH = cH, cF = cF, n = n)
+  tab <- tp$table
+  num <- function(x) if (tutor) open_signed(x) else ""
+
+  if (type == "ex1") {
+    d <- tp$d1
+    vals <- c(d[["CS_H"]], d[["PS_H"]], -d[["G_H"]], d[["CS_F"]],
+              d[["PS_F"]])
+    labs <- c("Home consumers", "Home producers", "Home government",
+              "Foreign consumers", "Foreign producers")
+    cols <- c(peib_cols["cs"], peib_cols["ps"], peib_cols["tax"],
+              peib_cols["cs"], peib_cols["ps"])
+    y <- c(6, 5, 4, 2, 1)                       # a gap between the countries
+    if (is.null(lim)) lim <- c(-1750, 1250)
+    if (is.null(tick)) tick <- 500
+    op <- par(mar = c(3.4, 8.2, if (fit_top) 0.6 else 1.5, 6.6), las = 1,
+              mgp = c(2.2, 0.6, 0))
+    on.exit(par(op))
+    plot(NA, xlim = lim, ylim = c(0.3, 6.7), xaxs = "i", yaxs = "i",
+         axes = FALSE, ann = FALSE)
+    at <- seq(ceiling(lim[1] / tick) * tick, lim[2], by = tick)
+    abline(v = at, col = "grey92")
+    axis(1, at = at, labels = format(at, trim = TRUE, big.mark = ","),
+         gap.axis = -1, cex.axis = 0.75)
+    title(xlab = "Change in welfare (period 1, subsidy versus free trade)",
+          line = 2.2, cex.lab = 0.9)
+    axis(2, at = y, labels = labs, tick = FALSE, cex.axis = 0.8, line = -0.6)
+    abline(v = 0, col = "grey20", lwd = 1.2)
+    h <- 0.32
+    rect(pmin(0, vals), y - h, pmax(0, vals), y + h,
+         col = firm_fill(cols, 0.8), border = NA)
+    if (tutor) {
+      off <- 0.012 * diff(lim)
+      # (text() takes one 'adj' per call: positive bars get their number
+      # right of the bar end, negative bars left of it)
+      for (i in seq_along(vals)) {
+        text(vals[i] + if (vals[i] >= 0) off else -off, y[i],
+             open_signed(vals[i]), adj = c(if (vals[i] >= 0) 0 else 1, 0.5),
+             cex = 0.78, font = 2, xpd = NA)
+      }
+    }
+    # Totals in the right margin: sums of the bars above, not extra bars
+    xr <- lim[2] + 0.02 * diff(lim)
+    tot <- c(tab["p1", "Home"], tab["p1", "Foreign"], tab["p1", "World"])
+    tl <- c(paste0("Home total\n", num(tot[1])),
+            paste0("Foreign total\n", num(tot[2])),
+            paste0("World total\n", num(tot[3])))
+    if (!tutor) tl <- c("Home total", "Foreign total", "World total")
+    segments(xr, 3.7, xr, 6.3, xpd = NA, col = "grey30")
+    segments(xr, 0.7, xr, 2.3, xpd = NA, col = "grey30")
+    text(xr + 0.02 * diff(lim), 5, tl[1], adj = c(0, 0.5), xpd = NA,
+         cex = 0.8, font = 2)
+    text(xr + 0.02 * diff(lim), 1.5, tl[2], adj = c(0, 0.5), xpd = NA,
+         cex = 0.8, font = 2)
+    text(xr + 0.02 * diff(lim), 3, tl[3], adj = c(0, 0.5), xpd = NA,
+         cex = 0.8, font = 2, col = "grey20")
+    return(invisible(tp))
+  }
+
+  if (type == "two_period") {
+    if (is.null(lim)) lim <- c(-300, 300)
+    if (is.null(tick)) tick <- 50
+    cols <- c(peib_cols["tvc"], peib_cols["tr"], peib_cols["atc"])
+    p2lab <- if (abs(delta - 1) < 1e-9) "Period 2" else
+      paste0("Period 2\n(x ", chain_fmt(delta), ")")
+    xl <- c("Period 1", p2lab, "Total")
+    op <- par(mfrow = c(1, 3), oma = c(0, 0, 0, 0),
+              mar = c(3.6, 3.8, 1.6, 0.6), mgp = c(2.4, 0.55, 0), las = 1)
+    on.exit(par(op))
+    for (j in c("Home", "Foreign", "World")) {
+      v <- tab[c("p1", "p2", "total"), j]
+      plot(NA, xlim = c(0.4, 3.6), ylim = lim, xaxs = "i", yaxs = "i",
+           axes = FALSE, ann = FALSE)
+      at <- seq(ceiling(lim[1] / tick) * tick, lim[2], by = tick)
+      abline(h = at, col = "grey92")
+      axis(2, at = at, labels = format(at, trim = TRUE, big.mark = ","),
+           gap.axis = -1, cex.axis = 0.75)
+      axis(1, at = 1:3, labels = xl, tick = FALSE, cex.axis = 0.8,
+           padj = 0.5, line = -0.3)
+      box(bty = "l")
+      title(ylab = "Change in welfare", line = 2.6, cex.lab = 0.9)
+      mtext(j, side = 3, line = 0.35, font = 2, cex = 0.85)
+      abline(h = 0, col = "grey20", lwd = 1.2)
+      vv <- pmin(pmax(v, lim[1]), lim[2])     # bars cut at the axis limits
+      rect(1:3 - 0.32, pmin(0, vv), 1:3 + 0.32, pmax(0, vv),
+           col = firm_fill(cols, 0.85), border = NA)
+      if (tutor) {
+        dy <- 0.03 * diff(lim)
+        for (i in 1:3) {
+          yy <- vv[i] + if (v[i] >= 0) dy else -dy
+          yy <- min(max(yy, lim[1] + dy), lim[2] - dy)
+          text(i, yy, open_signed(v[i]), cex = 0.8, font = 2)
+        }
+      }
+    }
+    return(invisible(tp))
+  }
+
+  # type == "env": waterfall for the world
+  if (is.null(lim)) lim <- c(-200, 400)
+  if (is.null(tick)) tick <- 50
+  steps <- c(tab["p1", "World"], tab["p2", "World"], tab["env_ap", "World"],
+             tab["env_ghg", "World"])
+  ends <- cumsum(steps); starts <- c(0, ends[-4])
+  total <- ends[4]
+  labs <- c("Period 1:\nsubsidy", "Period 2:\nlearning", "Air pollution\navoided",
+            "Climate\n(GHG) avoided", "Total")
+  cols <- c(peib_cols["tvc"], peib_cols["tr"], peib_cols["tax"],
+            peib_cols["tax"], peib_cols["atc"])
+  op <- par(mar = c(4.2, 4.2, if (fit_top) 0.6 else 1.5, 1), las = 1,
+            mgp = c(2.6, 0.55, 0))
+  on.exit(par(op))
+  plot(NA, xlim = c(0.4, 5.6), ylim = lim, xaxs = "i", yaxs = "i",
+       axes = FALSE, ann = FALSE)
+  at <- seq(ceiling(lim[1] / tick) * tick, lim[2], by = tick)
+  abline(h = at, col = "grey92")
+  axis(2, at = at, labels = format(at, trim = TRUE, big.mark = ","),
+       gap.axis = -1, cex.axis = 0.8)
+  axis(1, at = 1:5, labels = labs, tick = FALSE, cex.axis = 0.78, padj = 0.6,
+       line = -0.2, gap.axis = -1)
+  box(bty = "l")
+  title(ylab = "Change in world welfare", cex.lab = 0.9)
+  abline(h = 0, col = "grey20", lwd = 1.2)
+  lo <- c(pmin(starts, ends), min(0, total))
+  hi <- c(pmax(starts, ends), max(0, total))
+  rect(1:5 - 0.32, lo, 1:5 + 0.32, hi, col = firm_fill(cols, 0.85),
+       border = NA)
+  # hatching on the climate bar keeps it apart from the air-pollution bar
+  rect(4 - 0.32, lo[4], 4 + 0.32, hi[4], density = 18, angle = 45,
+       col = "white", border = NA)
+  # connectors between the steps
+  for (i in 1:4) segments(i + 0.32, ends[i], i + 1 - 0.32, ends[i],
+                          lty = 3, col = "grey40")
+  if (tutor) {
+    vals <- c(steps, total)
+    dy <- 0.03 * diff(lim)
+    for (i in 1:5) {
+      yy <- if (vals[i] >= 0) hi[i] + dy else lo[i] - dy
+      text(i, yy, open_signed(vals[i]), cex = 0.8, font = 2)
+    }
+  }
+  invisible(tp)
 }

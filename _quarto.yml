@@ -23,6 +23,8 @@ website:
             text: "Tutorial 2 - Linked markets, pass-through and welfare"
           - href: tutorials/tutorial03_subsidy.qmd
             text: "Tutorial 3 - Subsidies, welfare and learning-by-doing"
+          - href: tutorials/tutorial04_open_economy.qmd
+            text: "Tutorial 4 - Trade, national subsidies and welfare across borders"
   page-footer:
     center: "UCL SSEES - Florian Münch - 2026/27"
 
