@@ -26,3 +26,6 @@ Latex slides/PEIB/*.out
 Latex slides/PEIB/*.snm
 Latex slides/PEIB/*.toc
 Latex slides/PEIB/*.synctex.gz
+
+# Student personal data (names, numbers, emails): never commit
+code/group_allocation_26_27.do
