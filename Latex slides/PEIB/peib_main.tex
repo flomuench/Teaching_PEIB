@@ -17,6 +17,13 @@
 % Week 3 (26 frames, no answer frames: model responses stay text):
 %   py "$HOME/.claude/skills/latex-teaching/scripts/build.py" peib_main.tex --runs 1 --frames w3_setup_tc,w3_setup_demand,w3_wt1_mc,w3_wt1_rule,w3_wt2_equilibrium,w3_wt2_cs_def,w3_wt2_ps_def,w3_wt2_welfare,w3_wt2_ts,w3_cs_step1,w3_cs_step2,w3_cs_step3,w3_cs_step4,w3_cs_step5,w3_cs_step6,w3_learning_curve,w3_production,w3_production_log,w3_production_spill,w3_cost_E,w3_wt3_experience,w3_wt3_cost,w3_wt4_supply,w3_wt5_ledger,w3_appA_incidence,w3_appA_example
 %   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main_frames.pdf --out png/week3 --size-factor 0.83 --names w3_setup_tc,w3_setup_demand,w3_wt1_mc,w3_wt1_rule,w3_wt2_equilibrium,w3_wt2_cs_def,w3_wt2_ps_def,w3_wt2_welfare,w3_wt2_ts,w3_cs_step1,w3_cs_step2,w3_cs_step3,w3_cs_step4,w3_cs_step5,w3_cs_step6,w3_learning_curve,w3_production,w3_production_log,w3_production_spill,w3_cost_E,w3_wt3_experience,w3_wt3_cost,w3_wt4_supply,w3_wt5_ledger,w3_appA_incidence,w3_appA_example
+% Week 5 (50 frames = 29 EQ blocks of build_seminar5.py, split into _a/_b/_c
+% where taller than about 12 lines, plus _student variants of EQ 1.6 and B.2;
+% lead-ins and equations together, the builder inserts the PNGs itself).
+% Export uncropped, then crop to a common width (same left edge in Word):
+%   py "$HOME/.claude/skills/latex-teaching/scripts/build.py" peib_main.tex --runs 1 --frames w5_eq_1_1a,w5_eq_1_2a,w5_eq_1_2c,w5_eq_1_1b,w5_eq_1_2b,w5_eq_1_2d,w5_eq_1_3_a,w5_eq_1_3_b,w5_eq_1_4,w5_eq_1_5,w5_eq_1_6,w5_eq_1_6_student,w5_eq_1_7_a,w5_eq_1_7_b,w5_eq_2_1_a,w5_eq_2_1_b,w5_eq_2_2_a,w5_eq_2_2_b,w5_eq_2_3_a,w5_eq_2_3_b,w5_eq_2_3_c,w5_eq_2_4_a,w5_eq_2_4_b,w5_eq_2_5_a,w5_eq_2_5_b,w5_eq_2_6a_a,w5_eq_2_6a_b,w5_eq_2_6b_a,w5_eq_2_6b_b,w5_eq_2_6b_c,w5_eq_2_7a,w5_eq_2_7b_a,w5_eq_2_7b_b,w5_eq_2_8_a,w5_eq_2_8_b,w5_eq_a_0_a,w5_eq_a_0_b,w5_eq_a_1_a,w5_eq_a_1_b,w5_eq_a_2,w5_eq_a_3_a,w5_eq_a_3_b,w5_eq_a_4_a,w5_eq_a_4_b,w5_eq_b_1,w5_eq_b_2_a,w5_eq_b_2_b,w5_eq_b_2_student,w5_eq_b_3_a,w5_eq_b_3_b
+%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" peib_main_frames.pdf --no-crop --out png/week5_raw --size-factor 0.83 --names w5_eq_1_1a,w5_eq_1_2a,w5_eq_1_2c,w5_eq_1_1b,w5_eq_1_2b,w5_eq_1_2d,w5_eq_1_3_a,w5_eq_1_3_b,w5_eq_1_4,w5_eq_1_5,w5_eq_1_6,w5_eq_1_6_student,w5_eq_1_7_a,w5_eq_1_7_b,w5_eq_2_1_a,w5_eq_2_1_b,w5_eq_2_2_a,w5_eq_2_2_b,w5_eq_2_3_a,w5_eq_2_3_b,w5_eq_2_3_c,w5_eq_2_4_a,w5_eq_2_4_b,w5_eq_2_5_a,w5_eq_2_5_b,w5_eq_2_6a_a,w5_eq_2_6a_b,w5_eq_2_6b_a,w5_eq_2_6b_b,w5_eq_2_6b_c,w5_eq_2_7a,w5_eq_2_7b_a,w5_eq_2_7b_b,w5_eq_2_8_a,w5_eq_2_8_b,w5_eq_a_0_a,w5_eq_a_0_b,w5_eq_a_1_a,w5_eq_a_1_b,w5_eq_a_2,w5_eq_a_3_a,w5_eq_a_3_b,w5_eq_a_4_a,w5_eq_a_4_b,w5_eq_b_1,w5_eq_b_2_a,w5_eq_b_2_b,w5_eq_b_2_student,w5_eq_b_3_a,w5_eq_b_3_b
+%   py crop_common.py png/week5_raw png/week5   (Claude outputs/Week5/Tutorial/latex/scripts/; then delete png/week5_raw)
 % Compile one week only: uncomment the matching \includeonlyframes line below.
 %
 % Student vs tutor version: frames inside \ifnum\showanswers=1 (labels
@@ -104,6 +111,7 @@
 
 % SELECTIVE COMPILATION: uncomment one line to build a single week
 % \includeonlyframes{w2_ans_q11,w2_ans_q12a,w2_ans_q12b,w2_wt1_firm,w2_wt1_industry,w2_wt2_innovation,w2_wt3_equilibrium,w2_wt3_welfare,w2_ans_q21a,w2_ans_q21b,w2_ans_q22a,w2_ans_q22c,w2_ans_q22b,w2_wt4_elasticity,w2_ans_q23a,w2_ans_q23c,w2_wt5_firm,w2_wt5_industry,w2_ans_q31b,w2_wt6_derived,w2_ans_q32a,w2_ans_q32b,w2_ans_q32n1,w2_ans_q32n2,w2_wt7_chain,w2_ans_q33a0,w2_ans_q33a1,w2_ans_q33b,w2_ans_q33c,w2_ans_q33c1,w2_ans_q33c2,w2_appA_forms,w2_appC_passthrough,w2_appC_derived}
+% \includeonlyframes{w5_eq_1_1a,w5_eq_1_2a,w5_eq_1_2c,w5_eq_1_1b,w5_eq_1_2b,w5_eq_1_2d,w5_eq_1_3_a,w5_eq_1_3_b,w5_eq_1_4,w5_eq_1_5,w5_eq_1_6,w5_eq_1_6_student,w5_eq_1_7_a,w5_eq_1_7_b,w5_eq_2_1_a,w5_eq_2_1_b,w5_eq_2_2_a,w5_eq_2_2_b,w5_eq_2_3_a,w5_eq_2_3_b,w5_eq_2_3_c,w5_eq_2_4_a,w5_eq_2_4_b,w5_eq_2_5_a,w5_eq_2_5_b,w5_eq_2_6a_a,w5_eq_2_6a_b,w5_eq_2_6b_a,w5_eq_2_6b_b,w5_eq_2_6b_c,w5_eq_2_7a,w5_eq_2_7b_a,w5_eq_2_7b_b,w5_eq_2_8_a,w5_eq_2_8_b,w5_eq_a_0_a,w5_eq_a_0_b,w5_eq_a_1_a,w5_eq_a_1_b,w5_eq_a_2,w5_eq_a_3_a,w5_eq_a_3_b,w5_eq_a_4_a,w5_eq_a_4_b,w5_eq_b_1,w5_eq_b_2_a,w5_eq_b_2_b,w5_eq_b_2_student,w5_eq_b_3_a,w5_eq_b_3_b}
 
 \begin{document}
 
@@ -1287,6 +1295,692 @@
     \item $b = d = 1$ and $s = 20$, as in Question 2.3
     \item With $s < 0$ the same formulas describe a per-unit tax
   \end{itemize}
+\end{frame}
+
+%========================
+% WEEK 5: Complementary investments, FDI and linkages (Tutorial 5).
+% Source: build_seminar5.py (2 Nov 2026, 19:10), one frame per EQ block
+% (tags EQ 1.1a ... EQ B.3), split into _a, _b, _c where a block is taller
+% than about 12 lines; _student = variant for the version without responses
+% (EQ 1.6, EQ B.2). Each frame reproduces the WHOLE block: lead-in sentences
+% as left-aligned text, each equation on its own indented line beneath its
+% lead-in, so that the picture replaces the tag AND the text lines in Word
+% (text or picture, never both). The builder inserts the PNGs itself
+% (--eqdir png/week5). Text block widened to 12 cm (environment wfive) so the
+% lead-ins wrap less; export with --size-factor 0.83 as for weeks 2-3.
+% Frames of model responses (EQ 1.4, 1.5, 1.7, 2.7b, A.4, w5_eq_1_6, w5_eq_b_2_a/_b)
+% are used only in the versions with responses; no \showanswers toggle needed.
+%========================
+\section{Week 5}
+
+% Week 5 layout helpers: wfive = 12 cm text block in \Large; \wfl = lead-in
+% line; \wfe = equation line indented 1 cm; \wfc = equation with the
+% bracketed operation of the appendix style (continuation lines indented a
+% further 1 cm); \wft = indented text line.
+\newenvironment{wfive}{\noindent\hspace*{-0.6cm}\begin{minipage}{12cm}\Large\raggedright\setlength{\parindent}{0pt}}{\end{minipage}\hspace*{-0.6cm}}
+\newcommand{\wfl}[1]{\par #1\par\nobreak\vspace{3pt}}
+\newcommand{\wfe}[1]{{\par\leftskip=1cm\relax $\displaystyle #1$\par}\vspace{8pt}}
+\newcommand{\wfc}[2]{{\par\leftskip=1cm\relax\hangindent=1cm\hangafter=1 $\displaystyle #1$\quad #2\par}\vspace{5pt}}
+\newcommand{\wft}[1]{{\par\leftskip=1cm\relax #1\par}\vspace{5pt}}
+
+% --- EQ 1.1a [w5_eq_1_1a]: Ex 1 A, Hydrogen market (after 'read off the conventional supply curve:')
+% Hand check: given: Q_H^D = 10; P_H^S = 40 + Q_H/2 (Table 1)
+\begin{frame}[plain,label=w5_eq_1_1a]
+  \begin{wfive}
+    \wfl{Demand of the other users, fixed at 10 units:}
+    \wfe{Q_H^D = 10}
+    \wfl{Conventional hydrogen supply (industry marginal cost, Table~1):}
+    \wfe{P_H^S = 40 + \tfrac12Q_H}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.2a [w5_eq_1_2a]: Ex 1 A, Hydrogen market, directly after EQ 1.1a
+% Hand check: 40 + 0.5*10 = 45
+\begin{frame}[plain,label=w5_eq_1_2a]
+  \begin{wfive}
+    \wfl{Insert the fixed quantity into hydrogen supply to get the price:}
+    \wfe{P_H^0 = 40 + \tfrac12 \times 10 = 45}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.2c [w5_eq_1_2c]: Ex 1 A, Hydrogen market, directly after EQ 1.2a
+% Hand check: 0.5*10*(45 - 40) = 25
+\begin{frame}[plain,label=w5_eq_1_2c]
+  \begin{wfive}
+    \wfl{Producer surplus is the triangle above the supply curve and below the price (Tutorial~1): half the quantity times the gap between the price and the supply intercept, first in general terms:}
+    \wfe{PS_H^0 = \tfrac12 \times Q_H^0 \times (P_H^0 - 40)}
+    \wfl{Then with the numbers of the status quo:}
+    \wfe{PS_H^0 = \tfrac12 \times 10 \times (45 - 40) = 25}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.1b [w5_eq_1_1b]: Ex 1 A, Steel market (after 'the equilibrium is where the two meet.')
+% Hand check: given: P_S^D = 100 - Q_S; P_S^S = 60 + Q_S
+\begin{frame}[plain,label=w5_eq_1_1b]
+  \begin{wfive}
+    \wfl{Steel demand:}
+    \wfe{P_S^D = 100 - Q_S}
+    \wfl{Conventional steel supply (industry marginal cost, Table~1):}
+    \wfe{P_S^S = 60 + Q_S}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.2b [w5_eq_1_2b]: Ex 1 A, Steel market, directly after EQ 1.1b
+% Hand check: 100 - Q = 60 + Q; 40 = 2Q; Q = 20; P = 100 - 20 = 80 (supply: 60 + 20 = 80)
+\begin{frame}[plain,label=w5_eq_1_2b]
+  \begin{wfive}
+    \wfl{In equilibrium the price on the demand curve equals the price on the supply curve, so set the two equal:}
+    \wfe{100 - Q_S = 60 + Q_S}
+    \wfl{Add $Q_S$ and subtract 60 on both sides, to collect the quantity on one side:}
+    \wfe{40 = 2Q_S}
+    \wfl{Divide by 2 to get the equilibrium quantity:}
+    \wfe{Q_S^0 = 20}
+    \wfl{Insert the quantity into steel demand to get the price:}
+    \wfe{P_S^0 = 100 - 20 = 80}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.2d [w5_eq_1_2d]: Ex 1 A, Steel market, before Table 2
+% Hand check: 0.5*20*(80 - 60) = 200
+\begin{frame}[plain,label=w5_eq_1_2d]
+  \begin{wfive}
+    \wfl{Steel's producer surplus is the same triangle, now above the steel supply curve:}
+    \wfe{PS_S^0 = \tfrac12 \times Q_S^0 \times (P_S^0 - 60)}
+    \wfl{With the numbers:}
+    \wfe{PS_S^0 = \tfrac12 \times 20 \times (80 - 60) = 200}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.3 [w5_eq_1_3_a]: Ex 1 B, Walkthrough 1 (after '... battery market in Tutorial 2 (Walkthrough 6).')
+% Hand check: 100 - Q_S = 10 + Q_S + P_H; P_H = 90 - 2Q_S; with Q_S = Q_H - 10: 90 - 2(Q_H - 10)
+\begin{frame}[plain,label=w5_eq_1_3_a]
+  \begin{wfive}
+    \wfl{Set steel demand equal to the new steel supply, which contains the hydrogen price:}
+    \wfe{100 - Q_S = 10 + Q_S + P_H}
+    \wfl{Subtract $10 + Q_S$ on both sides, to get the hydrogen price steel makers can afford at each steel quantity:}
+    \wfe{P_H = 90 - 2Q_S}
+    \wfl{Replace the steel quantity by the hydrogen quantity it implies, $Q_S = Q_H - 10$ (the other users keep buying 10 units):}
+    \wfe{P_H = 90 - 2(Q_H - 10)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.3 [w5_eq_1_3_b]: Ex 1 B, Walkthrough 1, directly after w5_eq_1_3_a
+% Hand check: 90 - 2Q_H + 20 = 110 - 2Q_H; Q_H >= 10 branch
+\begin{frame}[plain,label=w5_eq_1_3_b]
+  \begin{wfive}
+    \wfl{Multiply out the bracket:}
+    \wfe{P_H = 90 - 2Q_H + 20}
+    \wfl{Collect the constants; this is the derived demand for hydrogen, valid for $Q_H \ge 10$:}
+    \wfe{P_H^D = 110 - 2Q_H}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.4 [w5_eq_1_4]: Ex 1 C, Question 1.2 model response (a) [responses only]
+% Hand check: 110 - 2Q = 5 + Q/2; 105 = 2.5Q; Q = 42; P = 5 + 21 = 26; 110 - 84 = 26
+\begin{frame}[plain,label=w5_eq_1_4]
+  \begin{wfive}
+    \wfl{Set derived demand equal to green-hydrogen supply:}
+    \wfe{110 - 2Q_H = 5 + \tfrac12Q_H}
+    \wfl{Add $2Q_H$ and subtract 5 on both sides:}
+    \wfe{105 = 2\tfrac12Q_H}
+    \wfl{Divide by $2\tfrac12$ to get the equilibrium quantity:}
+    \wfe{Q_H^1 = 42}
+    \wfl{Insert $Q_H^1 = 42$ into hydrogen supply to get the price:}
+    \wfe{P_H^1 = 5 + \tfrac12 \times 42 = 26}
+    \wfl{Check with demand, which must give the same price:}
+    \wfe{P_H^1 = 110 - 2 \times 42 = 26}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.5 [w5_eq_1_5]: Ex 1 C, Question 1.3 model response (a) [responses only]
+% Hand check: 10 + 26 = 36; 100 - Q = 36 + Q; 64 = 2Q; Q = 32; P = 68
+\begin{frame}[plain,label=w5_eq_1_5]
+  \begin{wfive}
+    \wfl{Insert $P_H = 26$ into steel's new supply curve:}
+    \wfe{P_S^S = 10 + Q_S + 26 = 36 + Q_S}
+    \wfl{Set steel demand equal to this supply:}
+    \wfe{100 - Q_S = 36 + Q_S}
+    \wfl{Add $Q_S$ and subtract 36 on both sides:}
+    \wfe{64 = 2Q_S}
+    \wfl{Divide by 2 to get the steel quantity:}
+    \wfe{Q_S^1 = 32}
+    \wfl{Insert $Q_S^1 = 32$ into steel demand to get the price:}
+    \wfe{P_S^1 = 100 - 32 = 68}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.6 [w5_eq_1_6]: Ex 1 D, after 'With joint investment:' [versions with responses]
+% Hand check: 0.5*42*(26 - 5) = 441; 0.5*32*(68 - 36) = 512
+\begin{frame}[plain,label=w5_eq_1_6]
+  \begin{wfive}
+    \wfl{Hydrogen: the triangle above the green-hydrogen supply curve (intercept 5) below the price, in general terms:}
+    \wfe{PS_H^1 = \tfrac12 \times Q_H^1 \times (P_H^1 - 5)}
+    \wfl{With the numbers of Question~1.2:}
+    \wfe{PS_H^1 = \tfrac12 \times 42 \times (26 - 5) = 441}
+    \wfl{Steel: the triangle above the hydrogen-based supply curve (intercept 36) below the price:}
+    \wfe{PS_S^1 = \tfrac12 \times Q_S^1 \times (P_S^1 - 36)}
+    \wfl{With the numbers of Question~1.3:}
+    \wfe{PS_S^1 = \tfrac12 \times 32 \times (68 - 36) = 512}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.6 [w5_eq_1_6_student]: Ex 1 D, after 'With joint investment:' [--student only; results given, no substitution]
+% Hand check: 441 and 512 given by design (spec); intercept 10 + P_H^1 = 36 not printed
+\begin{frame}[plain,label=w5_eq_1_6_student]
+  \begin{wfive}
+    \wfl{Hydrogen: the triangle above the green-hydrogen supply curve (intercept 5) below the price, in general terms:}
+    \wfe{PS_H^1 = \tfrac12 \times Q_H^1 \times (P_H^1 - 5)}
+    \wfl{With the numbers of Question~1.2 this gives:}
+    \wfe{PS_H^1 = 441}
+    \wfl{Steel: the triangle above the hydrogen-based supply curve below the price:}
+    \wfe{PS_S^1 = \tfrac12 \times Q_S^1 \times \bigl(P_S^1 - (10 + P_H^1)\bigr)}
+    \wfl{With the numbers of Question~1.3 this gives:}
+    \wfe{PS_S^1 = 512}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.7 [w5_eq_1_7_a]: Ex 1 D, Question 1.4 model response (a) [responses only]
+% Hand check: 441 - 180 = 261; 512 - 150 = 362
+\begin{frame}[plain,label=w5_eq_1_7_a]
+  \begin{wfive}
+    \wfl{Hydrogen: subtract its own fixed cost of 180:}
+    \wfe{\Pi_H^1 = PS_H^1 - FC_H = 441 - 180 = 261}
+    \wfl{Steel: subtract its own fixed cost of 150:}
+    \wfe{\Pi_S^1 = PS_S^1 - FC_S = 512 - 150 = 362}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 1.7 [w5_eq_1_7_b]: Ex 1 D, Question 1.4 model response, after the (b) sentence [responses only]
+% Hand check: 261 - 25 = 236; 362 - 200 = 162
+\begin{frame}[plain,label=w5_eq_1_7_b]
+  \begin{wfive}
+    \wfl{Hydrogen, against the status quo of 25:}
+    \wfe{\Delta \Pi_H = 261 - 25 = +236}
+    \wfl{Steel, against the status quo of 200:}
+    \wfe{\Delta \Pi_S = 362 - 200 = +162}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.1 [w5_eq_2_1_a]: Ex 2 A, Walkthrough 2, 'Upstream: from the supplier's cost function to industry supply.'
+% Hand check: d/dq (20q + 5q^2) = 20 + 10q; P_U = 20 + 10q; P_U - 20 = 10q
+\begin{frame}[plain,label=w5_eq_2_1_a]
+  \begin{wfive}
+    \wfl{Each local supplier $i$ has the total variable cost:}
+    \wfe{TC_{U,i} = 20q_i + 5q_i^2}
+    \wfl{Its marginal cost is the derivative of total cost with respect to its own output:}
+    \wfe{MC_{U,i} = 20 + 10q_i}
+    \wfl{A price-taking firm produces where price equals marginal cost:}
+    \wfe{P_U = 20 + 10q_i}
+    \wfl{Subtract 20 on both sides:}
+    \wfe{P_U - 20 = 10q_i}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.1 [w5_eq_2_1_b]: Ex 2 A, Walkthrough 2, directly after w5_eq_2_1_a
+% Hand check: q = (P_U - 20)/10; Q = 10q = P_U - 20; P_U = 20 + Q
+\begin{frame}[plain,label=w5_eq_2_1_b]
+  \begin{wfive}
+    \wfl{Divide by 10 to get the firm's supply, its output at each price:}
+    \wfe{q_i^s = \frac{P_U - 20}{10}}\vspace{4pt}
+    \wfl{Multiply by the 10 identical firms to get industry supply:}
+    \wfe{Q_U^s = 10 \times \frac{P_U - 20}{10}}\vspace{4pt}
+    \wfl{Cancel the 10:}
+    \wfe{Q_U^s = P_U - 20}
+    \wfl{Add 20 on both sides to write supply with the price on the left (inverse form, as drawn in the diagram):}
+    \wfe{P_U^s = 20 + Q_U}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.2 [w5_eq_2_2_a]: Ex 2 A, Walkthrough 2, 'Downstream: from the plant's cost function to industry supply.'
+% Hand check: d/dq ((80 + P_U)q + 5q^2) = 80 + P_U + 10q
+\begin{frame}[plain,label=w5_eq_2_2_a]
+  \begin{wfive}
+    \wfl{Each domestic chip plant $i$ has other costs of 80 per chip plus the input, and a rising component, so its total variable cost is:}
+    \wfe{TC_{D,i}^0 = (80 + P_U) q_i + 5q_i^2}
+    \wfl{Its marginal cost, the derivative with respect to $q_i$:}
+    \wfe{MC_{D,i}^0 = 80 + P_U + 10q_i}
+    \wfl{Price equals marginal cost:}
+    \wfe{P_D = 80 + P_U + 10q_i}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.2 [w5_eq_2_2_b]: Ex 2 A, Walkthrough 2, directly after w5_eq_2_2_a
+% Hand check: q = (P_D - 80 - P_U)/10; Q = P_D - 80 - P_U; P_D = 80 + P_U + Q
+\begin{frame}[plain,label=w5_eq_2_2_b]
+  \begin{wfive}
+    \wfl{Subtract $80 + P_U$ on both sides and divide by 10 to get the plant's supply:}
+    \wfe{q_i^s = \frac{P_D - 80 - P_U}{10}}\vspace{4pt}
+    \wfl{Multiply by the 10 identical plants and cancel the 10:}
+    \wfe{Q_D^s = P_D - 80 - P_U}
+    \wfl{Add $80 + P_U$ on both sides for the inverse form; this supply curve shifts with the input price:}
+    \wfe{P_D^{s,0} = 80 + P_U + Q_D}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.3 [w5_eq_2_3_a]: Ex 2 A, Walkthrough 2, 'The derived demand for local inputs and the equilibrium.'
+% Hand check: 160 - Q = 80 + P_U + Q; P_U = 80 - 2Q_D; Q_U = Q_D
+\begin{frame}[plain,label=w5_eq_2_3_a]
+  \begin{wfive}
+    \wfl{Chip demand of the device makers:}
+    \wfe{P_D^d = 160 - Q_D}
+    \wfl{In the chip market the price on the demand curve equals the price on the supply curve, so set the two equal:}
+    \wfe{160 - Q_D = 80 + P_U + Q_D}
+    \wfl{Subtract $80 + Q_D$ on both sides to get the input price the plants can afford at each chip output:}
+    \wfe{P_U = 80 - 2Q_D}
+    \wfl{Every chip needs one local input, so $Q_U = Q_D$; replace $Q_D$ by $Q_U$ to get the derived demand for local inputs:}
+    \wfe{P_U^{d,0} = 80 - 2Q_U}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.3 [w5_eq_2_3_b]: Ex 2 A, Walkthrough 2, directly after w5_eq_2_3_a
+% Hand check: 80 - 2Q = 20 + Q; 60 = 3Q; Q = 20
+\begin{frame}[plain,label=w5_eq_2_3_b]
+  \begin{wfive}
+    \wfl{Set derived demand equal to upstream supply to clear the input market:}
+    \wfe{80 - 2Q_U = 20 + Q_U}
+    \wfl{Add $2Q_U$ and subtract 20 on both sides:}
+    \wfe{60 = 3Q_U}
+    \wfl{Divide by 3 to get the input quantity:}
+    \wfe{Q_U^0 = 20}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.3 [w5_eq_2_3_c]: Ex 2 A, Walkthrough 2, directly after w5_eq_2_3_b
+% Hand check: Q_D = 20; P_U = 20 + 20 = 40; P_D = 160 - 20 = 140 (supply: 80 + 40 + 20 = 140)
+\begin{frame}[plain,label=w5_eq_2_3_c]
+  \begin{wfive}
+    \wfl{One input per chip, so chip output equals the input quantity:}
+    \wfe{Q_D^0 = 20}
+    \wfl{Insert $Q_U^0$ into upstream supply for the input price:}
+    \wfe{P_U^0 = 20 + 20 = 40}
+    \wfl{Insert $Q_D^0$ into chip demand for the chip price:}
+    \wfe{P_D^0 = 160 - 20 = 140}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.4 [w5_eq_2_4_a]: Ex 2 A, Walkthrough 2, 'Welfare before FDI.'
+% Hand check: 0.5*(160 - 140)*20 = 200; 0.5*(40 - 20)*20 = 200
+\begin{frame}[plain,label=w5_eq_2_4_a]
+  \begin{wfive}
+    \wfl{Buyer surplus of the device makers, the triangle under chip demand (intercept 160) above the chip price:}
+    \wfe{CS_D = \tfrac12 \times (160 - P_D) \times Q_D}
+    \wfl{With the numbers:}
+    \wfe{CS_D^0 = \tfrac12 \times (160 - 140) \times 20 = 200}
+    \wfl{Producer surplus of the local suppliers, the triangle above upstream supply (intercept 20) below the input price:}
+    \wfe{PS_U = \tfrac12 \times (P_U - 20) \times Q_U}
+    \wfl{With the numbers:}
+    \wfe{PS_U^0 = \tfrac12 \times (40 - 20) \times 20 = 200}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.4 [w5_eq_2_4_b]: Ex 2 A, Walkthrough 2, directly after w5_eq_2_4_a
+% Hand check: 80 + 40 = 120; 0.5*(140 - 120)*20 = 200; 200 + 200 + 200 = 600; W_F^0 = 0
+\begin{frame}[plain,label=w5_eq_2_4_b]
+  \begin{wfive}
+    \wfl{Producer surplus of the plants, the triangle above downstream supply (intercept $80 + P_U$) below the chip price:}
+    \wfe{PS_D = \tfrac12 \times \bigl(P_D - (80 + P_U)\bigr) \times Q_D}
+    \wfl{With the numbers (intercept $80 + 40 = 120$):}
+    \wfe{PS_D^0 = \tfrac12 \times (140 - 120) \times 20 = 200}
+    \wfl{Before FDI all three groups are domestic, so Home's welfare is their sum:}
+    \wfe{W_H^0 = CS_D^0 + PS_U^0 + PS_D^0 = 200 + 200 + 200 = 600}
+    \wfl{Nothing is produced for Home abroad, so Foreign's welfare from this value chain is:}
+    \wfe{W_F^0 = 0}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.5 [w5_eq_2_5_a]: Ex 2 B, Walkthrough 3, after Table 6
+% Hand check: MC = d/dq of TC = 20 + lambda P_U + (1 - lambda) P_M + 10q
+\begin{frame}[plain,label=w5_eq_2_5_a]
+  \begin{wfive}
+    \wfl{With the lower other costs and the input price of the source it uses, a foreign-owned plant's total variable cost is:}
+    \wfe{TC_{D,i}^{FDI} = \bigl[20 + \lambda P_U + (1 - \lambda) P_M\bigr] q_i + 5q_i^2}
+    \wfl{Its marginal cost:}
+    \wfe{MC_{D,i}^{FDI} = 20 + \lambda P_U + (1 - \lambda) P_M + 10q_i}
+    \wfl{Price equals marginal cost:}
+    \wfe{P_D = 20 + \lambda P_U + (1 - \lambda) P_M + 10q_i}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.5 [w5_eq_2_5_b]: Ex 2 B, Walkthrough 3, directly after w5_eq_2_5_a
+% Hand check: q = [P_D - intercept]/10; Q = 10q; P_D = intercept + Q
+\begin{frame}[plain,label=w5_eq_2_5_b]
+  \begin{wfive}
+    \wfl{Subtract the intercept $20 + \lambda P_U + (1 - \lambda)P_M$ on both sides and divide by 10 for the plant's supply:}
+    \wfe{q_i^s = \frac{P_D - 20 - \lambda P_U - (1 - \lambda) P_M}{10}}\vspace{4pt}
+    \wfl{Multiply by the 10 plants, cancel the 10, and add the intercept on both sides for the inverse form:}
+    \wfe{P_D^{s,FDI} = 20 + \lambda P_U + (1 - \lambda) P_M + Q_D}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.6a [w5_eq_2_6a_a]: Ex 2 B, 'The two groups of suppliers.'
+% Hand check: Q_U + Q_M = Q_D; MC_U = d/dq((20 - tau)q + 5q^2) = 20 - tau + 10q
+\begin{frame}[plain,label=w5_eq_2_6a_a]
+  \begin{wfive}
+    \wfl{Each chip needs one input unit; the local suppliers sell them all if $\lambda = 1$ and none if $\lambda = 0$:}
+    \wfe{Q_U = \lambda Q_D}
+    \wfl{The rest is imported from the suppliers abroad:}
+    \wfe{Q_M = (1 - \lambda) Q_D}
+    \wfl{Knowledge transfer lowers every local supplier's cost intercept by $\tau$, so the supplier's total variable cost becomes:}
+    \wfe{TC_{U,i} = (20 - \tau) q_i + 5q_i^2}
+    \wfl{Its marginal cost:}
+    \wfe{MC_{U,i} = 20 - \tau + 10q_i}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.6a [w5_eq_2_6a_b]: Ex 2 B, directly after w5_eq_2_6a_a
+% Hand check: P_U = 20 - tau + Q_U (10 firms, as EQ 2.1); MC_M = 8 + 10q; P_M = 8 + Q_M
+\begin{frame}[plain,label=w5_eq_2_6a_b]
+  \begin{wfive}
+    \wfl{The same steps as for the upstream supply in Walkthrough 2 (price equals marginal cost, ten firms, inverse form; Appendix~B.1) give the local suppliers' industry supply after knowledge transfer:}
+    \wfe{P_U^s = 20 - \tau + Q_U}
+    \wfl{Each supplier abroad $i$ has the total variable cost:}
+    \wfe{TC_{M,i} = 8q_i + 5q_i^2}
+    \wfl{Its marginal cost:}
+    \wfe{MC_{M,i} = 8 + 10q_i}
+    \wfl{The same steps give the suppliers abroad's industry supply:}
+    \wfe{P_M^s = 8 + Q_M}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.6b [w5_eq_2_6b_a]: Ex 2 B, 'The first FDI scenario: an enclave that imports everything (lambda = 0).'
+% Hand check: 160 - Q = 20 + P_M + Q; P_M = 140 - 2Q_D; Q_M = Q_D
+\begin{frame}[plain,label=w5_eq_2_6b_a]
+  \begin{wfive}
+    \wfl{In the chip market, set chip demand equal to the plants' supply with imported inputs:}
+    \wfe{160 - Q_D = 20 + P_M + Q_D}
+    \wfl{Subtract $20 + Q_D$ on both sides to get the import price the plants can afford at each chip output:}
+    \wfe{P_M = 140 - 2Q_D}
+    \wfl{Every chip needs one imported input, $Q_M = Q_D$; replace $Q_D$ by $Q_M$ to get the derived demand for imported inputs:}
+    \wfe{P_M^d = 140 - 2Q_M}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.6b [w5_eq_2_6b_b]: Ex 2 B, directly after w5_eq_2_6b_a
+% Hand check: 140 - 2Q = 8 + Q; 132 = 3Q; Q_M = 44 = Q_D
+\begin{frame}[plain,label=w5_eq_2_6b_b]
+  \begin{wfive}
+    \wfl{Set derived demand equal to the suppliers abroad's supply:}
+    \wfe{140 - 2Q_M = 8 + Q_M}
+    \wfl{Add $2Q_M$ and subtract 8 on both sides:}
+    \wfe{132 = 3Q_M}
+    \wfl{Divide by 3:}
+    \wfe{Q_M = 44}
+    \wfl{One imported input per chip:}
+    \wfe{Q_D = 44}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.6b [w5_eq_2_6b_c]: Ex 2 B, directly after w5_eq_2_6b_b
+% Hand check: P_M = 8 + 44 = 52; P_D = 160 - 44 = 116 (supply: 20 + 52 + 44 = 116); Q_U = 0
+\begin{frame}[plain,label=w5_eq_2_6b_c]
+  \begin{wfive}
+    \wfl{Insert $Q_M$ into the suppliers abroad's supply for the import price:}
+    \wfe{P_M = 8 + 44 = 52}
+    \wfl{Insert $Q_D$ into chip demand for the chip price:}
+    \wfe{P_D = 160 - 44 = 116}
+    \wfl{The local suppliers sell nothing:}
+    \wfe{Q_U = 0}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.7a [w5_eq_2_7a]: Ex 2 C, before Question 2.2 (after '... the upstream condition (2) from the input market.')
+% Hand check: 160 - Q = 20 + P_U + Q; 160 = 20 + P_U + 2Q; 140 = 2Q + P_U (1); P_U = 8 + Q_D (2)
+\begin{frame}[plain,label=w5_eq_2_7a]
+  \begin{wfive}
+    \wfl{In the chip market, set chip demand equal to the plants' supply (Table~7, $\lambda = 1$):}
+    \wfe{160 - Q_D = 20 + P_U + Q_D}
+    \wfl{Add $Q_D$ on both sides:}
+    \wfe{160 = 20 + P_U + 2Q_D}
+    \wfl{Subtract 20 on both sides; this is the downstream condition (1):}
+    \wfe{140 = 2Q_D + P_U\qquad (1)}
+    \wfl{In the input market, local supply after knowledge transfer is $P_U = 8 + Q_U$, and every chip needs one local input, $Q_U = Q_D$; this is the upstream condition (2):}
+    \wfe{P_U = 8 + Q_D\qquad (2)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.7b [w5_eq_2_7b_a]: Ex 2 C, Question 2.2 model response (a) [responses only]
+% Hand check: 140 = 2Q + 8 + Q; 132 = 3Q; Q_D = 44
+\begin{frame}[plain,label=w5_eq_2_7b_a]
+  \begin{wfive}
+    \wfl{Insert (2) into (1):}
+    \wfe{140 = 2Q_D + 8 + Q_D}
+    \wfl{Subtract 8 on both sides:}
+    \wfe{132 = 2Q_D + Q_D}
+    \wfl{Collect the $Q_D$ terms:}
+    \wfe{132 = 3Q_D}
+    \wfl{Divide by 3:}
+    \wfe{Q_D = 44}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.7b [w5_eq_2_7b_b]: Ex 2 C, Question 2.2 model response, after the (b) sentence [responses only]
+% Hand check: P_U = 8 + 44 = 52; Q_U = 44; Q_M = 0; P_D = 160 - 44 = 116; 20 + 52 + 44 = 116
+\begin{frame}[plain,label=w5_eq_2_7b_b]
+  \begin{wfive}
+    \wfl{Input price from (2):}
+    \wfe{P_U = 8 + 44 = 52}
+    \wfl{Local inputs, one per chip:}
+    \wfe{Q_U = 44}
+    \wfl{Imported inputs, none with $\lambda = 1$:}
+    \wfe{Q_M = 0}
+    \wfl{Chip price from chip demand:}
+    \wfe{P_D = 160 - 44 = 116}
+    \wfl{Check: the plants' supply at $P_U = 52$ must give the same chip price:}
+    \wfe{P_D^{s,FDI} = 20 + 52 + 44 = 116}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.8 [w5_eq_2_8_a]: Ex 2 E, after the paragraph on surplus formulas and owners
+% Hand check: definitions; Pi_F = PS_D after FDI
+\begin{frame}[plain,label=w5_eq_2_8_a]
+  \begin{wfive}
+    \wfl{Home's welfare before FDI, all three groups domestic:}
+    \wfe{W_H^0 = CS_D + PS_U + PS_D}
+    \wfl{Home's welfare after FDI, the chip buyers and the local suppliers only:}
+    \wfe{W_H^{FDI} = CS_D + PS_U}
+    \wfl{The plants' operating profit after FDI, repatriated to Foreign:}
+    \wfe{\Pi_F^{FDI} = PS_D}
+  \end{wfive}
+\end{frame}
+
+% --- EQ 2.8 [w5_eq_2_8_b]: Ex 2 E, directly after w5_eq_2_8_a
+% Hand check: PS_M = triangle above 8 + Q_M below P_M; W_W = W_H + W_F
+\begin{frame}[plain,label=w5_eq_2_8_b]
+  \begin{wfive}
+    \wfl{The suppliers abroad's producer surplus, the triangle above $8 + Q_M$ below $P_M$:}
+    \wfe{PS_M = \tfrac12 \times (P_M - 8) \times Q_M}
+    \wfl{Foreign's welfare after FDI, the plant owners and the suppliers abroad:}
+    \wfe{W_F^{FDI} = \Pi_F^{FDI} + PS_M}
+    \wfl{World welfare, the sum of the two countries:}
+    \wfe{W_W = W_H + W_F}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.0 [w5_eq_a_0_a]: Appendix A.0, after '... Hydrogen, conventional technology:'
+% Hand check: d/dq(40q + 2.5q^2) = 40 + 5q; q = (P - 40)/5; Q = 10q = 2(P - 40); P = 40 + Q/2
+\begin{frame}[plain,label=w5_eq_a_0_a]
+  \begin{wfive}
+    \wfc{MC_{H,i} = 40 + 5q_{H,i}}{(derivative of $TC_{H,i} = 40q_{H,i} + 2\tfrac12q_{H,i}^2$)}
+    \wfc{P_H = 40 + 5q_{H,i}}{(price equals marginal cost)}
+    \wfc{q_{H,i}^S = \frac{P_H - 40}{5}}{(subtract 40, divide by 5)}\vspace{4pt}
+    \wfc{Q_H^S = 10 \times \frac{P_H - 40}{5} = 2(P_H - 40)}{(ten identical firms)}\vspace{4pt}
+    \wfc{P_H^S = 40 + \tfrac12Q_H}{(solve for the price: divide by 2, add 40)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.0 [w5_eq_a_0_b]: Appendix A.0, directly after w5_eq_a_0_a
+% Hand check: d/dq(60q + 5q^2) = 60 + 10q; q = (P - 60)/10; Q = P - 60; P = 60 + Q
+\begin{frame}[plain,label=w5_eq_a_0_b]
+  \begin{wfive}
+    \wfl{Green hydrogen: the same steps with intercept 5 instead of 40 give $P_H^S = 5 + \tfrac12Q_H$. Steel, conventional technology:}
+    \wfc{MC_{S,i} = 60 + 10q_{S,i}}{(derivative of $TC_{S,i} = 60q_{S,i} + 5q_{S,i}^2$)}
+    \wfc{P_S = 60 + 10q_{S,i}}{(price equals marginal cost)}
+    \wfc{q_{S,i}^S = \frac{P_S - 60}{10}}{(subtract 60, divide by 10)}\vspace{4pt}
+    \wfc{Q_S^S = 10 \times \frac{P_S - 60}{10} = P_S - 60}{(ten identical firms)}\vspace{4pt}
+    \wfc{P_S^S = 60 + Q_S}{(solve for the price: add 60)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.1 [w5_eq_a_1_a]: Appendix A.1 (after '... above supply below the price:')
+% Hand check: 40 + 5 = 45; 0.5*10*5 = 25; 100 - Q = 60 + Q; Q = 20; P = 80; 0.5*20*20 = 200
+\begin{frame}[plain,label=w5_eq_a_1_a]
+  \begin{wfive}
+    \wfe{Q_H^{00} = 10}
+    \wfe{P_H^{00} = 40 + \tfrac12 \times 10 = 45}
+    \wfe{PS_H^{00} = \tfrac12 \times 10 \times (45 - 40) = 25}
+    \wfl{Steel: set demand equal to the conventional supply:}
+    \wfe{100 - Q_S = 60 + Q_S}
+    \wfc{40 = 2Q_S}{(add $Q_S$ and subtract 60 on both sides)}
+    \wfc{Q_S^{00} = 20}{(divide by 2)}
+    \wfe{P_S^{00} = 100 - 20 = 80}
+    \wfe{PS_S^{00} = \tfrac12 \times 20 \times (80 - 60) = 200}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.1 [w5_eq_a_1_b]: Appendix A.1, directly after w5_eq_a_1_a
+% Hand check: no FC: Pi = PS: 25, 200
+\begin{frame}[plain,label=w5_eq_a_1_b]
+  \begin{wfive}
+    \wfl{No new fixed costs are paid, so net equals gross producer surplus:}
+    \wfe{\Pi_H^{00} = 25}
+    \wfe{\Pi_S^{00} = 200}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.2 [w5_eq_a_2]: Appendix A.2 (after '... now from the green-hydrogen supply curve:')
+% Hand check: 5 + 5 = 10; 0.5*10*(10 - 5) = 25; 25 - 180 = -155; steel as A.1
+\begin{frame}[plain,label=w5_eq_a_2]
+  \begin{wfive}
+    \wfe{Q_H^{10} = 10}
+    \wfe{P_H^{10} = 5 + \tfrac12 \times 10 = 10}
+    \wfe{PS_H^{10} = \tfrac12 \times 10 \times (10 - 5) = 25}
+    \wfe{\Pi_H^{10} = 25 - 180 = -155}
+    \wfl{Steel is unchanged:}
+    \wfe{Q_S^{10} = 20}
+    \wfe{P_S^{10} = 80}
+    \wfe{\Pi_S^{10} = 200}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.3 [w5_eq_a_3_a]: Appendix A.3 (after '... meets the conventional supply:')
+% Hand check: 110 - 2Q = 40 + Q/2; 70 = 2.5Q; Q = 28; P = 40 + 14 = 54; 0.5*28*14 = 196
+\begin{frame}[plain,label=w5_eq_a_3_a]
+  \begin{wfive}
+    \wfe{110 - 2Q_H = 40 + \tfrac12Q_H}
+    \wfc{70 = 2\tfrac12Q_H}{(add $2Q_H$ and subtract 40 on both sides)}
+    \wfc{Q_H^{01} = 28}{(divide by $2\tfrac12$)}
+    \wfe{P_H^{01} = 40 + \tfrac12 \times 28 = 54}
+    \wfe{PS_H^{01} = \tfrac12 \times 28 \times (54 - 40) = 196}
+    \wfc{\Pi_H^{01} = 196}{(no upstream investment cost)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.3 [w5_eq_a_3_b]: Appendix A.3, directly after w5_eq_a_3_a
+% Hand check: 28 - 10 = 18; 10 + 54 = 64; 100 - Q = 64 + Q; 36 = 2Q; Q = 18; P = 82; 0.5*18*18 = 162; 162 - 150 = 12
+\begin{frame}[plain,label=w5_eq_a_3_b]
+  \begin{wfive}
+    \wfl{Steel uses $28 - 10 = 18$ units of hydrogen, so $Q_S^{01} = 18$. At $P_H = 54$ its supply intercept is $10 + 54 = 64$; check with demand and compute surplus:}
+    \wfe{100 - Q_S = 64 + Q_S}
+    \wfc{36 = 2Q_S}{(add $Q_S$ and subtract 64 on both sides)}
+    \wfc{Q_S^{01} = 18}{(divide by 2)}
+    \wfe{P_S^{01} = 100 - 18 = 82}
+    \wfe{PS_S^{01} = \tfrac12 \times 18 \times (82 - 64) = 162}
+    \wfe{\Pi_S^{01} = 162 - 150 = 12}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.4 [w5_eq_a_4_a]: Appendix A.4 [responses only]
+% Hand check: 110 - 2Q = 5 + Q/2: Q_H = 42, P_H = 26; Q_S = 42 - 10 = 32; 10 + 26 = 36; P_S = 100 - 32 = 68
+\begin{frame}[plain,label=w5_eq_a_4_a]
+  \begin{wfive}
+    \wfe{110 - 2Q_H = 5 + \tfrac12Q_H}
+    \wfe{Q_H^{11} = 42}
+    \wfe{P_H^{11} = 26}
+    \wfe{Q_S^{11} = 42 - 10 = 32}
+    \wfc{P_S^S = 36 + Q_S}{(steel supply at $P_H = 26$)}
+    \wfe{P_S^{11} = 68}
+  \end{wfive}
+\end{frame}
+
+% --- EQ A.4 [w5_eq_a_4_b]: Appendix A.4, directly after w5_eq_a_4_a [responses only]
+% Hand check: 0.5*42*21 = 441; 0.5*32*32 = 512; 441 - 180 = 261; 512 - 150 = 362; 261 - 25 = 236; 362 - 200 = 162
+\begin{frame}[plain,label=w5_eq_a_4_b]
+  \begin{wfive}
+    \wfe{PS_H^{11} = \tfrac12 \times 42 \times (26 - 5) = 441}
+    \wfe{PS_S^{11} = \tfrac12 \times 32 \times (68 - 36) = 512}
+    \wfe{\Pi_H^{11} = 441 - 180 = 261}
+    \wfe{\Pi_S^{11} = 512 - 150 = 362}
+    \wfe{\Pi_H^{11} - \Pi_H^{00} = 236}
+    \wfe{\Pi_S^{11} - \Pi_S^{00} = 162}
+  \end{wfive}
+\end{frame}
+
+% --- EQ B.1 [w5_eq_b_1]: Appendix B.2
+% Hand check: 160 - Q = 80 + P_U + Q gives P_U = 80 - 2Q; 160 - Q = 20 + P + Q gives P = 140 - 2Q
+\begin{frame}[plain,label=w5_eq_b_1]
+  \begin{wfive}
+    \wfc{160 - Q_D = 80 + P_U + Q_D}{(before FDI: chip demand $=$ supply of the old plants)}
+    \wfc{P_U^{d,0} = 80 - 2Q_U}{(solve for $P_U$, $Q_U = Q_D$)}
+    \wfc{160 - Q_D = 20 + P + Q_D}{(after FDI: $P$ is the price of whichever source is used)}
+    \wfc{P^{d,FDI} = 140 - 2Q}{(solve for $P$; $Q = Q_U$ if $\lambda = 1$, $Q = Q_M$ if $\lambda = 0$)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ B.2 [w5_eq_b_2_a]: Appendix B.3 [versions with responses]
+% Hand check: 140 - 2Q = 8 + Q: 132 = 3Q, Q = 44, P_M = 8 + 44 = 52, P_D = 160 - 44 = 116; 140 - 2Q = 20 + Q: 120 = 3Q, Q = 40, P_U = 60, P_D = 120
+\begin{frame}[plain,label=w5_eq_b_2_a]
+  \begin{wfive}
+    \wfc{140 - 2Q_M = 8 + Q_M}{(enclave: demand meets the suppliers abroad)}
+    \wfc{Q_M = 44,\; P_M = 52,\; Q_D = 44,\; P_D = 116}{(scenario~1)}
+    \wfc{140 - 2Q_U = 20 + Q_U}{(local inputs, no transfer: demand meets the local suppliers at the old cost)}
+    \wfc{Q_U = 40,\; P_U = 60,\; Q_D = 40,\; P_D = 120}{(scenario~2)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ B.2 [w5_eq_b_2_b]: Appendix B.3, directly after w5_eq_b_2_a [versions with responses]
+% Hand check: 140 - 2Q = 8 + Q: Q_U = 44, P_U = 52, Q_D = 44, P_D = 116
+\begin{frame}[plain,label=w5_eq_b_2_b]
+  \begin{wfive}
+    \wfc{140 - 2Q_U = 8 + Q_U}{(local inputs with transfer: the local supply curve equals the suppliers abroad's)}
+    \wfc{Q_U = 44,\; P_U = 52,\; Q_D = 44,\; P_D = 116}{(scenario~3)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ B.2 [w5_eq_b_2_student]: Appendix B.3 [--student only; scenario 3 left to Question 2.2]
+% Hand check: as w5_eq_b_2 without the scenario 3 lines
+\begin{frame}[plain,label=w5_eq_b_2_student]
+  \begin{wfive}
+    \wfc{140 - 2Q_M = 8 + Q_M}{(enclave: demand meets the suppliers abroad)}
+    \wfc{Q_M = 44,\; P_M = 52,\; Q_D = 44,\; P_D = 116}{(scenario~1)}
+    \wfc{140 - 2Q_U = 20 + Q_U}{(local inputs, no transfer: demand meets the local suppliers at the old cost)}
+    \wfc{Q_U = 40,\; P_U = 60,\; Q_D = 40,\; P_D = 120}{(scenario~2)}
+    \wft{Scenario 3: your answer to Question~2.2 (same route, with the local supply curve after knowledge transfer)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ B.3 [w5_eq_b_3_a]: Appendix B.4
+% Hand check: 160 - Q = 20 + P_U + Q; 140 = 2Q + P_U (1); P_U = 20 + Q (2); 140 = 2Q + 20 + Q; 120 = 3Q; Q_D = 40
+\begin{frame}[plain,label=w5_eq_b_3_a]
+  \begin{wfive}
+    \wfe{160 - Q_D = 20 + P_U + Q_D}
+    \wfc{140 = 2Q_D + P_U\qquad (1)}{(add $Q_D$ and subtract 20 on both sides)}
+    \wfc{P_U = 20 + Q_D\qquad (2)}{(local supply with $Q_U = Q_D$ and $\tau = 0$)}
+    \wfc{140 = 2Q_D + 20 + Q_D}{(insert (2) into (1))}
+    \wfc{120 = 3Q_D}{(subtract 20, collect the $Q_D$ terms)}
+    \wfc{Q_D = 40}{(divide by 3)}
+  \end{wfive}
+\end{frame}
+
+% --- EQ B.3 [w5_eq_b_3_b]: Appendix B.4, directly after w5_eq_b_3_a
+% Hand check: P_U = 20 + 40 = 60; Q_U = 40; Q_M = 0; P_D = 160 - 40 = 120; 20 + 60 + 40 = 120
+\begin{frame}[plain,label=w5_eq_b_3_b]
+  \begin{wfive}
+    \wfc{P_U = 20 + 40 = 60}{(from (2))}
+    \wfc{Q_U = 40}{(local inputs, one per chip)}
+    \wfc{Q_M = 0}{(no imports)}
+    \wfc{P_D = 160 - 40 = 120}{(chip demand)}
+    \wfc{P_D^{s,FDI} = 20 + 60 + 40 = 120}{(check with the plants' supply)}
+  \end{wfive}
 \end{frame}
 
 \end{document}

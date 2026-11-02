@@ -442,3 +442,236 @@
   \end{itemize}
 \end{frame}
 
+% =====================================================================
+% retired 2 Nov 2026: TikZ pilot, replaced by R figures in code/tutorial05_figures.R
+% (frames fig01, fig02, fig04 of tutorial05_figures.tex; they need that file's preamble:
+% 24 x 12 cm page, PEIB palette, \panelaxes, \rint, the tikz styles and \showanswers)
+% =====================================================================
+
+% =====================================================================
+% Figure 1: status quo
+% Hydrogen: S = 40 + 0.5 Q_H; demand of other users vertical at Q_H = 10
+%   E0 = (10, 40 + 0.5*10) = (10, 45); PS_H0 = 0.5 * 10 * (45 - 40) = 25
+% Steel: D = 100 - Q_S; S = 60 + Q_S
+%   100 - Q = 60 + Q -> Q = 20, P = 80; PS_S0 = 0.5 * 20 * (80 - 60) = 200
+% =====================================================================
+\begin{frame}[plain,label=fig01]
+\centering
+\begin{tikzpicture}
+  % parameters
+  \pgfmathsetmacro{\aH}{40}  \pgfmathsetmacro{\bH}{0.5}  \pgfmathsetmacro{\QoH}{10}
+  \pgfmathsetmacro{\aD}{100} \pgfmathsetmacro{\bD}{1}
+  \pgfmathsetmacro{\aS}{60}  \pgfmathsetmacro{\bS}{1}
+  % derived
+  \pgfmathsetmacro{\PoH}{\aH+\bH*\QoH}
+  \pgfmathsetmacro{\QoS}{(\aD-\aS)/(\bD+\bS)}
+  \pgfmathsetmacro{\PoS}{\aD-\bD*\QoS}
+  \rint{\iQoH}{\QoH} \rint{\iPoH}{\PoH} \rint{\iQoS}{\QoS} \rint{\iPoS}{\PoS}
+  \rint{\PSH}{0.5*\QoH*(\PoH-\aH)} \rint{\PSS}{0.5*\QoS*(\PoS-\aS)}
+
+  % ---------------- left panel: hydrogen ----------------
+  \begin{scope}[panel]
+    \node[font=\bfseries, anchor=base] at (30,132) {Hydrogen};
+    \ifnum\showanswers=1
+      \fill[ps] (0,\aH) -- (0,\PoH) -- (\QoH,\PoH) -- cycle;
+      \draw[leader, -{Stealth[length=4pt]}] (16,26) -- (4,42);
+      \node[lab, anchor=north west] at (15,27) {PS = \PSH};
+    \fi
+    \panelaxes{60}{120}{Quantity of hydrogen ($Q_H$)}{Price of hydrogen ($P_H$)}
+    \draw[curve, peibsupply] (0,\aH) -- (60,{\aH+\bH*60}) node[above left, lab, align=right] {supply,\\conventional};
+    \draw[curve, peibdemand] (\QoH,0) -- (\QoH,120);
+    \node[lab, peibdemand, anchor=north west, align=left] at ({\QoH+1},119) {demand,\\other users};
+    \draw[guide] (0,\PoH) -- (\QoH,\PoH);
+    \node[pt] at (\QoH,\PoH) {};
+    \node[lab, anchor=north west] at ({\QoH+1},{\PoH-2}) {E0 = (\iQoH, \iPoH)};
+  \end{scope}
+
+  % ---------------- right panel: steel ----------------
+  \begin{scope}[shift={(9.0cm,0)}, panel]
+    \node[font=\bfseries, anchor=base] at (30,132) {Steel};
+    \ifnum\showanswers=1
+      \fill[ps] (0,\aS) -- (0,\PoS) -- (\QoS,\PoS) -- cycle;
+      \draw[leader, -{Stealth[length=4pt]}] (23,53) -- (8,72);
+      \node[lab, anchor=north west] at (22,55) {PS = \PSS};
+    \fi
+    \panelaxes{60}{120}{Quantity of steel ($Q_S$)}{Price of steel ($P_S$)}
+    \draw[curve, peibdemand] (0,\aD) -- (60,{\aD-\bD*60}) node[below left, lab] {D};
+    \draw[curve, peibsupply] (0,\aS) -- (60,{\aS+\bS*60}) node[right, lab] {S = MC};
+    \draw[guide] (0,\PoS) -- (\QoS,\PoS) -- (\QoS,0);
+    \node[pt] at (\QoS,\PoS) {};
+    \node[lab, anchor=west] at ({\QoS+5},{\PoS}) {E0 = (\iQoS, \iPoS)};
+  \end{scope}
+\end{tikzpicture}
+\end{frame}
+
+% =====================================================================
+% Figure 2: status quo and joint investment
+% Hydrogen: conventional S = 40 + 0.5 Q; green S = 5 + 0.5 Q
+%   demand: other users vertical at Q = 10; with steel D = 110 - 2 Q for Q >= 10
+%   (kink at (10, 90): 110 - 20 = 90; choke at Q = 55)
+%   E0 = (10, 45); E1: 110 - 2Q = 5 + 0.5Q -> 2.5Q = 105 -> Q = 42, P = 26
+%   PS_H1 = 0.5 * 42 * (26 - 5) = 441
+% Steel: D = 100 - Q; conventional S = 60 + Q; joint investment S = 36 + Q (P_H = 26)
+%   optional steel-only case S = 64 + Q (conventional hydrogen at P_H = 54): 100 - Q = 64 + Q -> (18, 82)
+%   E0 = (20, 80); E1: 100 - Q = 36 + Q -> Q = 32, P = 68; PS_S1 = 0.5 * 32 * (68 - 36) = 512
+% =====================================================================
+\begin{frame}[plain,label=fig02]
+\centering
+\begin{tikzpicture}
+  % parameters
+  \pgfmathsetmacro{\aH}{40}  \pgfmathsetmacro{\aG}{5}  \pgfmathsetmacro{\bH}{0.5}
+  \pgfmathsetmacro{\QoH}{10}
+  \pgfmathsetmacro{\aDH}{110} \pgfmathsetmacro{\bDH}{2}
+  \pgfmathsetmacro{\aD}{100} \pgfmathsetmacro{\bD}{1}
+  \pgfmathsetmacro{\aS}{60}  \pgfmathsetmacro{\aJ}{36} \pgfmathsetmacro{\aC}{64} \pgfmathsetmacro{\bS}{1}
+  % derived
+  \pgfmathsetmacro{\PoH}{\aH+\bH*\QoH}
+  \pgfmathsetmacro{\Pkink}{\aDH-\bDH*\QoH}
+  \pgfmathsetmacro{\Qchoke}{\aDH/\bDH}
+  \pgfmathsetmacro{\QiH}{(\aDH-\aG)/(\bDH+\bH)}
+  \pgfmathsetmacro{\PiH}{\aG+\bH*\QiH}
+  \pgfmathsetmacro{\QoS}{(\aD-\aS)/(\bD+\bS)}
+  \pgfmathsetmacro{\PoS}{\aD-\bD*\QoS}
+  \pgfmathsetmacro{\QiS}{(\aD-\aJ)/(\bD+\bS)}
+  \pgfmathsetmacro{\PiS}{\aD-\bD*\QiS}
+  \rint{\iQoH}{\QoH} \rint{\iPoH}{\PoH} \rint{\iQiH}{\QiH} \rint{\iPiH}{\PiH}
+  \rint{\iQoS}{\QoS} \rint{\iPoS}{\PoS} \rint{\iQiS}{\QiS} \rint{\iPiS}{\PiS}
+  \rint{\PSH}{0.5*\QiH*(\PiH-\aG)} \rint{\PSS}{0.5*\QiS*(\PiS-\aJ)}
+
+  % ---------------- left panel: hydrogen ----------------
+  \begin{scope}[panel]
+    \node[font=\bfseries, anchor=base] at (30,132) {Hydrogen};
+    \ifnum\showanswers=1
+      \fill[ps] (0,\aG) -- (0,\PiH) -- (\QiH,\PiH) -- cycle;
+      \node[lab] at (18.5,21.3) {PS1 = \PSH};
+    \fi
+    \panelaxes{60}{120}{Quantity of hydrogen ($Q_H$)}{Price of hydrogen ($P_H$)}
+    % supplies
+    \draw[curve, peibsupply] (0,\aH) -- (60,{\aH+\bH*60}) node[above left, lab, align=right] {supply,\\conventional};
+    \draw[curve, peibtax] (0,\aG) -- (60,{\aG+\bH*60}) node[right, lab, align=left] {supply,\\green hydrogen};
+    % demand of other users (status quo) below the kink, dashed
+    \draw[curve, peibdemand, dashed] (\QoH,0) -- (\QoH,\Pkink);
+    % kinked demand: other users + steel
+    \draw[curve, peibdemand] (\QoH,120) -- (\QoH,\Pkink) -- (\Qchoke,0);
+    \node[lab, peibdemand, anchor=north west, align=left] at ({\QoH+1},119) {demand, other users};
+    \node[lab, peibdemand, anchor=west, align=left] at (36,47) {demand, other\\users + steel};
+    % shifts
+    \draw[shiftarrow] (11.5,70) -- (19,70);
+    \node[lab, gray, anchor=west] at (22,70) {steel adopts};
+    \draw[shiftarrow] (57,{\aH+\bH*57-1.5}) -- (57,{\aG+\bH*57+1.5});
+    % points
+    \draw[guide] (0,\PoH) -- (\QoH,\PoH);
+    \draw[guide] (0,\PiH) -- (\QiH,\PiH) -- (\QiH,0);
+    \node[pt] at (\QoH,\PoH) {};
+    \node[pt] at (\QiH,\PiH) {};
+    \node[lab, anchor=north west] at ({\QoH+1},{\PoH-2}) {E0 = (\iQoH, \iPoH)};
+    \draw[leader] ({\QiH+1},{\PiH-1.5}) -- (48,20);
+    \ifnum\showanswers=1
+      \node[lab, anchor=west] at (48,19) {E1 = (\iQiH, \iPiH)};
+    \else
+      \node[lab, anchor=west] at (48,19) {E1};
+    \fi
+  \end{scope}
+
+  % ---------------- linkages between the panels ----------------
+  \node[lab, align=center, text width=2.0cm, anchor=south] at (8.45,5.05) {new steel technology $\rightarrow$ demand for hydrogen};
+  \draw[-{Stealth[length=5pt]}, thick] (9.45,4.9) -- (7.45,4.9);
+  \draw[-{Stealth[length=5pt]}, thick] (7.45,4.1) -- (9.45,4.1);
+  \node[lab, align=center, text width=2.0cm, anchor=north] at (8.45,3.95) {cheaper green hydrogen $\rightarrow$ lower steel costs};
+
+  % ---------------- right panel: steel ----------------
+  \begin{scope}[shift={(10.9cm,0)}, panel]
+    \node[font=\bfseries, anchor=base] at (30,132) {Steel};
+    \ifnum\showanswers=1
+      \fill[ps] (0,\aJ) -- (0,\PiS) -- (\QiS,\PiS) -- cycle;
+      \node[lab] at (10,58) {PS1 = \PSS};
+    \fi
+    \panelaxes{60}{120}{Quantity of steel ($Q_S$)}{Price of steel ($P_S$)}
+    \draw[curve, peibdemand] (0,\aD) -- (60,{\aD-\bD*60}) node[below left, lab] {D};
+    \draw[curve, peibsupply] (0,\aS) -- (60,{\aS+\bS*60}) node[right, lab, align=left] {supply,\\conventional};
+    \draw[thick, peibtax, dashed] (0,\aC) -- (46,{\aC+\bS*46}) node[above left, lab, align=right, peibtax] {hydrogen-based,\\$P_H = 54$};
+    \draw[curve, peibtax] (0,\aJ) -- (60,{\aJ+\bS*60}) node[right, lab, align=left] {hydrogen-based,\\$P_H = 26$};
+    \draw[guide] (0,\PoS) -- (\QoS,\PoS) -- (\QoS,0);
+    \draw[guide] (0,\PiS) -- (\QiS,\PiS) -- (\QiS,0);
+    \node[pt] at (\QoS,\PoS) {};
+    \node[pt] at (\QiS,\PiS) {};
+    \node[lab, anchor=west] at ({\QoS+4},{\PoS}) {E0 = (\iQoS, \iPoS)};
+    \ifnum\showanswers=1
+      \node[lab, anchor=west] at ({\QiS+5},{\PiS}) {E1 = (\iQiS, \iPiS)};
+    \else
+      \node[lab, anchor=west] at ({\QiS+5},{\PiS}) {E1};
+    \fi
+  \end{scope}
+\end{tikzpicture}
+\end{frame}
+
+% =====================================================================
+% Figure 4: market for local inputs, scenarios 0, 2 and 3
+% Demand 0 (no FDI, lambda = 1, old plants): P = 80 - 2Q   (0,80)-(40,0)
+% Demand 2 (lambda = 1/2):                    P = 200 - 8Q (12.5,100)-(25,0)
+% Demand 3 (lambda = 1):                      P = 140 - 2Q (20,100)-(60,20)
+% Supply 0 and 2: P = 20 + Q;  supply 3 (tau = 12): P = 8 + Q
+%   80 - 2Q = 20 + Q -> Q = 20, P = 40;  200 - 8Q = 20 + Q -> Q = 20, P = 40  (E0 = E2)
+%   140 - 2Q = 8 + Q -> Q = 44, P = 52 (E3)
+%   PS_0/2 = 0.5 * 20 * (40 - 20) = 200;  PS_3 = 0.5 * 44 * (52 - 8) = 968
+% Scale: 1 unit of Q = 0.13 cm (60 -> 7.8 cm); 1 unit of P = 0.075 cm (100 -> 7.5 cm)
+% =====================================================================
+\begin{frame}[plain,label=fig04]
+\centering
+\begin{tikzpicture}[x=0.13cm, y=0.075cm]
+  % parameters
+  \pgfmathsetmacro{\aO}{80}  \pgfmathsetmacro{\bO}{2}
+  \pgfmathsetmacro{\aT}{200} \pgfmathsetmacro{\bT}{8}
+  \pgfmathsetmacro{\aR}{140} \pgfmathsetmacro{\bR}{2}
+  \pgfmathsetmacro{\cS}{20}  \pgfmathsetmacro{\tauU}{12} \pgfmathsetmacro{\dS}{1}
+  % derived
+  \pgfmathsetmacro{\cSt}{\cS-\tauU}
+  \pgfmathsetmacro{\Qo}{(\aO-\cS)/(\bO+\dS)}   \pgfmathsetmacro{\Po}{\cS+\dS*\Qo}
+  \pgfmathsetmacro{\Qt}{(\aT-\cS)/(\bT+\dS)}   \pgfmathsetmacro{\Pt}{\cS+\dS*\Qt}
+  \pgfmathsetmacro{\Qr}{(\aR-\cSt)/(\bR+\dS)}  \pgfmathsetmacro{\Pr}{\cSt+\dS*\Qr}
+  \rint{\iQo}{\Qo} \rint{\iPo}{\Po} \rint{\iQt}{\Qt} \rint{\iPt}{\Pt} \rint{\iQr}{\Qr} \rint{\iPr}{\Pr}
+  \rint{\PSo}{0.5*\Qo*(\Po-\cS)} \rint{\PSr}{0.5*\Qr*(\Pr-\cSt)} \rint{\itau}{\tauU}
+
+  \ifnum\showanswers=1
+    \fill[ps] (0,\cSt) -- (0,\Pr) -- (\Qr,\Pr) -- cycle;
+    \fill[pattern=north east lines, pattern color=peibsupply] (0,\cS) -- (0,\Po) -- (\Qo,\Po) -- cycle;
+  \fi
+  % key for the two areas, top right: drawn in both variants so the picture (and its
+  % centring on the page) has the same bounding box; invisible (opacity 0) in noanswers
+  \ifnum\showanswers=1 \def\keyop{1}\else \def\keyop{0}\fi
+  \begin{scope}[opacity=\keyop, text opacity=\keyop]
+    \pgfmathsetmacro{\keypsop}{0.35*\keyop}  % ps style sets its own opacity, so scale it here
+    \fill[peibps, opacity=\keypsop] (62,97) rectangle (65,101);
+    \node[lab, anchor=west] at (65.5,99) {PS$_3$ = \PSr{} (scenario 3)};
+    \fill[pattern=north east lines, pattern color=peibsupply] (62,90) rectangle (65,94);
+    \draw[peibsupply, thin] (62,90) rectangle (65,94);
+    \node[lab, anchor=west] at (65.5,92) {PS$_{0}$ = PS$_{2}$ = \PSo{} (scenarios 0, 2)};
+  \end{scope}
+  \panelaxes{60}{100}{Quantity of local inputs ($Q_U$)}{Price of local inputs ($P_U$)}
+
+  % demands
+  \draw[curve, peibdemand, dashed] (0,\aO) -- ({\aO/\bO},0);
+  \node[lab, peibdemand, align=left, anchor=south west] at (45,1) {derived demand, no FDI\\($\lambda = 1$, old plants)};
+  \draw[curve, peibcs] ({(\aT-100)/\bT},100) -- ({\aT/\bT},0);
+  \node[lab, peibcs, anchor=south] at (10,101) {derived demand, $\lambda = \tfrac12$};
+  \draw[curve, peibdemand] ({(\aR-100)/\bR},100) -- (60,{\aR-\bR*60}) node[right, lab, align=left] {derived demand,\\$\lambda = 1$};
+  % supplies
+  \draw[curve, peibsupply] (0,\cS) -- (60,{\cS+\dS*60}) node[right, lab] {supply, $\tau = 0$};
+  \draw[curve, peibsupply, dashed] (0,\cSt) -- (60,{\cSt+\dS*60}) node[right, lab, align=left] {supply after knowledge transfer,\\$\tau = \itau$: supply down};
+
+  % shifts
+  \draw[shiftarrow] (16,80) -- (29,80);
+  \node[lab, gray, anchor=west, align=left] at (33,81) {higher $\lambda$:\\demand out};
+  \draw[shiftarrow] (58,{\cS+\dS*58-1.5}) -- (58,{\cSt+\dS*58+1.5});
+
+  % points (E0 and E2 coincide: \iQo = \iQt, \iPo = \iPt)
+  \draw[guide] (0,\Po) -- (\Qo,\Po) -- (\Qo,0);
+  \draw[guide] (0,\Pr) -- (\Qr,\Pr) -- (\Qr,0);
+  \node[pt] at (\Qo,\Po) {};
+  \node[pt] at (\Qr,\Pr) {};
+  \draw[leader] (13.5,44) -- ({\Qo-1},{\Po+0.5});
+  \node[lab, anchor=east, align=right, inner sep=1pt] at (13.5,46) {E0 = E2 =\\(\iQt, \iPt)};
+  \node[lab, anchor=west] at (48,48) {E3 = (\iQr, \iPr)};
+  \node[lab, align=left, anchor=west] at (62,36) {$P_U$ rises \iPo{} $\rightarrow$ \iPr\\although costs fell};
+\end{tikzpicture}
+\end{frame}

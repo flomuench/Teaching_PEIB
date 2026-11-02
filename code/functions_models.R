@@ -24,6 +24,10 @@
 #               learning-by-doing (open_outcomes(), open_two_period(),
 #               draw_open_market(), draw_open_period2(),
 #               draw_open_learning(), draw_open_bars())
+#       Part 8: Model G, Tutorial 5: linked investments in hydrogen and
+#               steel, and FDI in chip plants with local suppliers or
+#               imported inputs (h2_outcomes(), draw_h2_steel(),
+#               fdi_outcomes(), draw_fdi_row(), draw_fdi_scenarios())
 #
 # Authors: Florian Münch
 # Requires: base R only (the packages graphics and grDevices, which every
@@ -5029,4 +5033,730 @@ draw_open_bars <- function(type = c("ex1", "two_period", "env"),
     }
   }
   invisible(tp)
+}
+
+
+# ***********************************************************
+# Part 8: Model G, Tutorial 5: linked investments (hydrogen and ----
+#         steel) and FDI with local suppliers (chips)
+# ***********************************************************
+# Exercise 1: two linked markets, hydrogen (H, upstream) and steel (S,
+# downstream), ten price-taking firms each. Each sector can adopt a new
+# technology (fixed cost FC_H = 180, FC_S = 150):
+#   Hydrogen supply: conventional P_H = 40 + Q_H/2, green P_H = 5 + Q_H/2.
+#   Hydrogen demand: the other industrial users buy 10 units at any price;
+#            once steel adopts, steel buys Q_S units more (Q_H = 10 + Q_S).
+#   Steel:   demand P_S = 100 - Q_S; supply conventional P_S = 60 + Q_S,
+#            hydrogen-based P_S = 10 + P_H + Q_S.
+#   When steel adopts, the steel market gives Q_S = (90 - P_H)/2, so the
+#   DERIVED demand for hydrogen is P_H = 110 - 2 Q_H for Q_H >= 10 (and
+#   the vertical line Q_H = 10 above P_H = 90): a backward demand linkage.
+#   Cheaper hydrogen lowers the steel supply curve: a forward cost linkage.
+# Handout numbers (h2_outcomes()):
+#   status quo        Q_H 10, P_H 45, PS_H 25;   Q_S 20, P_S 80, PS_S 200
+#   joint investment  Q_H 42, P_H 26, PS_H 441;  Q_S 32, P_S 68, PS_S 512
+#   hydrogen alone    Q_H 10, P_H 10, PS_H 25 (net -155); steel unchanged
+#   steel alone       Q_H 28, P_H 54, PS_H 196;  Q_S 18, P_S 82, PS_S 162
+#                     (net 12)
+#   gains from joint investment: hydrogen 261 - 25 = +236, steel
+#   362 - 200 = +162.
+#
+# Exercise 2 (variant B): FDI in chip assembly-and-test plants (D) in
+# Home, with local input suppliers (U, Home) and suppliers abroad (M,
+# Foreign); ten price-taking firms in each group.
+#   Chip demand (Home's device makers): P_D = 160 - Q_D.
+#   Local suppliers:     P_U = 20 - tau + Q_U (tau = knowledge transfer).
+#   Suppliers abroad:    P_M = 8 + Q_M.
+#   Plants before FDI:   P_D = 80 + P_U + Q_D, all inputs local, Home-owned.
+#   Plants after FDI:    P_D = 20 + input price + Q_D, foreign-owned; the
+#                        inputs come either all from local suppliers
+#                        (lambda = 1) or all from abroad (lambda = 0).
+#   One input per chip, so the input quantity equals Q_D. The derived
+#   demand for inputs is 80 - 2Q before FDI and 140 - 2Q after it.
+#   Surpluses (all triangles, slopes 1): CS_D = PS_U = PS_M = Pi_F =
+#   Q^2/2. Home = CS_D + PS_U (+ PS_D before FDI, when Home owns the
+#   plants); Foreign = Pi_F (the plants' profit after FDI) + PS_M.
+# Handout Tables 8 and 9 (fdi_outcomes()):
+#   0 no FDI              Q_D 20, P_U 40, P_D 140;  Home 600, Foreign 0
+#   1 enclave (lambda 0)  Q_D 44, P_M 52, P_D 116;  Home 968, Foreign 1,936
+#   2 local, tau = 0      Q_D 40, P_U 60, P_D 120;  Home 1,600, Foreign 800
+#   3 local, tau = 12     Q_D 44, P_U 52, P_D 116;  Home 1,936, Foreign 968
+#   World: 600, 2,904, 2,400, 2,904.
+#
+# Figures: version = "noanswers" (curves and the points the handout gives)
+# or "answers" (all coordinates, drop lines and shaded surpluses), as in
+# Parts 6 and 7. The axes are fixed (handout and app use the same ones):
+# hydrogen and steel 0-60 x 0-120; input market 0-60 x 0-140; chip market
+# 0-60 x 0-160. Label positions are set by hand for the handout cases
+# (the model has no sliders that move them far); other cases use the
+# free-spot search of chain_point().
+
+### 34. Colours for owners (Tutorial 5) ----
+# Home and Foreign as in the LaTeX slides (homecolor, foreigncolor): blue
+# and a red-orange, distinguishable for the common colour-vision
+# deficiencies. Added to peib_cols here, so the earlier parts are unchanged.
+peib_cols <- c(peib_cols, home = "#0066CC", foreign = "#CC3300",
+               green = "#54A24B", neutral = "#1A1A1A", bench = "#9A9A9A")
+
+
+### 35. h2_outcomes(): hydrogen and steel for given technology choices ----
+# steel = TRUE: steel uses the hydrogen-based process; green = TRUE: the
+# hydrogen sector uses green hydrogen. Returns a named list: Q_H, P_H,
+# Q_S, P_S, PS_H, PS_S (gross producer surpluses), Pi_H, Pi_S (net of the
+# fixed cost of a new technology, only if that sector invested), the cost
+# intercepts cH (hydrogen) and cS (steel supply: 60, or 10 + P_H), and the
+# flags. Defaults are the handout values.
+h2_outcomes <- function(steel = FALSE, green = FALSE, other = 10,
+                        cH_conv = 40, cH_green = 5, bH = 0.5,
+                        aS = 100, cS_conv = 60, cS_new = 10,
+                        FC_H = 180, FC_S = 150) {
+  if (!is.logical(steel) || !is.logical(green) || length(steel) != 1 ||
+      length(green) != 1 || is.na(steel) || is.na(green)) {
+    stop("'steel' and 'green' must be TRUE or FALSE.", call. = FALSE)
+  }
+  cH <- if (green) cH_green else cH_conv
+  if (!steel) {
+    # Only the other users buy hydrogen: the quantity is fixed at 'other',
+    # the price is read off the supply curve; steel is conventional
+    Q_H <- other
+    P_H <- cH + bH * Q_H
+    cS  <- cS_conv
+  } else {
+    # Steel market for a given P_H: aS - Q_S = cS_new + P_H + Q_S, so
+    # Q_S = (aS - cS_new - P_H)/2; with Q_H = other + Q_S the derived demand
+    # is P_H = (aS - cS_new) + 2 other - 2 Q_H. It meets the supply
+    # cH + bH Q_H at Q_H = (aS - cS_new + 2 other - cH) / (2 + bH).
+    Q_H <- (aS - cS_new + 2 * other - cH) / (2 + bH)
+    if (Q_H < other) Q_H <- other   # steel would not buy at that price
+    P_H <- cH + bH * Q_H
+    cS  <- cS_new + P_H
+  }
+  Q_S <- max(0, (aS - cS) / 2)
+  P_S <- aS - Q_S
+  PS_H <- 0.5 * Q_H * (P_H - cH)
+  PS_S <- 0.5 * Q_S * (P_S - cS)
+  list(steel = steel, green = green, Q_H = Q_H, P_H = P_H, Q_S = Q_S,
+       P_S = P_S, PS_H = PS_H, PS_S = PS_S,
+       Pi_H = PS_H - if (green) FC_H else 0,
+       Pi_S = PS_S - if (steel) FC_S else 0,
+       cH = cH, cS = cS, FC_H = FC_H, FC_S = FC_S)
+}
+
+
+### 36. Small helpers for the Tutorial 5 figures ----
+
+# A straight line P = a0 + slope * Q from x0 to x1, cut to the price range
+t5_seg <- function(a0, slope, x0, x1, ylim, ...) {
+  if (slope != 0) {
+    xa <- (ylim[1] - a0) / slope; xb <- (ylim[2] - a0) / slope
+    x0 <- max(x0, min(xa, xb)); x1 <- min(x1, max(xa, xb))
+  }
+  if (x1 <= x0) return(invisible(NULL))
+  segments(x0, a0 + slope * x0, x1, a0 + slope * x1, ...)
+}
+
+# Text with an optional white box behind it (readable on shaded areas).
+# 'lab' may be a character string (with "\n") or a plotmath expression.
+t5_text <- function(x, y, lab, adj = c(0.5, 0.5), cex = 0.75, col = "black",
+                    font = 1, bg = NULL, srt = 0) {
+  if (!is.null(bg) && srt == 0) {
+    w <- strwidth(lab, cex = cex, font = font)
+    h <- strheight(lab, cex = cex, font = font)
+    px <- 0.25 * strwidth("M", cex = cex); py <- 0.35 * h / max(1,
+      length(strsplit(as.character(lab), "\n")[[1]]))
+    l <- x - adj[1] * w; b <- y - adj[2] * h
+    rect(l - px, b - py, l + w + px, b + h + py,
+         col = adjustcolor(bg, 0.85), border = NA)
+  }
+  text(x, y, lab, adj = adj, cex = cex, col = col, font = font, srt = srt)
+}
+
+# Angle (degrees) at which a line of slope 'slope' (user units) appears
+# on the device, for labels written along a line
+t5_angle <- function(slope) {
+  usr <- par("usr"); pin <- par("pin")
+  atan(slope * (pin[2] / (usr[4] - usr[3])) /
+         (pin[1] / (usr[2] - usr[1]))) * 180 / pi
+}
+
+# A label written ALONG the line P = a0 + slope * Q, centred at Q = x,
+# just above (side = 1) or below (side = -1) the line
+t5_line_label <- function(a0, slope, x, lab, side = 1, cex = 0.7,
+                          col = "black", font = 1, gap = 0.35) {
+  ang <- t5_angle(slope); usr <- par("usr"); pin <- par("pin")
+  d <- gap * strheight("M", units = "inches", cex = cex) * side
+  dx <- -sin(ang * pi / 180) * d * (usr[2] - usr[1]) / pin[1]
+  dy <-  cos(ang * pi / 180) * d * (usr[4] - usr[3]) / pin[2]
+  text(x + dx, a0 + slope * x + dy, lab, srt = ang, cex = cex, col = col,
+       font = font, adj = c(0.5, if (side > 0) 0 else 1))
+}
+
+# Clip to the whole device (for labels in the margins), and back to the
+# plotting box
+t5_clip_device <- function() {
+  do.call("clip", as.list(c(grconvertX(c(0, 1), "ndc", "user"),
+                            grconvertY(c(0, 1), "ndc", "user"))))
+}
+t5_clip_box <- function() {
+  usr <- par("usr"); clip(usr[1], usr[2], usr[3], usr[4])
+}
+
+# An equilibrium point with its label: at a fixed spot 'at' = c(x, y)
+# with 'adj', or (at = NULL) at the free spot found by chain_point()
+t5_point <- function(Q, P, lab, at = NULL, adj = c(0, 0.5), cex = 0.75,
+                     curves = function(x) list(), dir = c(1, 1),
+                     font = 2) {
+  if (is.null(at)) {
+    chain_point(Q, P, lab, curves, list(), dir = dir, cex = cex)
+  } else {
+    points(Q, P, pch = 19, cex = 1)
+    text(at[1], at[2], lab, adj = adj, cex = cex, font = font)
+  }
+  invisible(NULL)
+}
+
+# "E1 = (42, 26)" or "E1"
+t5_plab <- function(nm, Q, P, coords = TRUE) {
+  if (!coords) return(nm)
+  paste0(nm, " = (", chain_fmt(Q), ", ", chain_fmt(P), ")")
+}
+
+# Label of two lines whose second line is plotmath (e.g. P_H = 26)
+t5_two_lines <- function(x, y, line1, line2, adj = c(0, 1), cex = 0.75,
+                         col = "black", font = 1) {
+  h <- 1.25 * strheight("Mg", cex = cex)
+  text(x, y, line1, adj = adj, cex = cex, col = col, font = font)
+  text(x, y - h, line2, adj = adj, cex = cex, col = col, font = font)
+}
+
+
+### 37. draw_h2_steel(): hydrogen (left) and steel (right), Figs 1-2 ----
+# view = "status_quo" (Figure 1: neither sector invests), "joint"
+# (Figure 2: both invest; the status-quo curves stay as reference) or
+# "custom" (any combination of steel and green, for the website app).
+# version = "noanswers": curves and points; E0 with its coordinates (the
+# status quo is given in the handout), E1 without coordinates or drop
+# lines, the steel supply labelled "green hydrogen" instead of the price;
+# "answers": E1's coordinates, drop lines, the prices in the labels and
+# the producer-surplus triangles of the case shown (show_areas).
+# show_steel_only adds the dashed steel supply of the "steel alone" case
+# (10 + 54 + Q_S = 64 + Q_S); default TRUE in the joint view.
+# Handout size 9 x 4.2 inches. Returns list(base, case) invisibly
+# (h2_outcomes() for the status quo and for the case drawn).
+draw_h2_steel <- function(view = c("status_quo", "joint", "custom"),
+                          version = c("noanswers", "answers"),
+                          steel = FALSE, green = FALSE, show_areas = TRUE,
+                          show_steel_only = NULL, tick_step = 10,
+                          mid = NULL, cex = 0.8) {
+  view <- match.arg(view); version <- match.arg(version)
+  tutor <- version == "answers"
+  if (view == "status_quo") { steel <- FALSE; green <- FALSE }
+  if (view == "joint") { steel <- TRUE; green <- TRUE }
+  if (is.null(show_steel_only)) show_steel_only <- view == "joint"
+  o0 <- h2_outcomes(FALSE, FALSE)
+  o1 <- h2_outcomes(steel, green)
+  oS <- h2_outcomes(TRUE, FALSE)        # steel alone (dashed reference)
+  changed <- steel || green
+  handout <- view != "custom"
+  xl <- c(0, 60); yl <- c(0, 120); rx <- 60; ry <- 120
+  col_conv <- peib_cols["supply"]; col_new <- peib_cols["green"]
+  col_d <- peib_cols["demand"]; ps_fill <- firm_fill(peib_cols["ps"], 0.35)
+  if (is.null(mid)) mid <- if (view == "status_quo") 0.35 else 1.3
+
+  # Layout: hydrogen | middle (linkage notes) | steel; the steel panel has
+  # a wide right margin for the supply labels. Widths in inches (9 in).
+  lh <- 0.2                                     # inches per margin line
+  mar_h <- c(3.1, 3.4, 1.6, 0.6); mar_s <- c(3.1, 3.4, 1.6, 6.4)
+  P_w <- (par("din")[1] - mid - lh * (sum(mar_h[c(2, 4)]) +
+                                       sum(mar_s[c(2, 4)]))) / 2
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  layout(matrix(1:3, 1), widths = c(P_w + lh * sum(mar_h[c(2, 4)]), mid,
+                                    P_w + lh * sum(mar_s[c(2, 4)])))
+  # layout() with three columns shrinks all text to 83%; cex = 1 undoes
+  # that, so the labels keep their size in the Word handout
+  par(mgp = c(2.2, 0.55, 0), las = 1, mai = mar_h * lh, cex = 1)
+  ts <- if (is.null(tick_step)) NULL else c(tick_step, tick_step)
+
+  ## Hydrogen panel ----
+  open_panel(xl, yl, "Hydrogen",
+             xlab = expression(paste("Quantity of hydrogen (", Q[H], ")")),
+             ylab = expression(paste("Price of hydrogen (", P[H], ")")),
+             tick_step = ts, cex.axis = 0.8)
+  # Areas first: the producer surplus of the case shown
+  if (tutor && show_areas) {
+    polygon(c(0, 0, o1$Q_H), c(o1$cH, o1$P_H, o1$P_H), col = ps_fill,
+            border = NA)
+  }
+  # Guides: E0 always (given), the new point only in the answers version
+  chain_guides(o0$Q_H, o0$P_H, xl, yl, col = "grey45")
+  if (changed && tutor) chain_guides(o1$Q_H, o1$P_H, xl, yl, col = "grey45")
+  # Supply curves
+  t5_seg(40, 0.5, 0, 60, yl, col = col_conv, lwd = 2.5)
+  text(59.5, 40 + 0.5 * 59.5 + 4, "supply,\nconventional", adj = c(1, 0),
+       cex = cex, col = col_conv)
+  if (green) {
+    t5_seg(5, 0.5, 0, 60, yl, col = col_new, lwd = 2.5)
+    # label to the right of the line end, in the margin (as in the TikZ
+    # pilot), so that it clears the demand curves
+    t5_clip_device()
+    text(61, 35, "supply,\ngreen\nhydrogen", adj = c(0, 0.5), cex = cex,
+         col = col_new)
+    t5_clip_box()
+    arrows(57.5, 40 + 0.5 * 57.5 - 2.5, 57.5, 5 + 0.5 * 57.5 + 2.5,
+           length = 0.07, col = "grey40", lwd = 1.6)
+  }
+  # Demand: vertical at 10 (other users); with steel the kinked curve
+  if (!steel) {
+    segments(10, 0, 10, 120, col = col_d, lwd = 2.5)
+  } else {
+    segments(10, 0, 10, 90, col = col_d, lwd = 2, lty = 2)
+    segments(10, 120, 10, 90, col = col_d, lwd = 2.5)
+    t5_seg(110, -2, 10, 55, yl, col = col_d, lwd = 2.5)
+    text(16.5, 87, "demand, other\nusers + steel", adj = c(0, 0.5),
+         cex = cex, col = col_d)
+    arrows(11, 70, 18, 70, length = 0.07, col = "grey40", lwd = 1.6)
+    text(21.5, 70, "steel adopts", adj = c(0, 0.5), cex = cex * 0.95,
+         col = "grey35", font = 3)
+  }
+  text(11.5, 116, "demand, other users", adj = c(0, 1), cex = cex,
+       col = col_d)
+  # Points
+  t5_point(o0$Q_H, o0$P_H, t5_plab("E0", o0$Q_H, o0$P_H), at = c(12, 40),
+           adj = c(0, 1), cex = cex)
+  if (changed) {
+    lab1 <- t5_plab("E1", o1$Q_H, o1$P_H, coords = tutor || !handout)
+    if (steel && green) {
+      t5_point(o1$Q_H, o1$P_H, lab1, at = c(37.5, 27.5), adj = c(1, 0),
+               cex = cex)
+    } else {
+      if (steel) {
+        # steel alone: E1 = (28, 54); label below right, with a leader
+        points(o1$Q_H, o1$P_H, pch = 19, cex = 1)
+        text(35.5, 47, lab1, adj = c(0, 1), cex = cex, font = 2)
+        segments(o1$Q_H + 0.6, o1$P_H - 1.2, 35.3, 45, col = "grey30")
+      } else {
+        cv <- function(x) list(40 + 0.5 * x, 5 + 0.5 * x)
+        t5_point(o1$Q_H, o1$P_H, lab1, curves = cv, dir = c(1, -1),
+                 cex = cex)
+      }
+    }
+  }
+  # Area labels
+  if (tutor && show_areas) {
+    a_lab <- paste0(if (changed) "PS1 = " else "PS = ", chain_fmt(o1$PS_H))
+    if (!changed) {
+      t5_text(0.8, 31, a_lab, adj = c(0, 0.5), cex = cex * 0.85, font = 2)
+      segments(3.5, 34, 4, 42.3, col = "grey30")
+    } else if (steel && green) {
+      t5_text(22, 22.5, a_lab, adj = c(0.5, 0.5), cex = cex, font = 2)
+    } else {
+      # small triangles (green alone: 25; steel alone: 196)
+      if (steel) t5_text(12, o1$P_H - 4, a_lab, adj = c(0, 1), cex = cex,
+                         font = 2, bg = "white")
+      else {
+        t5_text(12, 24, a_lab, adj = c(0, 0.5), cex = cex, font = 2)
+        segments(12, 22.5, 5, 9, col = "grey30")
+      }
+    }
+  }
+
+  ## Middle: the two linkages ----
+  par(mai = c(mar_h[1], 0, mar_h[3], 0) * lh)
+  plot.new(); plot.window(c(0, 1), c(0, 1), xaxs = "i", yaxs = "i")
+  t5_clip_device()
+  if (mid >= 0.9) {
+    if (steel) {
+      text(0.5, 0.86, "new steel\ntechnology\n\u2192 demand\nfor hydrogen",
+           cex = cex, col = "grey15")
+      arrows(0.95, 0.69, 0.05, 0.69, length = 0.08, lwd = 1.4)
+    }
+    if (steel && green) {
+      arrows(0.05, 0.63, 0.95, 0.63, length = 0.08, lwd = 1.4)
+      text(0.5, 0.49, "cheaper green\nhydrogen\n\u2192 lower\nsteel costs",
+           cex = cex, col = "grey15")
+    }
+  }
+
+  ## Steel panel ----
+  par(mai = mar_s * lh)
+  open_panel(xl, yl, "Steel",
+             xlab = expression(paste("Quantity of steel (", Q[S], ")")),
+             ylab = expression(paste("Price of steel (", P[S], ")")),
+             tick_step = ts, cex.axis = 0.8)
+  if (tutor && show_areas) {
+    polygon(c(0, 0, o1$Q_S), c(o1$cS, o1$P_S, o1$P_S), col = ps_fill,
+            border = NA)
+  }
+  chain_guides(o0$Q_S, o0$P_S, xl, yl, col = "grey45")
+  if (steel && tutor) chain_guides(o1$Q_S, o1$P_S, xl, yl, col = "grey45")
+  t5_seg(100, -1, 0, 60, yl, col = col_d, lwd = 2.5)
+  text(58.5, 37, "D", adj = c(0.5, 1), cex = cex * 1.1, col = col_d,
+       font = 2)
+  t5_seg(60, 1, 0, 60, yl, col = col_conv, lwd = 2.5)
+  # Steel-alone reference (dashed): hydrogen-based steel with conventional
+  # hydrogen at P_H = 54
+  if (steel && green && show_steel_only) {
+    t5_seg(oS$cS, 1, 0, 60, yl, col = col_new, lwd = 1.8, lty = 2)
+    if (tutor) {
+      t5_two_lines(37, 116, "hydrogen-based,",
+                   bquote(P[H] == .(chain_fmt(oS$P_H))), adj = c(1, 1),
+                   cex = cex, col = col_new)
+    } else {
+      text(37, 103, "hydrogen-based,\nconventional hydrogen", adj = c(1, 0),
+           cex = cex, col = col_new)
+    }
+  }
+  if (steel) {
+    # with green hydrogen solid; steel alone (conventional hydrogen) dashed,
+    # as the steel-alone reference line of Figure 2
+    t5_seg(o1$cS, 1, 0, 60, yl, col = col_new, lwd = 2.5,
+           lty = if (green) 1 else 2)
+  }
+  # Supply labels in the right margin, next to the ends of the lines
+  t5_clip_device()
+  text(61.5, 120, "supply,\nconventional", adj = c(0, 0.75), cex = cex,
+       col = col_conv)
+  if (steel) {
+    y_end <- min(120, o1$cS + 60)
+    second <- if (tutor || !handout) bquote(P[H] == .(chain_fmt(o1$P_H)))
+              else "green hydrogen"
+    if (o1$cS + 60 <= 108) {
+      t5_two_lines(61.5, y_end + 4, "hydrogen-based,", second, adj = c(0, 1),
+                   cex = cex, col = col_new)
+    } else {
+      # the line leaves the box at the top: label inside, left of its end
+      t5_clip_box()
+      t5_two_lines(37, 116, "hydrogen-based,", second,
+                   adj = c(1, 1), cex = cex, col = col_new)
+    }
+  }
+  t5_clip_box()
+  t5_point(o0$Q_S, o0$P_S, t5_plab("E0", o0$Q_S, o0$P_S), at = c(23.2, 79.6),
+           adj = c(0, 0.5), cex = cex * 0.88)
+  if (steel) {
+    lab1 <- t5_plab("E1", o1$Q_S, o1$P_S, coords = tutor || !handout)
+    if (green) {
+      t5_point(o1$Q_S, o1$P_S, lab1, at = c(37, 68), adj = c(0, 0.5),
+               cex = cex)
+    } else {
+      # steel alone: E1 = (18, 82) lies next to E0, so its label sits to
+      # the left with a short leader line
+      points(o1$Q_S, o1$P_S, pch = 19, cex = 1)
+      t5_text(1.5, 92, lab1, adj = c(0, 0.5), cex = cex, font = 2,
+              bg = "white")
+      segments(o1$Q_S - 0.8, o1$P_S + 1, 9, 89.5, col = "grey30")
+    }
+  }
+  if (tutor && show_areas) {
+    a_lab <- paste0(if (steel) "PS1 = " else "PS = ", chain_fmt(o1$PS_S))
+    xc <- o1$Q_S / 3; yc <- o1$P_S - (o1$P_S - o1$cS) / 3
+    if (!steel) { xc <- 6.3; yc <- o1$P_S - (o1$P_S - o1$cS) / 4 }
+    # keep the label inside the box (the triangle is narrow at Q_S = 18)
+    xc <- max(xc, strwidth(a_lab, cex = cex, font = 2) / 2 + 0.8)
+    t5_text(xc, yc, a_lab, cex = cex, font = 2,
+            bg = if (steel && !green) "white" else NULL)
+  }
+  invisible(list(base = o0, case = o1))
+}
+
+
+### 38. fdi_outcomes(): the chip market and the input market ----
+# fdi = FALSE: the no-FDI benchmark (Home-owned plants, local inputs; lambda
+# and tau are ignored). fdi = TRUE: foreign-owned modernised plants;
+# lambda = 1 buys all inputs from the local suppliers (whose cost falls by
+# tau through knowledge transfer), lambda = 0 imports all of them.
+# Returns a named list: Q_D, Q_U, Q_M, P_U, P_M (NA when that group sells
+# nothing: shown as "n/a"), P_D, CS_D, PS_U, PS_M, PS_D (Home-owned plants,
+# before FDI only), Pi_F (foreign-owned plants, after FDI), W_H, W_F, W_W,
+# and the input market's price, quantity and supply intercept (P_in, Q_in,
+# c_in) and the plants' supply intercept c_D (non-input cost + input price).
+fdi_outcomes <- function(fdi = TRUE, lambda = 1, tau = 0, aD = 160,
+                         cD_old = 80, cD_new = 20, cU = 20, cM = 8) {
+  if (!is.logical(fdi) || length(fdi) != 1 || is.na(fdi)) {
+    stop("'fdi' must be TRUE or FALSE.", call. = FALSE)
+  }
+  if (!(length(lambda) == 1 && lambda %in% c(0, 1))) {
+    stop("'lambda' (the local sourcing share) must be 0 (all inputs ",
+         "imported) or 1 (all inputs local).", call. = FALSE)
+  }
+  if (!fdi) { lambda <- 1; tau <- 0 }
+  check_firm_number(tau, "tau", min = 0, what = "the knowledge transfer")
+  if (fdi && lambda == 1 && tau >= cU) {
+    stop("'tau' must be smaller than the local suppliers' cost intercept ",
+         "(", cU, ").", call. = FALSE)
+  }
+  c_non <- if (fdi) cD_new else cD_old       # plants' non-input cost
+  c_in  <- if (lambda == 1) cU - tau else cM # supply intercept of the source
+  # Chip market: aD - Q = c_non + P_in + Q and input market P_in = c_in + Q
+  # (one input per chip), so aD - Q = c_non + c_in + 2Q
+  Q <- (aD - c_non - c_in) / 3
+  if (Q <= 0) stop("Nothing would be traded with these values.",
+                   call. = FALSE)
+  P_in <- c_in + Q
+  P_D  <- aD - Q
+  PS_in <- 0.5 * Q * (P_in - c_in)
+  PS_pl <- 0.5 * Q * (P_D - c_non - P_in)
+  CS_D  <- 0.5 * Q * (aD - P_D)
+  loc <- lambda == 1
+  out <- list(fdi = fdi, lambda = lambda, tau = tau,
+              Q_D = Q, Q_U = if (loc) Q else 0, Q_M = if (loc) 0 else Q,
+              P_U = if (loc) P_in else NA_real_,
+              P_M = if (loc) NA_real_ else P_in,
+              P_D = P_D, CS_D = CS_D,
+              PS_U = if (loc) PS_in else 0, PS_M = if (loc) 0 else PS_in,
+              PS_D = if (fdi) 0 else PS_pl, Pi_F = if (fdi) PS_pl else 0,
+              P_in = P_in, Q_in = Q, c_in = c_in, c_D = c_non + P_in,
+              aD = aD, cU = cU, cM = cM)
+  out$W_H <- out$CS_D + out$PS_U + out$PS_D
+  out$W_F <- out$Pi_F + out$PS_M
+  out$W_W <- out$W_H + out$W_F
+  out
+}
+
+# Scenario name and point name for (lambda, tau)
+fdi_scenario_name <- function(lambda, tau) {
+  if (lambda == 0) "FDI enclave: all inputs imported"
+  else if (tau == 0) "FDI with local inputs, no knowledge transfer"
+  else "FDI with local inputs and knowledge transfer"
+}
+fdi_point_name <- function(lambda, tau, tau_main = 12) {
+  if (lambda == 0) "E1" else if (tau == 0) "E2"
+  else if (tau == tau_main) "E3" else "E"
+}
+
+
+### 39. draw_fdi_row(): input market (left) and chip market (right) ----
+# Draws the two panels of ONE FDI scenario into the next two plot regions
+# (the caller sets the layout; see draw_fdi_scenarios()). Grey: the no-FDI
+# benchmark (input demand 80 - 2Q, local supply 20 + Q, E0; chip supply
+# 120 + Q_D). Neutral (near black): the active curves after FDI (input
+# demand 140 - 2Q, the supply that meets it, the plants' new supply).
+# The chip demand 160 - Q_D does not change and is drawn in the neutral
+# colour. Shaded (answers, show_areas): surpluses coloured by OWNER, Home
+# blue (device makers' CS_D, local suppliers' PS_U), Foreign red (plants'
+# profit Pi_F, suppliers abroad's PS_M).
+# coords: show the scenario point's coordinates (noanswers: TRUE only for
+# the enclave, which the handout gives); prices in the curve labels and
+# drop lines follow 'coords'.
+draw_fdi_row <- function(lambda = 0, tau = 0, version = c("noanswers",
+                         "answers"), show_areas = TRUE, coords = NULL,
+                         point_name = NULL, cex = 0.62,
+                         tick_step = list(c(10, 20), c(10, 20)),
+                         cex.axis = 0.8) {
+  version <- match.arg(version); tutor <- version == "answers"
+  o0 <- fdi_outcomes(fdi = FALSE)
+  o1 <- fdi_outcomes(fdi = TRUE, lambda = lambda, tau = tau)
+  if (is.null(coords)) coords <- tutor || lambda == 0
+  if (is.null(point_name)) point_name <- fdi_point_name(lambda, tau)
+  loc <- lambda == 1
+  shift <- loc && tau > 0
+  col_b <- peib_cols["bench"]; col_n <- peib_cols["neutral"]
+  f_home <- firm_fill(peib_cols["home"], 0.35)
+  f_for  <- firm_fill(peib_cols["foreign"], 0.35)
+  xl <- c(0, 60)
+  ts <- function(i) if (is.null(tick_step)) NULL else
+    if (is.list(tick_step)) tick_step[[i]] else tick_step
+
+  ## Input market ----
+  yl <- c(0, 140)
+  open_panel(xl, yl, NULL, xlab = "Quantity of inputs (Q)",
+             ylab = "Price of inputs (P)", tick_step = ts(1),
+             cex.axis = cex.axis)
+  Q1 <- o1$Q_in; P1 <- o1$P_in; c1 <- o1$c_in
+  if (tutor && show_areas) {
+    polygon(c(0, 0, Q1), c(c1, P1, P1), border = NA,
+            col = if (loc) f_home else f_for)
+  }
+  chain_guides(o0$Q_in, o0$P_in, xl, yl, col = "grey55")
+  if (coords) chain_guides(Q1, P1, xl, yl, col = "grey30")
+  # benchmark (grey)
+  t5_seg(80, -2, 0, 60, yl, col = col_b, lwd = 2)
+  # label right of the lower end of the old demand curve (40, 0)
+  text(45.5, 2, "demand,\nold plants", adj = c(0, 0), cex = cex, col = col_b)
+  bench_sup_lty <- if (shift) 2 else 1
+  if (!(loc && !shift)) {
+    t5_seg(20, 1, 0, 60, yl, col = col_b, lwd = 2, lty = bench_sup_lty)
+    # label above the end of the line (60, 80), right-aligned
+    text(59.5, 82, expression(paste("Home suppliers, ", tau == 0)),
+         adj = c(1, 0), cex = cex, col = col_b)
+  }
+  # active curves (neutral)
+  t5_seg(140, -2, 0, 60, yl, col = col_n, lwd = 2.3)
+  text(7.5, 127, "demand, modernised plants", adj = c(0, 0), cex = cex,
+       col = col_n)
+  t5_seg(c1, 1, 0, 60, yl, col = col_n, lwd = 2.3)
+  # Label of the active supply: stacked lines, right-aligned just below
+  # the right end of the line (between the line and the new demand), so
+  # it clears the other labels for every tau
+  sup_lines <- if (!loc) list("suppliers", "abroad")
+               else list("Home", "suppliers,",
+                         bquote(tau == .(chain_fmt(tau))))
+  lh_u <- 1.2 * strheight("Mg", cex = cex)
+  w_u <- max(vapply(sup_lines, function(t) strwidth(t, cex = cex), 0))
+  x_r <- 59.5; y_t <- c1 + (x_r - w_u) - 2.5
+  for (k in seq_along(sup_lines)) {
+    text(x_r, y_t - (k - 1) * lh_u, sup_lines[[k]], adj = c(1, 1),
+         cex = cex, col = col_n)
+  }
+  # arrow: the modernised plants' demand moves out (label above it)
+  arrows(3, 75, 31, 75, length = 0.06, lwd = 1.4, col = "grey25")
+  text(15, 77.5, "modernised plants:\ndemand out", adj = c(0.5, 0),
+       cex = cex * 0.85, col = "grey25", font = 3)
+  if (shift) {
+    arrows(11, 20 + 11 - 1.5, 11, c1 + 11 + 1.5, length = 0.05, lwd = 1.4,
+           col = "grey25")
+    t5_text(13, 9.5, "knowledge transfer", adj = c(0, 0), cex = cex * 0.95,
+            col = "grey25", font = 3, bg = "white")
+    t5_text(13, 2.5, bquote(tau == .(chain_fmt(tau))), adj = c(0, 0),
+            cex = cex * 0.95, col = "grey25", font = 3, bg = "white")
+  }
+  # points
+  points(o0$Q_in, o0$P_in, pch = 19, cex = 1)
+  t5_text(18.5, 40, t5_plab("E0", o0$Q_in, o0$P_in), adj = c(1, 0.5),
+          cex = cex, font = 2, bg = "white")
+  points(Q1, P1, pch = 19, cex = 1)
+  if (loc && tau == 0) {
+    # E2 = (40, 60): the label goes above the point, between the curves
+    t5_text(Q1 + 1.5, P1 + 8, t5_plab(point_name, Q1, P1, coords),
+            adj = c(0.5, 0), cex = cex, font = 2, bg = "white")
+  } else {
+    t5_text(Q1 - 4.5, P1 + 2, t5_plab(point_name, Q1, P1, coords),
+            adj = c(1, 0), cex = cex, font = 2, bg = "white")
+  }
+  if (tutor && show_areas) {
+    lab <- if (loc) bquote(PS[U] == .(chain_fmt(o1$PS_U)))
+           else bquote(PS[M] == .(chain_fmt(o1$PS_M)))
+    t5_text(8, 48.6, lab, adj = c(0.5, 0.5), cex = cex, font = 2,
+            bg = "white")
+  }
+
+  ## Chip market ----
+  yl <- c(0, 160)
+  open_panel(xl, yl, NULL,
+             xlab = expression(paste("Quantity of chips (", Q[D], ")")),
+             ylab = expression(paste("Price of chips (", P[D], ")")),
+             tick_step = ts(2), cex.axis = cex.axis)
+  QD <- o1$Q_D; PD <- o1$P_D; cD <- o1$c_D
+  if (tutor && show_areas) {
+    polygon(c(0, 0, QD), c(cD, PD, PD), border = NA, col = f_for)
+    polygon(c(0, 0, QD), c(PD, o1$aD, PD), border = NA, col = f_home)
+  }
+  chain_guides(o0$Q_D, o0$P_D, xl, yl, col = "grey55")
+  if (coords) chain_guides(QD, PD, xl, yl, col = "grey30")
+  t5_seg(o0$c_D, 1, 0, 60, yl, col = col_b, lwd = 2)
+  t5_clip_device()
+  t5_two_lines(41.5, 159, "supply, old plants,",
+               bquote(P[U] == .(chain_fmt(o0$P_U))), adj = c(0, 1),
+               cex = cex, col = col_b)
+  t5_clip_box()
+  t5_seg(160, -1, 0, 60, yl, col = col_n, lwd = 2.3)
+  text(59.5, 96, "demand,\ndevice makers", adj = c(1, 1), cex = cex,
+       col = col_n)
+  t5_seg(cD, 1, 0, 60, yl, col = col_n, lwd = 2.3)
+  x_lab <- min(30, QD - 15)
+  t5_line_label(cD, 1, x_lab, "supply, modernised plants", side = -1,
+                cex = cex * 0.9, col = col_n)
+  if (coords) {
+    p2 <- if (loc) bquote(P[U] == .(chain_fmt(o1$P_U)))
+          else bquote(P[M] == .(chain_fmt(o1$P_M)))
+    t5_line_label(cD, 1, x_lab, p2, side = -1, cex = cex * 0.9, col = col_n,
+                  gap = 2.2)
+  }
+  points(o0$Q_D, o0$P_D, pch = 19, cex = 1)
+  t5_text(15.5, 140, t5_plab("E0", o0$Q_D, o0$P_D), adj = c(1, 0.5),
+          cex = cex, font = 2, bg = "white")
+  points(QD, PD, pch = 19, cex = 1)
+  t5_text(QD + 1, PD + 9.5, t5_plab(point_name, QD, PD, coords),
+          adj = c(0.5, 0.5), cex = cex, font = 2, bg = "white")
+  if (tutor && show_areas) {
+    t5_text(QD * 0.5, PD + 7,
+            bquote(CS[D] == .(chain_fmt(o1$CS_D))), cex = cex, font = 2,
+            bg = "white")
+    t5_text(QD * 0.3, PD - (PD - cD) * 0.3,
+            bquote(Pi[F] == .(chain_fmt(o1$Pi_F))), cex = cex, font = 2,
+            bg = "white")
+  }
+  invisible(list(base = o0, case = o1))
+}
+
+
+### 40. draw_fdi_scenarios(): one row per FDI scenario (Figure 4) ----
+# scen: a list of c(lambda, tau), one per row (handout: list(c(0, 0),
+# c(1, 12)), the enclave and local inputs with knowledge transfer; the
+# app: one row). Each row has a title with the scenario's name and (in the
+# answers version, totals = TRUE) the welfare totals Home / Foreign /
+# World. One legend across the top: grey = before FDI, neutral = active
+# curves after FDI; answers adds Home and Foreign colours for the areas.
+# coords: NULL (default: answers all, noanswers only the enclave) or a
+# logical vector, one per row. Handout size 8 x 7.2 inches (two rows).
+# Returns the list of fdi_outcomes() per row invisibly.
+draw_fdi_scenarios <- function(scen = list(c(0, 0), c(1, 12)),
+                               version = c("noanswers", "answers"),
+                               show_areas = TRUE, coords = NULL,
+                               totals = TRUE, cex = 0.74,
+                               title_cex = 0.8,
+                               tick_step = list(c(10, 20), c(10, 20))) {
+  version <- match.arg(version); tutor <- version == "answers"
+  n <- length(scen)
+  if (n < 1) stop("'scen' needs at least one scenario c(lambda, tau).",
+                  call. = FALSE)
+  if (is.null(coords)) coords <- vapply(scen, function(s)
+    tutor || s[1] == 0, TRUE)
+  coords <- rep(coords, length.out = n)
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  # Layout: a thin title strip above each row of two panels; the legend
+  # sits in the outer top margin
+  m <- matrix(0, 2 * n, 2)
+  k <- 1
+  for (i in seq_len(n)) {
+    m[2 * i - 1, ] <- k; k <- k + 1
+    m[2 * i, ] <- c(k, k + 1); k <- k + 2
+  }
+  layout(m, heights = rep(c(0.09, 1), n))
+  # layout() with four or more rows shrinks all text to 66%; cex = 1 undoes
+  # that, so the labels keep their size in the Word handout
+  par(oma = c(0.6, 0, 1.9, 0), mgp = c(2, 0.5, 0), las = 1, cex = 1)
+  out <- vector("list", n)
+  for (i in seq_len(n)) {
+    s <- scen[[i]]
+    o <- fdi_outcomes(TRUE, s[1], s[2])
+    out[[i]] <- o
+    par(mar = c(0, 0, 0, 0))
+    plot.new()
+    ttl <- if (s[1] == 0) paste0(fdi_scenario_name(s[1], s[2]),
+                                 " (\u03bb = 0)")
+           else paste0(fdi_scenario_name(s[1], s[2]), " (\u03bb = 1, \u03c4 = ",
+                       chain_fmt(s[2]), ")")
+    if (tutor && totals) {
+      ttl <- paste0(ttl, ".   Home / Foreign / World: ", chain_fmt(o$W_H),
+                    " / ", chain_fmt(o$W_F), " / ", chain_fmt(o$W_W))
+    }
+    text(0.5, 0.35, ttl, font = 2, cex = title_cex, xpd = NA)
+    par(mar = c(3.3, 3.4, 0.6, 0.8))
+    draw_fdi_row(s[1], s[2], version = version, show_areas = show_areas,
+                 tick_step = tick_step,
+                 coords = coords[i], cex = cex)
+  }
+  # Legend across the top (outer margin)
+  t5_clip_device()
+  items <- c("before FDI (benchmark)", "after FDI (active curves)")
+  lcol <- c(peib_cols["bench"], peib_cols["neutral"])
+  x <- grconvertX(0.5, "ndc", "user"); y <- grconvertY(0.997, "ndc", "user")
+  if (tutor && show_areas) {
+    legend(x, y, xjust = 0.5, yjust = 1, xpd = NA, bty = "n", ncol = 4,
+           legend = c(items, "surplus owned in Home",
+                      "surplus owned in Foreign"),
+           col = c(lcol, firm_fill(peib_cols["home"], 0.35),
+                   firm_fill(peib_cols["foreign"], 0.35)),
+           lty = c(1, 1, NA, NA), lwd = c(2, 2.3, NA, NA),
+           pch = c(NA, NA, 15, 15), pt.cex = 2.2,
+           seg.len = 2, x.intersp = 0.6, text.width = NULL, cex = 0.74)
+  } else {
+    legend(x, y, xjust = 0.5, yjust = 1, xpd = NA, bty = "n", ncol = 2,
+           legend = items, col = lcol, lty = 1, lwd = c(2, 2.3),
+           seg.len = 2, x.intersp = 0.5, cex = 0.74)
+  }
+  invisible(out)
 }

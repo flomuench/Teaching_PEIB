@@ -9,7 +9,8 @@
 #       Part 4: Tutorial 2 figures                          (on)
 #       Part 5: Tutorial 3 figures                          (on)
 #       Part 6: Tutorial 4 figures                          (on)
-#       Parts 7-12: Tutorials 5 to 10 figures               (off)
+#       Part 7: Tutorial 5 figures                          (on)
+#       Parts 8-12: Tutorials 6 to 10 figures               (off)
 #       Part 13: Build the website locally                  (off)
 #       Part 14: Test an app locally as a normal Shiny app  (off)
 #       Part 15: Session information
@@ -80,12 +81,13 @@ o_fig  <- file.path(root, "figures")     # PNGs for handouts and website
 d_site <- file.path(root, "_site")       # rendered website (Part 13)
 
 # One figures subfolder per tutorial: figures/tutorial1/, figures/tutorial2/,
-# ... (no leading zero in the folder name). Add o_fig_t5 <- file.path(o_fig,
-# "tutorial5") etc. here when the next tutorial's figures script exists.
+# ... (no leading zero in the folder name). Add o_fig_t6 <- file.path(o_fig,
+# "tutorial6") etc. here when the next tutorial's figures script exists.
 o_fig_t1 <- file.path(o_fig, "tutorial1")   # Tutorial 1 figures (Part 3)
 o_fig_t2 <- file.path(o_fig, "tutorial2")   # Tutorial 2 figures (Part 4)
 o_fig_t3 <- file.path(o_fig, "tutorial3")   # Tutorial 3 figures (Part 5)
 o_fig_t4 <- file.path(o_fig, "tutorial4")   # Tutorial 4 figures (Part 6)
+o_fig_t5 <- file.path(o_fig, "tutorial5")   # Tutorial 5 figures (Part 7)
 
 dir.create(o_fig, showWarnings = FALSE)  # create figures/ if it is missing
 
@@ -122,8 +124,9 @@ pacman::p_load(
 # draw_market_step() (Tutorial 1), chain_outcomes() and the draw_chain_*()
 # functions (Tutorial 2), subsidy_outcomes(), draw_subsidy(), learning_cost()
 # and draw_learning() (Tutorial 3), open_outcomes(), open_two_period() and
-# the draw_open_*() functions (Tutorial 4), the colour palette peib_cols and
-# their helpers.
+# the draw_open_*() functions (Tutorial 4), h2_outcomes(), draw_h2_steel(),
+# fdi_outcomes() and draw_fdi_scenarios() (Tutorial 5), the colour palette
+# peib_cols and their helpers.
 # Nothing is drawn yet. (No echo: the file is 5,000 lines long.)
 source(file.path(c_code, "functions_models.R"))
 
@@ -140,13 +143,14 @@ if (1) source(file.path(c_code, "tutorial01_figures.R"), echo = TRUE)
 # Parts 4-12: Tutorials 2 to 10 ----
 # ***********************************************************
 # Explanatory notes:
-  # Parts 7-12 are switched off (if (0)) because their scripts do not exist
+  # Parts 8-12 are switched off (if (0)) because their scripts do not exist
   # yet; a switched-off line is skipped, so it cannot cause an error. When a
   # tutorial's figures are ready: copy code/tutorial04_figures.R to the new
-  # name as a template, replace its figures, then change if (0) to if (1).
+  # name as a template (or code/tutorial05_figures.R), replace its
+  # figures, then change if (0) to if (1).
   # Each tutorial saves its PNGs in its own folder figures/tutorialN/ (e.g.
-  # Tutorial 5: figures/tutorial5/, path o_fig_t5 to be defined in Part 1;
-  # in the copied script, replace every o_fig_t4 by o_fig_t5).
+  # Tutorial 6: figures/tutorial6/, path o_fig_t6 to be defined in Part 1;
+  # in the copied script, replace every o_fig_t5 by o_fig_t6).
 
 ### Part 4: Tutorial 2: the nickel-battery value chain ----
 # Writes the Tutorial 2 PNGs (student and tutor versions) and the overview
@@ -166,8 +170,12 @@ if (1) source(file.path(c_code, "tutorial03_figures.R"), echo = TRUE)
 # the spillover slider table (theta = 0, 0.2, 0.5, 0.8, 1).
 if (1) source(file.path(c_code, "tutorial04_figures.R"), echo = TRUE)
 
-### Part 7: Tutorial 5 ----
-if (0) source(file.path(c_code, "tutorial05_figures.R"), echo = TRUE)
+### Part 7: Tutorial 5: linked investments and FDI with local suppliers ----
+# Writes the Tutorial 5 PNGs (noanswers and answers versions of Figures 1,
+# 2 and 4; Figure 3 is TikZ) and the overview sheet into figures/tutorial5/,
+# prints the answer key numbers and stops if one no longer matches the
+# handout (Tables 2, 4, 8, 9 and A.1).
+if (1) source(file.path(c_code, "tutorial05_figures.R"), echo = TRUE)
 
 ### Part 8: Tutorial 6 ----
 if (0) source(file.path(c_code, "tutorial06_figures.R"), echo = TRUE)
@@ -207,6 +215,8 @@ if (0) source(file.path(c_code, "website_build.R"))
 #   tutorials/tutorial02_linked_markets.qmd  1 = Explorer A, 2 = Explorer B
 #   tutorials/tutorial03_subsidy.qmd         1 = the explorer
 #   tutorials/tutorial04_open_economy.qmd    1 = the explorer
+#   tutorials/tutorial05_linkages_fdi.qmd    1 = hydrogen and steel,
+#                                            2 = FDI and local suppliers
 app_qmd   <- "tutorials/tutorial01_market.qmd"
 app_chunk <- 1
 if (0) source(file.path(c_code, "app_test.R"))

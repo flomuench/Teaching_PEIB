@@ -8,6 +8,9 @@ project:
   type: website
   output-dir: _site          # rendered HTML goes here (not committed to git;
                              # GitHub Actions rebuilds it on every push)
+  render:                    # only these files become pages; README.md,
+    - index.qmd              # CLAUDE.md, AGENTS.md and any other .md in
+    - tutorials/*.qmd        # the repo are NOT rendered as site pages
 
 website:
   title: "SEES0082 - Political Economy of International Business"
@@ -25,6 +28,8 @@ website:
             text: "Tutorial 3 - Subsidies, welfare and learning-by-doing"
           - href: tutorials/tutorial04_open_economy.qmd
             text: "Tutorial 4 - Trade, national subsidies and welfare across borders"
+          - href: tutorials/tutorial05_linkages_fdi.qmd
+            text: "Tutorial 5 - Linkages: joint investment, FDI and local suppliers"
   page-footer:
     center: "UCL SSEES - Florian Münch - 2026/27"
 
