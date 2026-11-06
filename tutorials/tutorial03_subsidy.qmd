@@ -36,7 +36,7 @@ engine: markdown   # nothing to run at build time; the app runs in the browser
     change, change them there too. The app draws the "answers" version
     (with numbers): students use it after working through the questions.
   - To try the app on your computer as a normal Shiny app before pushing,
-    switch on Part 14 (code/app_test.R) in code/master.R and set app_qmd to
+    switch on Part 16 (code/app_test.R) in code/master.R and set app_qmd to
     this page there (app_chunk = 1).
 -->
 

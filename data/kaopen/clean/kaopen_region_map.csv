@@ -1,0 +1,186 @@
+code,entity,region_wb,region_un_sub,region,override,first_year,last_year,n_years,balanced
+AUS,Australia,East Asia & Pacific,Australia and New Zealand,east_asia_pacific,FALSE,1970,2023,54,TRUE
+CHN,China,East Asia & Pacific,Eastern Asia,east_asia_pacific,FALSE,1984,2023,40,FALSE
+FJI,Fiji,East Asia & Pacific,Melanesia,east_asia_pacific,FALSE,1975,2023,49,FALSE
+FSM,"Micronesia, Fed. Sts.",East Asia & Pacific,Micronesia,east_asia_pacific,FALSE,1996,2021,26,FALSE
+HKG,"Hong Kong, China",East Asia & Pacific,Eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+IDN,Indonesia,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+JPN,Japan,East Asia & Pacific,Eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+KHM,Cambodia,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1973,2023,31,FALSE
+KIR,Kiribati,East Asia & Pacific,Micronesia,east_asia_pacific,FALSE,1990,2023,22,FALSE
+KOR,"Korea, Rep.",East Asia & Pacific,Eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+LAO,Lao PDR,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,49,FALSE
+MHL,Marshall Islands,East Asia & Pacific,Micronesia,east_asia_pacific,FALSE,1996,2023,28,FALSE
+MMR,Myanmar,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+MNG,Mongolia,East Asia & Pacific,Eastern Asia,east_asia_pacific,FALSE,1995,2023,29,FALSE
+MYS,Malaysia,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+NZL,New Zealand,East Asia & Pacific,Australia and New Zealand,east_asia_pacific,FALSE,1970,2023,54,TRUE
+PHL,Philippines,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+PNG,Papua New Guinea,East Asia & Pacific,Melanesia,east_asia_pacific,FALSE,1979,2023,45,FALSE
+SGP,Singapore,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+SLB,Solomon Islands,East Asia & Pacific,Melanesia,east_asia_pacific,FALSE,1982,2023,42,FALSE
+THA,Thailand,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,54,TRUE
+TMP,Timor-Leste,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,,,0,FALSE
+TON,Tonga,East Asia & Pacific,Polynesia,east_asia_pacific,FALSE,1989,2023,35,FALSE
+VNM,Vietnam,East Asia & Pacific,South-eastern Asia,east_asia_pacific,FALSE,1970,2023,49,FALSE
+VUT,Vanuatu,East Asia & Pacific,Melanesia,east_asia_pacific,FALSE,1985,2023,22,FALSE
+WSM,Samoa,East Asia & Pacific,Polynesia,east_asia_pacific,FALSE,1975,2023,49,FALSE
+ALB,Albania,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1995,2023,29,FALSE
+ARM,Armenia,Europe & Central Asia,Western Asia,europe_central_asia,FALSE,1996,2023,28,FALSE
+AUT,Austria,Europe & Central Asia,Western Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+AZE,Azerbaijan,Europe & Central Asia,Western Asia,europe_central_asia,FALSE,1996,2023,28,FALSE
+BEL,Belgium,Europe & Central Asia,Western Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+BGR,Bulgaria,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1994,2023,30,FALSE
+BIH,Bosnia and Herzegovina,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1999,2023,25,FALSE
+BLR,Belarus,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+CHE,Switzerland,Europe & Central Asia,Western Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+CYP,Cyprus,Europe & Central Asia,Western Asia,europe_central_asia,FALSE,1970,2023,54,TRUE
+CZE,Czech Republic,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+DEU,Germany,Europe & Central Asia,Western Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+DNK,Denmark,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+ESP,Spain,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+EST,Estonia,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+FIN,Finland,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+FRA,France,Europe & Central Asia,Western Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+GBR,United Kingdom,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+GEO,Georgia,Europe & Central Asia,Western Asia,europe_central_asia,FALSE,1996,2023,28,FALSE
+GRC,Greece,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+HRV,Croatia,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+HUN,Hungary,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1986,2023,38,FALSE
+IRL,Ireland,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+ISL,Iceland,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+ITA,Italy,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+KAZ,Kazakhstan,Europe & Central Asia,Central Asia,europe_central_asia,FALSE,1996,2023,28,FALSE
+KGZ,Kyrgyz Republic,Europe & Central Asia,Central Asia,europe_central_asia,FALSE,1997,2023,27,FALSE
+LTU,Lithuania,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+LVA,Latvia,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+MDA,Moldova,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+MKD,"Macedonia, FYR",Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1997,2023,27,FALSE
+MNE,Montenegro,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,,,0,FALSE
+NLD,Netherlands,Europe & Central Asia,Western Europe,europe_central_asia,FALSE,1970,2023,48,FALSE
+NOR,Norway,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+POL,Poland,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1986,2023,38,FALSE
+PRT,Portugal,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+ROU,Romania,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1976,2023,48,FALSE
+RUS,Russian Federation,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+SMR,San Marino,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+SRB,"Serbia, Rep. of",Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,,,0,FALSE
+SVK,Slovak Republic,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+SVN,Slovenia,Europe & Central Asia,Southern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+SWE,Sweden,Europe & Central Asia,Northern Europe,europe_central_asia,FALSE,1970,2023,54,TRUE
+TJK,Tajikistan,Europe & Central Asia,Central Asia,europe_central_asia,FALSE,1997,2023,27,FALSE
+TKM,Turkmenistan,Europe & Central Asia,Central Asia,europe_central_asia,FALSE,1996,2023,28,FALSE
+TUR,Turkiye,Europe & Central Asia,Western Asia,europe_central_asia,FALSE,1970,2023,54,TRUE
+UKR,Ukraine,Europe & Central Asia,Eastern Europe,europe_central_asia,FALSE,1996,2023,28,FALSE
+UZB,Uzbekistan,Europe & Central Asia,Central Asia,europe_central_asia,FALSE,1996,2023,28,FALSE
+ABW,Aruba,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1992,2023,32,FALSE
+ANT,Netherlands Antilles,Latin America & Caribbean,,lac,TRUE,1970,2009,39,FALSE
+ARG,Argentina,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+ATG,Antigua and Barbuda,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1985,2023,31,FALSE
+BHS,"Bahamas, The",Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1977,2023,47,FALSE
+BLZ,Belize,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1985,2023,39,FALSE
+BOL,Bolivia,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+BRA,Brazil,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+BRB,Barbados,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1974,2023,50,FALSE
+CHL,Chile,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+COL,Colombia,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+CRI,Costa Rica,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+DMA,Dominica,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1982,2023,42,FALSE
+DOM,Dominican Republic,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+ECU,Ecuador,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+GRD,Grenada,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1979,2023,45,FALSE
+GTM,Guatemala,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+GUY,Guyana,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+HND,Honduras,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+HTI,Haiti,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,47,FALSE
+JAM,Jamaica,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+KNA,St. Kitts and Nevis,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1988,2023,36,FALSE
+LCA,St. Lucia,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1983,2023,41,FALSE
+MEX,Mexico,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+NIC,Nicaragua,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+PAN,Panama,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+PER,Peru,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+PRY,Paraguay,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+SLV,El Salvador,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+SUR,Suriname,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,47,FALSE
+TTO,Trinidad and Tobago,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+URY,Uruguay,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+VCT,St. Vincent and the Grenadines,Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1983,2023,41,FALSE
+VEN,"Venezuela, RB",Latin America & Caribbean,Latin America and the Caribbean,lac,FALSE,1970,2023,54,TRUE
+ARE,United Arab Emirates,Middle East & North Africa,Western Asia,mena,FALSE,1976,2023,48,FALSE
+BHR,Bahrain,Middle East & North Africa,Western Asia,mena,FALSE,1976,2023,48,FALSE
+DJI,Djibouti,Middle East & North Africa,Sub-Saharan Africa,mena,FALSE,1982,2023,42,FALSE
+DZA,Algeria,Middle East & North Africa,Northern Africa,mena,FALSE,1970,2023,54,TRUE
+EGY,"Egypt, Arab Rep.",Middle East & North Africa,Northern Africa,mena,FALSE,1970,2023,54,TRUE
+IRN,"Iran, Islamic Rep.",Middle East & North Africa,Southern Asia,mena,FALSE,1970,2023,54,TRUE
+IRQ,Iraq,Middle East & North Africa,Western Asia,mena,FALSE,1970,2002,28,FALSE
+ISR,Israel,Middle East & North Africa,Western Asia,mena,FALSE,1970,2023,54,TRUE
+JOR,Jordan,Middle East & North Africa,Western Asia,mena,FALSE,1970,2023,54,TRUE
+KWT,Kuwait,Middle East & North Africa,Western Asia,mena,FALSE,1970,2023,54,TRUE
+LBN,Lebanon,Middle East & North Africa,Western Asia,mena,FALSE,1970,2023,54,TRUE
+LBY,Libya,Middle East & North Africa,Northern Africa,mena,FALSE,1970,2023,50,FALSE
+MAR,Morocco,Middle East & North Africa,Northern Africa,mena,FALSE,1970,2023,54,TRUE
+MLT,Malta,Middle East & North Africa,Southern Europe,mena,FALSE,1972,2023,52,FALSE
+OMN,Oman,Middle East & North Africa,Western Asia,mena,FALSE,1977,2023,47,FALSE
+QAT,Qatar,Middle East & North Africa,Western Asia,mena,FALSE,1976,2023,48,FALSE
+SAU,Saudi Arabia,Middle East & North Africa,Western Asia,mena,FALSE,1970,2023,54,TRUE
+SYR,Syrian Arab Republic,Middle East & North Africa,Western Asia,mena,FALSE,1970,2023,54,TRUE
+TUN,Tunisia,Middle East & North Africa,Northern Africa,mena,FALSE,1970,2023,54,TRUE
+YEM,"Yemen, Rep.",Middle East & North Africa,Western Asia,mena,FALSE,1995,2023,28,FALSE
+CAN,Canada,North America,Northern America,north_america,FALSE,1970,2023,54,TRUE
+USA,United States,North America,Northern America,north_america,FALSE,1970,2023,54,TRUE
+AFG,Afghanistan,South Asia,Southern Asia,south_asia,FALSE,1970,2000,26,FALSE
+BGD,Bangladesh,South Asia,Southern Asia,south_asia,FALSE,1976,2023,48,FALSE
+BTN,Bhutan,South Asia,Southern Asia,south_asia,FALSE,1985,2023,39,FALSE
+IND,India,South Asia,Southern Asia,south_asia,FALSE,1970,2023,54,TRUE
+LKA,Sri Lanka,South Asia,Southern Asia,south_asia,FALSE,1970,2023,54,TRUE
+MDV,Maldives,South Asia,Southern Asia,south_asia,FALSE,1982,2023,42,FALSE
+NPL,Nepal,South Asia,Southern Asia,south_asia,FALSE,1970,2023,54,TRUE
+PAK,Pakistan,South Asia,Southern Asia,south_asia,FALSE,1970,2023,54,TRUE
+AGO,Angola,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1993,2023,31,FALSE
+BDI,Burundi,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+BEN,Benin,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1979,2023,45,FALSE
+BFA,Burkina Faso,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1988,2023,36,FALSE
+BWA,Botswana,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1972,2023,52,FALSE
+CAF,Central African Republic,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+CIV,Cote d'Ivoire,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+CMR,Cameroon,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+COG,"Congo, Rep.",Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+COM,Comoros,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1981,2023,43,FALSE
+CPV,Cape Verde,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1982,2023,42,FALSE
+ERI,Eritrea,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1998,2023,26,FALSE
+ETH,Ethiopia,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+GAB,Gabon,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+GHA,Ghana,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+GIN,Guinea,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+GMB,"Gambia, The",Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1971,2023,53,FALSE
+GNB,Guinea-Bissau,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1981,2023,43,FALSE
+GNQ,Equatorial Guinea,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1973,2023,51,FALSE
+KEN,Kenya,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+LBR,Liberia,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+LSO,Lesotho,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1972,2023,52,FALSE
+MDG,Madagascar,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+MLI,Mali,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+MOZ,Mozambique,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1988,2023,36,FALSE
+MRT,Mauritania,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+MUS,Mauritius,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1972,2023,52,FALSE
+MWI,Malawi,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+NAM,Namibia,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1994,2023,30,FALSE
+NER,Niger,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+NGA,Nigeria,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+RWA,Rwanda,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+SDN,Sudan,Sub-Saharan Africa,Northern Africa,ssa,FALSE,1970,2023,53,FALSE
+SEN,Senegal,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+SLE,Sierra Leone,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+SOM,Somalia,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2007,33,FALSE
+STP,Sao Tome and Principe,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1981,2023,43,FALSE
+SWZ,Swaziland,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1973,2023,51,FALSE
+SYC,Seychelles,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1981,2023,43,FALSE
+TCD,Chad,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+TGO,Togo,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+TZA,Tanzania,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+UGA,Uganda,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+ZAF,South Africa,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+ZAR,"Congo, Dem. Rep.",Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,49,FALSE
+ZMB,Zambia,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1970,2023,54,TRUE
+ZWE,Zimbabwe,Sub-Saharan Africa,Sub-Saharan Africa,ssa,FALSE,1984,2023,40,FALSE

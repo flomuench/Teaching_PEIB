@@ -32,7 +32,7 @@ engine: markdown   # nothing to run at build time; the apps run in the browser
     of each app.R): if the handout parameters in code/tutorial02_figures.R
     change, change them there too.
   - To try an app on your computer as a normal Shiny app before pushing,
-    switch on Part 14 (code/app_test.R) in code/master.R and set app_qmd to
+    switch on Part 16 (code/app_test.R) in code/master.R and set app_qmd to
     this page there (app_chunk = 1: single-market explorer, 2:
     linked-markets explorer).
 -->

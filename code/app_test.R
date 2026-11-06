@@ -34,7 +34,7 @@
 
 # Safety check: stop with a clear message if master.R Part 1 has not run
 if (!exists("root")) {
-  stop("root is missing. Run code/master.R with Part 14 switched on, or ",
+  stop("root is missing. Run code/master.R with Part 16 switched on, or ",
        "run its Part 1 before this script.", call. = FALSE)
 }
 
@@ -42,7 +42,7 @@ if (!exists("root")) {
 # ***********************************************************
 # Part 1: Options: which page, which app ----
 # ***********************************************************
-# The page and the app can also be chosen in code/master.R, Part 14 (set
+# The page and the app can also be chosen in code/master.R, Part 16 (set
 # app_qmd and app_chunk there, just before this script is sourced); the
 # values below are used only if they are not set yet.
 # Pages and their apps:

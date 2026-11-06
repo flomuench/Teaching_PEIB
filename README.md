@@ -18,7 +18,9 @@ The diagrams are small Shiny apps that run **inside the student's browser** (via
 | `code/tutorial01_figures.R` | Makes the Tutorial 1 PNGs in `figures/tutorial1/` and prints the answer key numbers. |
 | `code/website_build.R` | Optional: checks the pages and builds the website on your computer. |
 | `code/app_test.R` | Optional: runs one page's app on your computer as a normal Shiny app. |
-| `figures/` | PNG figures (committed to git), one subfolder per tutorial: `figures/tutorial1/`, `figures/tutorial2/`, ... (no leading zero in the folder name). |
+| `figures/` | PNG figures (committed to git), one subfolder per tutorial: `figures/tutorial1/`, `figures/tutorial2/`, ... (no leading zero in the folder name); lecture data figures (PNG and PDF) in `figures/lectureN/` (e.g. `figures/lecture5/`). |
+| `data/` | Data for the lecture figures: `data/kaopen/raw/` and `data/imf_bop/raw/` (downloads, not committed, re-created by `code/kaopen_import.R` and `code/bop_import.R`) and `data/kaopen/clean/`, `data/imf_bop/clean/` (csv files, committed). |
+| `outputs/` | Slide-ready deliverables that are not website figures: `outputs/lecture5_capital_inflows/` (IMF capital inflows figure as PNG, PDF, SVG, PPTX, csv and methodology notes; master Part 14). |
 | `Teaching_PEIB.Rproj` | RStudio project: opening it sets the working directory to this folder. |
 | `.github/workflows/publish.yml` | GitHub Actions recipe that renders and publishes the site on every push. |
 | `_extensions/quarto-ext/shinylive/` | The Quarto shinylive extension (do not edit). |
@@ -31,13 +33,15 @@ The diagrams are small Shiny apps that run **inside the student's browser** (via
 
 | Part | What it does | Default |
 |---|---|---|
-| 1 | Settings: finds the repository folder, sets the folder paths, loads packages (`shiny`, `shinylive`) | always runs |
-| 2 | Loads the functions in `code/functions_models.R` | always runs |
+| 1 | Settings: finds the repository folder, sets the folder paths, loads packages (`shiny`, `shinylive`, `png`, and for the lecture data figures `haven`, `curl`, `jsonlite`, `data.table`, `countrycode`, `ggplot2`, `ggrepel`, `scales`, `ragg`, `systemfonts`, and for the IMF figure `imf.data`, `svglite`, `officer`, `rvg`) | always runs |
+| 2 | Loads the functions in `code/functions_models.R` (models, diagrams, apps) and `code/functions_lecture.R` (ggplot theme and save helper for lecture data figures; never in the apps) | always runs |
 | 3 | `code/tutorial01_figures.R`: Tutorial 1 PNGs and answer key numbers | on |
-| 4-12 | Tutorials 2 to 10: `code/tutorial02_figures.R` ... (create the script when the content exists, then switch it on) | off |
-| 13 | `code/website_build.R`: checks the pages and renders the site into `_site/` | off |
-| 14 | `code/app_test.R`: runs one page's app as a normal Shiny app | off |
-| 15 | Prints R and package versions | always runs |
+| 4-12 | Tutorials 2 to 10: `code/tutorial02_figures.R` ... (create the script when the content exists, then switch it on) | 4-7 on, 8-12 off |
+| 13 | Lecture 5 data figures: `code/kaopen_import.R` (downloads the Chinn-Ito financial openness index into `data/kaopen/raw/`, gitignored, once), `code/kaopen_clean.R` (the seven World Bank regions from the `countrycode` package, region-year means into `data/kaopen/clean/`), `code/lecture05_kaopen_figures.R` (three figures as PNG and PDF into `figures/lecture5/`: seven regions, the same on a balanced panel, small multiples with a World panel; plus a headline numbers csv) | on |
+| 14 | Lecture 5 IMF capital inflows figure: `code/bop_import.R` (verifies the IMF codes against the code lists and downloads the balance of payments and WEO GDP data via the IMF SDMX 3.0 API into `data/imf_bop/raw/`, gitignored, once; set `BOP_FORCE_DOWNLOAD <- TRUE` to refresh), `code/bop_clean.R` (economy-year panel, world sums, coverage and checks into `data/imf_bop/clean/`), `code/lecture05_bop_figures.R` (stacked-area figure 1980-2025 and a 1996 variant as PNG, PDF and SVG, a 3-slide PPTX on the course template, the figure csv, headline numbers and methodology notes into `outputs/lecture5_capital_inflows/`) | on |
+| 15 | `code/website_build.R`: checks the pages and renders the site into `_site/` | off |
+| 16 | `code/app_test.R`: runs one page's app as a normal Shiny app | off |
+| 17 | Prints R and package versions | always runs |
 
 All scripts in `code/` rely on Parts 1 and 2. To run one script by hand, run Parts 1 and 2 of `master.R` first.
 
@@ -61,9 +65,9 @@ Then, with `Teaching_PEIB.Rproj` open:
 
 - click **Render** on a `.qmd` file, or
 - type `quarto preview` in the RStudio **Terminal** tab (not the Console). A browser window opens and refreshes whenever you save, or
-- switch on Part 13 of `code/master.R`: it first checks the pages for known pitfalls (missing `engine: markdown`, broken figure links, wrong file names in the app chunk), then renders the whole site into `_site/`. Set `website_preview <- TRUE` at the top of `code/website_build.R` for a live preview afterwards.
+- switch on Part 15 of `code/master.R`: it first checks the pages for known pitfalls (missing `engine: markdown`, broken figure links, wrong file names in the app chunk), then renders the whole site into `_site/`. Set `website_preview <- TRUE` at the top of `code/website_build.R` for a live preview afterwards.
 
-To test only one app: switch on Part 14 of `code/master.R` (choose the page at the top of `code/app_test.R`). The app opens in a browser window as a normal Shiny app, and errors appear in the RStudio console.
+To test only one app: switch on Part 16 of `code/master.R` (choose the page at the top of `code/app_test.R`). The app opens in a browser window as a normal Shiny app, and errors appear in the RStudio console.
 
 The first render downloads the shinylive web assets (about 60-70 MB, once per shinylive version).
 
@@ -81,7 +85,7 @@ The first render downloads the shinylive web assets (about 60-70 MB, once per sh
 3. Edit the `## file: app.R` part of the `{shinylive-r}` chunk (inputs, outputs).
 4. Add the page to the "Tutorials" menu in `_quarto.yml`, and a link on `index.qmd`.
 5. For the handout figures: copy `code/tutorial01_figures.R` to `code/tutorialNN_figures.R`, add a path for its folder in Part 1 of `code/master.R` (e.g. `o_fig_t2 <- file.path(o_fig, "tutorial2")`), save the PNGs there, link them from the page as `../figures/tutorial2/<file>.png`, and switch on the script's line in `code/master.R`.
-6. Preview locally (`code/master.R` Parts 13 and 14), then commit and push.
+6. Preview locally (`code/master.R` Parts 14 and 15), then commit and push.
 
 Rules for the app code:
 
@@ -92,6 +96,6 @@ Rules for the app code:
 ## Troubleshooting
 
 - **Red cross in the Actions tab**: click the failed run, open the red step and read the last lines of the log. Usually a typo in a `.qmd` or `_quarto.yml` (YAML is sensitive to indentation). Fix, commit, push again.
-- **The app area stays blank or grey**: wait 30 seconds (first load). If it is still blank, open the browser's developer console (F12 or Cmd+Option+I > Console) and look for red errors. An R error in `app.R` or `functions_models.R` shows up there; test the app on your computer first with Part 14 of `code/master.R` (`code/app_test.R`), or run Parts 1 and 2 of `code/master.R` and then e.g. `draw_market(tax = 2)`.
+- **The app area stays blank or grey**: wait 30 seconds (first load). If it is still blank, open the browser's developer console (F12 or Cmd+Option+I > Console) and look for red errors. An R error in `app.R` or `functions_models.R` shows up there; test the app on your computer first with Part 15 of `code/master.R` (`code/app_test.R`), or run Parts 1 and 2 of `code/master.R` and then e.g. `draw_market(tax = 2)`.
 - **First load is slow**: expected. The browser downloads R itself (webR) the first time; later visits use the cache. The static PNGs on each page are there so students see the diagrams immediately.
 - **Site not updated after a push**: check the Actions tab; then force-refresh the page (Ctrl+F5 / Cmd+Shift+R).

@@ -27,5 +27,13 @@ Latex slides/PEIB/*.snm
 Latex slides/PEIB/*.toc
 Latex slides/PEIB/*.synctex.gz
 
+# Downloaded raw data: code/kaopen_import.R re-creates it (master Part 13);
+# the clean csv files in data/kaopen/clean/ are committed
+data/kaopen/raw/
+
 # Student personal data (names, numbers, emails): never commit
 code/group_allocation_26_27.do
+
+# IMF balance of payments downloads: code/bop_import.R re-creates them (master
+# Part 14); the clean csv files in data/imf_bop/clean/ are committed
+data/imf_bop/raw/

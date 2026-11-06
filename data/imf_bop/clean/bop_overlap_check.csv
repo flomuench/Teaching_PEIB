@@ -1,0 +1,6 @@
+pred,succ,pred_first,pred_last,succ_first,succ_last,overlap_years
+ANT,CUW,1976,2009,2011,2023,0
+ANT,SXM,1976,2009,2011,2023,0
+ANT,CWX,1976,2009,2024,2025,0
+CWX,CUW,2024,2025,2011,2023,0
+CWX,SXM,2024,2025,2011,2023,0

@@ -22,7 +22,7 @@ engine: markdown   # nothing to run at build time; the app runs in the browser
     at the top of its app.R): if the handout parameters in
     code/tutorial01_figures.R change, change them there too.
   - To try the app on your computer as a normal Shiny app before pushing,
-    switch on Part 14 (code/app_test.R) in code/master.R (app_chunk = 1 is
+    switch on Part 16 (code/app_test.R) in code/master.R (app_chunk = 1 is
     the explorer).
 -->
 

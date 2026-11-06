@@ -1,0 +1,17 @@
+sample,region,mean_ka_open_1970,mean_ka_open_1990,mean_ka_open_2008,mean_ka_open_2023,n_countries_1970,n_countries_1990,n_countries_2008,n_countries_2023
+all,east_asia_pacific,0.373,0.5513,0.5595,0.5748,13,21,23,24
+all,europe_central_asia,0.3585,0.5009,0.7496,0.7213,18,21,46,46
+all,lac,0.4604,0.2672,0.6194,0.4982,24,33,34,33
+all,mena,0.3151,0.4894,0.6916,0.6021,13,19,19,19
+all,north_america,1,1,1,1,2,2,2,2
+all,south_asia,0.1758,0.1911,0.3226,0.1952,5,8,7,7
+all,ssa,0.2027,0.226,0.3117,0.324,29,44,45,46
+all,world,0.3385,0.3628,0.5672,0.5261,104,148,176,177
+balanced,east_asia_pacific,0.3904,0.7419,0.677,0.7148,11,11,11,11
+balanced,europe_central_asia,0.3383,0.56,0.9181,0.9507,17,17,17,17
+balanced,lac,0.4481,0.213,0.7974,0.6181,21,21,21,21
+balanced,mena,0.3576,0.3466,0.5489,0.4323,11,11,11,11
+balanced,north_america,1,1,1,1,2,2,2,2
+balanced,south_asia,0.0812,0.1624,0.2333,0.1218,4,4,4,4
+balanced,ssa,0.2136,0.2027,0.287,0.2702,26,26,26,26
+balanced,world,0.3399,0.3683,0.6113,0.5573,92,92,92,92

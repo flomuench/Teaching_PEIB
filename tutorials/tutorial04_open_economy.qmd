@@ -35,7 +35,7 @@ engine: markdown   # nothing to run at build time; the app runs in the browser
     the subsidy); the learning rate is calibrated so that s = 20 lowers it
     from 20 to 16, as in the handout. s = 0 means no learning at all.
   - To try the app on your computer as a normal Shiny app before pushing,
-    switch on Part 14 (code/app_test.R) in code/master.R and set app_qmd to
+    switch on Part 16 (code/app_test.R) in code/master.R and set app_qmd to
     this page there (app_chunk = 1).
 -->
 

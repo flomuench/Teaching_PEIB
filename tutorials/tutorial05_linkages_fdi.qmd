@@ -30,7 +30,7 @@ engine: markdown   # nothing to run at build time; the apps run in the browser
     transfer tau from 0 to 12. Both draw the "answers" version (with
     numbers): students use them after working through the questions.
   - To try an app on your computer as a normal Shiny app before pushing,
-    switch on Part 14 (code/app_test.R) in code/master.R and set app_qmd to
+    switch on Part 16 (code/app_test.R) in code/master.R and set app_qmd to
     this page there (app_chunk = 1 or 2).
 -->
 

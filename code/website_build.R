@@ -32,7 +32,7 @@
 
 # Safety check: stop with a clear message if master.R Part 1 has not run
 if (!exists("root") || !exists("d_site")) {
-  stop("root or d_site is missing. Run code/master.R with Part 13 switched ",
+  stop("root or d_site is missing. Run code/master.R with Part 15 switched ",
        "on, or run its Part 1 before this script.", call. = FALSE)
 }
 
