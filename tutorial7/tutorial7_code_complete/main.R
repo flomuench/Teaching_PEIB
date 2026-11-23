@@ -75,7 +75,6 @@ out_tab <- file.path(output, "tables")
 # Part 2: Cleantech FDI projects (fdi) ----
 # ***********************************************************
 # Switch a step on with if (1) and off with if (0).
-
 # 2.1: Import the raw project list
 #   Requires: cm-fdi-projects.csv
 #   Creates:  fdi_raw.rds

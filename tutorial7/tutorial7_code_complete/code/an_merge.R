@@ -19,6 +19,8 @@ fdi <- readRDS(file.path(fdi_final, "fdi_final.rds"))
 
 # Keep every country-year of the solar data (all.x = TRUE) and add the FDI columns
 an <- merge(sol, fdi, by = c("country", "year"), all.x = TRUE)
+# alternative with the package tidylog (prints how many rows matched and how many did not):
+# an <- tidylog::left_join(sol, fdi, by = c("country", "year"))
 
 # Check the merge: how many FDI country-years found no partner in the solar data?
 cat("FDI country-years:", nrow(fdi), "| matched:", sum(!is.na(an$n_projects)), "\n")
