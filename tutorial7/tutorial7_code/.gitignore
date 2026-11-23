@@ -1,0 +1,12 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+# Stata
+*.log
+*.smcl
+# Data never goes on GitHub
+*.csv
+*.rds
+*.dta
+*.xlsx
