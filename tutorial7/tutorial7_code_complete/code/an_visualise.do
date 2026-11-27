@@ -16,6 +16,7 @@
 {
 use "${an_final}/an_final", clear
 
+* Response to Question 4.8 a)
 twoway scatter solar_gw fdi_cum if year == 2024 & solar_gw > 0, yscale(log) ///
 	ylabel(0.00001 "0.00001" 0.001 "0.001" 0.1 "0.1" 10 "10" 1000 "1,000", angle(0)) ///
 	xtitle("Cleantech FDI projects announced since 2000") ///

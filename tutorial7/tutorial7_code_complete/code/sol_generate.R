@@ -17,6 +17,7 @@
 sol <- readRDS(file.path(sol_inter, "sol_inter.rds"))
 
 # The log is only defined for positive values; country-years with zero capacity stay missing
+# Response to Question 4.5 b)
 sol[solar_gw > 0, log_solar_gw := log(solar_gw)]
 
 saveRDS(sol, file.path(sol_final, "sol_final.rds"))

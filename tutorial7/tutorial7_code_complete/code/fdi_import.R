@@ -15,6 +15,7 @@
 # ***********************************************************
 
 # The raw csv is never edited. We read it and save an unchanged copy in R's own format.
+# Response to Question 3.3 a)
 fdi <- fread(file.path(fdi_raw, "cm-fdi-projects.csv"), encoding = "UTF-8")
 
 saveRDS(fdi, file.path(fdi_raw, "fdi_raw.rds"))

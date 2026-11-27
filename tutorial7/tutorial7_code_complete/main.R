@@ -47,6 +47,7 @@ if (.Platform$OS.type == "windows") {
   data_root <- file.path("/Users", user_name, "Library/CloudStorage/OneDrive-UniversityCollegeLondon/tutorial7_project")
 }
 # Check: show both paths and test that both folders exist
+# Response to Question 3.1 c)
 print(code_root)
 print(data_root)
 print(dir.exists(c(code_root, data_root)))   # both must be TRUE
@@ -61,6 +62,7 @@ fdi_raw   <- file.path(d, "fdi", "raw")
 fdi_inter <- file.path(d, "fdi", "inter")
 fdi_final <- file.path(d, "fdi", "final")
 
+# Response to Question 3.2
 sol_raw   <- file.path(d, "sol", "raw")
 sol_inter <- file.path(d, "sol", "inter")
 sol_final <- file.path(d, "sol", "final")
@@ -69,6 +71,7 @@ an_final  <- file.path(d, "an", "final")
 
 output  <- file.path(data_root, "output")
 out_fig <- file.path(output, "figures")
+# Response to Question 3.2
 out_tab <- file.path(output, "tables")
 
 # ***********************************************************
@@ -103,6 +106,7 @@ if (1) source(file.path(code, "fdi_aggregate.R"), echo = TRUE)
 # ***********************************************************
 # Part 3: Solar capacity (sol) ----
 # ***********************************************************
+# Response to Question 4.4
 # 3.1: Import the raw solar capacity file
 #   Requires: installed-solar-pv-capacity.csv
 #   Creates:  sol_raw.rds

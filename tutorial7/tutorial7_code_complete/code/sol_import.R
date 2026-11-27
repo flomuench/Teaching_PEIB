@@ -15,6 +15,7 @@
 # ***********************************************************
 
 # The raw csv is never edited. We read it and save an unchanged copy in R's own format.
+# Response to Question 4.1 a)
 sol <- fread(file.path(sol_raw, "installed-solar-pv-capacity.csv"))
 
 saveRDS(sol, file.path(sol_raw, "sol_raw.rds"))

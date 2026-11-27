@@ -17,6 +17,7 @@
 sol <- readRDS(file.path(sol_raw, "sol_raw.rds"))
 
 # Short names: country, iso3, year, solar_gw
+# Response to Question 4.2
 setnames(sol, c("country", "iso3", "year", "solar_gw"))
 
 saveRDS(sol, file.path(sol_inter, "sol_inter.rds"))

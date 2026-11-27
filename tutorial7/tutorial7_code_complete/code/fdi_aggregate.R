@@ -18,6 +18,7 @@ fdi <- readRDS(file.path(fdi_inter, "fdi_inter.rds"))
 
 # Number of projects and total announced investment per country and year.
 # na.rm = TRUE: projects without a published amount count as zero in the sum.
+# Response to Question 4.6 a)
 fdi <- fdi[, .(n_projects = .N, invest_bn = sum(invest_bn, na.rm = TRUE)),
            by = .(country, year)]
 

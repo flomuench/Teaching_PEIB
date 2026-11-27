@@ -21,6 +21,7 @@ fdi <- fdi[, .(`Project ID`, `Parent company`, `Company Country (HQ)`, `Project 
                `Destination Country`, `Year Announced`, Technology, `Capital Investment (US$m)`)]
 
 # Short lower-case names without spaces
+# Response to Question 3.4 a)
 setnames(fdi, c("project_id", "parent", "home_country", "status",
                 "country", "year", "technology", "invest_musd"))
 

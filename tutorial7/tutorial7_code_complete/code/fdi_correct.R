@@ -17,6 +17,7 @@
 fdi <- readRDS(file.path(fdi_inter, "fdi_inter.rds"))
 
 # Two destination countries are spelled differently from the solar data
+# Response to Question 3.5 a)
 fdi[country == "Czech Republic", country := "Czechia"]
 fdi[country == "UAE", country := "United Arab Emirates"]
 

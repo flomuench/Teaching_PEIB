@@ -21,6 +21,7 @@ keep projectid parentcompany companycountryhq projectstatus destinationcountry /
 	yearannounced technology capitalinvestmentusm
 
 	* short names
+* Response to Question 3.4 a)
 rename (projectid parentcompany companycountryhq projectstatus destinationcountry ///
 	yearannounced technology capitalinvestmentusm) ///
 	(project_id parent home_country status country year technology invest_musd)

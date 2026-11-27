@@ -18,6 +18,7 @@ sol <- readRDS(file.path(sol_final, "sol_final.rds"))
 fdi <- readRDS(file.path(fdi_final, "fdi_final.rds"))
 
 # Keep every country-year of the solar data (all.x = TRUE) and add the FDI columns
+# Response to Question 4.7 a)
 an <- merge(sol, fdi, by = c("country", "year"), all.x = TRUE)
 # alternative with the package tidylog (prints how many rows matched and how many did not):
 # an <- tidylog::left_join(sol, fdi, by = c("country", "year"))

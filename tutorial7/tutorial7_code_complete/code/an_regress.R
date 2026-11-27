@@ -19,6 +19,7 @@ an <- readRDS(file.path(an_final, "an_final.rds"))
 # r1: no fixed effects; r2: country and year fixed effects.
 # Standard errors clustered by country (observations of one country are not independent).
 r1 <- feols(log_solar_gw ~ fdi_cum, data = an, cluster = ~country)
+# Response to Question 4.9 a)
 r2 <- feols(log_solar_gw ~ fdi_cum | country + year, data = an, cluster = ~country)
 
 # Show the table in the Console

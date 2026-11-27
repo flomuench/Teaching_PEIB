@@ -5,7 +5,8 @@ Material for Tutorial 7 (reproducible coding with R, Stata, GitHub and AI agents
 | Folder | What it is |
 |---|---|
 | `tutorial7_code/` | The partly pre-coded project that students download as `tutorial7_code.zip`: task lines replaced by `your_code_here (Question x.y)`; `fdi_generate.R/.do` left out on purpose (Question 2.1). |
-| `tutorial7_code_complete/` | The complete project (`tutorial7_code_complete.zip`), released after the tutorial. |
+| `tutorial7_code_complete/` | The complete project (`tutorial7_code_complete.zip`), released after the tutorial; every answer is marked `# Response to Question x.y`. |
+| `tutorial7_code_lecturer/` | The complete project with the lecturer's paths in Part 1 of `main.R` / `main.do` (code here, data and output in the module's OneDrive folder `week7/project/tutorial7_project`); it runs from this folder. |
 | `tutorial7_project/data/` | The two raw data files (`tutorial7_data.zip`) at the paths the main scripts expect. Intermediate and final data and the outputs are not stored here; the scripts re-create them. |
 
 ## Data sources

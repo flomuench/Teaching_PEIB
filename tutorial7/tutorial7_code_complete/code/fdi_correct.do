@@ -17,6 +17,7 @@
 use "${fdi_inter}/fdi_inter", clear
 
 	* two destination countries are spelled differently from the solar data
+* Response to Question 3.5 a)
 replace country = "Czechia" if country == "Czech Republic"
 replace country = "United Arab Emirates" if country == "UAE"
 

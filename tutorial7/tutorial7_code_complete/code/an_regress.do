@@ -23,6 +23,7 @@ xtset country_id year
 	* r1: no fixed effects; r2: country and year fixed effects; clustered by country
 regress log_solar_gw fdi_cum, vce(cluster country_id)
 estimates store r1
+* Response to Question 4.9 a)
 xtreg log_solar_gw fdi_cum i.year, fe vce(cluster country_id)
 estimates store r2
 

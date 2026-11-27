@@ -1,0 +1,249 @@
+% =====================================================================
+% PEIB (SEES0082) Lecture 7 - Two externalities in the supply-demand diagram
+% (24 Nov 2026). Same style and colours as lecture07_weitzman.tex (frame
+% w7_externality): black = demand, blue = marginal private cost (supply),
+% green = marginal social cost, red = welfare loss, gray dashed = guides.
+%
+% Frames:
+%   w7_ext_negative  environmental externality: MSC = MPC + MD above MPC
+%                    => market produces too much (Q^m > Q^*), price too low
+%   w7_ext_positive  R&D / learning externality: MSC = MPC - MEB below MPC
+%                    => market produces too little (Q^m < Q^*), price too high
+%   w7_ext_both      both diagrams side by side: dirty good and clean good
+%
+% All three come from ONE macro, \extdiagram, so a change of a slope or of the
+% size of the externality moves curves, points, guides and the shaded triangle
+% together. Numbers (demand P = 4.5 - 0.7Q, MPC slope 0.6, externality 1.4):
+%   negative: MPC = 0.3 + 0.6Q -> Q^m = 4.2/1.3 = 3.23, P^m = 2.24
+%             MSC = 1.7 + 0.6Q -> Q^* = 2.8/1.3 = 2.15, P^* = 2.99
+%   positive: MPC = 1.9 + 0.6Q -> Q^m = 2.6/1.3 = 2.00, P^m = 3.10
+%             MSC = 0.5 + 0.6Q -> Q^* = 4.0/1.3 = 3.08, P^* = 2.35
+%
+% Build (skill latex-teaching):
+%   py "$HOME/.claude/skills/latex-teaching/scripts/build.py" lecture07_externalities.tex
+%   py "$HOME/.claude/skills/latex-teaching/scripts/build.py" lecture07_externalities.tex --handout
+% Export for PowerPoint (handout PDF = one page per frame, everything visible):
+%   py "$HOME/.claude/skills/latex-teaching/scripts/export_frames.py" lecture07_externalities_handout.pdf
+%      --out ../png/week7 --names w7_ext_negative,w7_ext_positive,w7_ext_both
+% =====================================================================
+\documentclass{beamer}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+
+\usetikzlibrary{decorations.pathreplacing}
+\pgfplotsset{compat=newest}
+
+% Minimal, no headers/footers/nav symbols
+\mode<presentation>{
+  \usetheme{default}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{headline}{}
+  \setbeamertemplate{footline}{}
+}
+
+% ---------------------------------------------------------------------
+% \extdiagram{scale}{MPC intercept}{sign}{compact}{step}
+%   #1 scale of the picture (1.1 full slide, about 0.62 for two panels)
+%   #2 intercept of the marginal private cost curve
+%   #3 sign of the externality: 1 = negative externality (MSC above MPC),
+%                              -1 = positive externality (MSC below MPC)
+%   #4 0 = full labels, 1 = compact labels (for the two-panel frame)
+%   #5 overlay step at which the MSC curve and the optimum appear (1 = at once)
+% ---------------------------------------------------------------------
+\newcommand{\extdiagram}[5]{%
+\begin{tikzpicture}[scale=#1]
+
+% Parameters
+\pgfmathsetmacro{\mD}{-0.7}      % slope of demand
+\pgfmathsetmacro{\bD}{4.5}       % intercept of demand
+\pgfmathsetmacro{\mS}{0.6}       % slope of the cost curves
+\pgfmathsetmacro{\bS}{#2}        % intercept of MPC
+\pgfmathsetmacro{\dm}{#3*1.4}    % MSC - MPC (positive: damage, negative: external benefit)
+
+% Market equilibrium: demand = MPC
+\pgfmathsetmacro{\Qm}{(\bD-\bS)/(\mS-\mD)}
+\pgfmathsetmacro{\Pm}{\mS*\Qm+\bS}
+% Social optimum: demand = MSC
+\pgfmathsetmacro{\Qstar}{(\bD-\bS-\dm)/(\mS-\mD)}
+\pgfmathsetmacro{\Pstar}{\mS*\Qstar+\bS+\dm}
+% MSC at the market quantity (third corner of the welfare-loss triangle)
+\pgfmathsetmacro{\MSCatQm}{\mS*\Qm+\bS+\dm}
+% Right end of the curves
+\pgfmathsetmacro{\xE}{5.5}
+\pgfmathsetmacro{\yMPC}{\mS*\xE+\bS}
+\pgfmathsetmacro{\yMSC}{\mS*\xE+\bS+\dm}
+
+% Axes
+\ifnum#4=0
+  \draw[->, thick] (0,0) -- (6,0) node[below] {Quantity};
+  \draw[->, thick] (0,0) -- (0,5.8) node[left] {Price};
+\else
+  \draw[->, thick] (0,0) -- (6,0) node[below] {$Q$};
+  \draw[->, thick] (0,0) -- (0,5.8) node[left] {$P$};
+\fi
+
+% Demand
+\draw[thick, black] (0.3, {\mD*0.3+\bD}) -- (\xE, {\mD*\xE+\bD});
+\ifnum#4=0
+  \node[black, right, align=left] at (\xE, {\mD*\xE+\bD}) {\textbf{Demand} \\ \small Marginal benefit};
+\else
+  \node[black, right] at (\xE, {\mD*\xE+\bD}) {\small D};
+\fi
+
+% Supply = marginal private cost
+\draw[thick, blue] (0.3, {\mS*0.3+\bS}) -- (\xE, \yMPC);
+\ifnum#4=0
+  % the upper curve's label sits above its line end, the lower one's below
+  \ifnum#3=1
+    \node[blue, anchor=north west, align=left] at (\xE, {\yMPC+0.35}) {\textbf{Supply} \\ \small Marginal private \\ \small cost (MPC)};
+  \else
+    \node[blue, anchor=south west, align=left] at (\xE, {\yMPC-0.35}) {\textbf{Supply} \\ \small Marginal private \\ \small cost (MPC)};
+  \fi
+\else
+  \node[blue, right] at (\xE, \yMPC) {\small MPC};
+\fi
+
+% Market equilibrium
+\draw[dashed, gray] (\Qm, 0) -- (\Qm, \Pm);
+\node[below] at (\Qm, 0) {$Q^m$};
+\draw[dashed, gray] (0, \Pm) -- (\Qm, \Pm);
+\node[left] at (0, \Pm) {$P^m$};
+\filldraw[black] (\Qm, \Pm) circle (2pt);
+
+% Marginal social cost, optimum and welfare loss
+\onslide<#5->{
+\draw[thick, green!60!black] (0.3, {\mS*0.3+\bS+\dm}) -- (\xE, \yMSC);
+\ifnum#4=0
+  \ifnum#3=1
+    \node[green!60!black, anchor=south west, align=left] at (\xE, {\yMSC-0.35}) {Marginal social \\ cost (MSC) \\ \small $= MPC + MD$};
+  \else
+    \node[green!60!black, anchor=north west, align=left] at (\xE, {\yMSC+0.35}) {Marginal social \\ cost (MSC) \\ \small $= MPC - MEB$};
+  \fi
+\else
+  \node[green!60!black, right] at (\xE, \yMSC) {\small MSC};
+\fi
+
+% Welfare-loss triangle: optimum, market point, MSC at Q^m
+\fill[red!70, opacity=0.6]
+  (\Qstar, \Pstar) -- (\Qm, \Pm) -- (\Qm, \MSCatQm) -- cycle;
+
+% Optimum
+\draw[dashed, gray] (\Qstar, 0) -- (\Qstar, \Pstar);
+\node[below] at (\Qstar, 0) {$Q^*$};
+\draw[dashed, gray] (0, \Pstar) -- (\Qstar, \Pstar);
+\node[left] at (0, \Pstar) {$P^*$};
+\filldraw[black] (\Qstar, \Pstar) circle (2pt);
+\filldraw[black] (\Qm, \Pm) circle (2pt);
+\filldraw[black] (\Qm, \MSCatQm) circle (2pt);
+
+\ifnum#4=0
+  % Size of the externality: double arrow between MPC and MSC
+  \pgfmathsetmacro{\xX}{4.7}
+  \pgfmathsetmacro{\yA}{\mS*\xX+\bS}
+  \pgfmathsetmacro{\yB}{\mS*\xX+\bS+\dm}
+  \draw[<->, thick, purple] (\xX, \yA) -- (\xX, \yB);
+  \ifnum#3=1
+    \node[purple, right] at (\xX + 0.05, {(\yA+\yB)/2}) {$MD$};
+    % Welfare-loss label above the triangle
+    \draw[->, thick, red!70!black] ({\Qm + 0.2}, {\MSCatQm + 1.0}) -- ({\Qm - 0.15}, {\MSCatQm + 0.1});
+    \node[red!70!black, align=center] at ({\Qm + 0.3}, {\MSCatQm + 1.4}) {Welfare \\ loss};
+  \else
+    \node[purple, left] at (\xX - 0.05, {(\yA+\yB)/2}) {$MEB$};
+    % Welfare-loss label above the market point (mirror of the pollution diagram)
+    \draw[->, thick, red!70!black] ({\Qm - 0.65}, {\Pm + 1.35}) -- ({\Qm + 0.15}, {\Pm - 0.35});
+    \node[red!70!black, align=center] at ({\Qm - 0.8}, {\Pm + 1.75}) {Welfare \\ loss};
+  \fi
+\fi
+}
+
+\end{tikzpicture}%
+}
+
+\begin{document}
+
+%========================
+% 1: negative (environmental) externality
+%========================
+\begin{frame}[label=w7_ext_negative]{Environmental externality: the market produces too much}
+\centering
+\extdiagram{1.05}{0.3}{1}{0}{2}
+
+\vspace{-0.1cm}
+{\footnotesize $MD$: marginal damage that production imposes on third parties (pollution). \\
+\onslide<2->{The market ignores it: $Q^m > Q^*$ and $P^m < P^*$.}}
+\end{frame}
+
+% To say:
+% Producers decide on their own marginal cost. Each unit also causes damage to others, so the
+% cost to society is higher. Demand meets the social cost earlier: less output, higher price.
+% The red triangle is the welfare lost on the units between Q* and Q^m, which cost society
+% more than buyers are willing to pay.
+
+%========================
+% 2: positive (R&D, learning-by-doing) externality
+%========================
+\begin{frame}[label=w7_ext_positive]{R\&D externality: the market produces too little}
+\centering
+\extdiagram{1.05}{1.9}{-1}{0}{2}
+
+\vspace{-0.1cm}
+{\footnotesize $MEB$: marginal external benefit, e.g. knowledge that lowers other firms' costs. \\
+\onslide<2->{The market ignores it: $Q^m < Q^*$ and $P^m > P^*$.}}
+\end{frame}
+
+% To say:
+% The mirror image. Each unit a firm produces (or each euro of R&D) creates knowledge that other
+% firms use without paying. The cost to society is therefore lower than the cost to the firm.
+% Demand meets the social cost later: more output, lower price. The red triangle is the welfare
+% lost on the units between Q^m and Q* that are not produced although buyers value them above
+% their social cost.
+% Alternative drawing (not used): keep one cost curve and put a marginal social benefit curve
+% above demand. Same Q* logic; the cost version is used here to mirror the pollution diagram.
+
+%========================
+% 3: both, side by side (two markets)
+%========================
+\begin{frame}[label=w7_ext_both]{Two externalities, two markets}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\centering
+\textbf{Dirty good} \\ {\small e.g. coal power, petrol cars}
+
+\vspace{0.1cm}
+\extdiagram{0.6}{0.3}{1}{1}{1}
+
+{\small Pollution: $MSC > MPC$ \\
+Market produces \textbf{too much} \\
+\onslide<2->{Instrument: carbon price}}
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering
+\textbf{Clean good} \\ {\small e.g. solar panels, batteries}
+
+\vspace{0.1cm}
+\extdiagram{0.6}{1.9}{-1}{1}{1}
+
+{\small Knowledge spillovers: $MSC < MPC$ \\
+Market produces \textbf{too little} \\
+\onslide<2->{Instrument: R\&D or deployment subsidy}}
+\end{column}
+\end{columns}
+
+\vspace{0.3cm}
+\onslide<3->{\centering \textbf{Two market failures $\Rightarrow$ two instruments}: a carbon price alone does not close the gap on the right. \par}
+\end{frame}
+
+% To say:
+% The two externalities sit in two different markets, so they cannot be netted against each
+% other. A carbon price moves the dirty market to Q*. It also raises demand for the clean good,
+% but the knowledge spillover remains unpriced, so clean output and clean innovation stay below
+% the optimum. This is the case for carbon pricing plus green industrial policy.
+
+\end{document}

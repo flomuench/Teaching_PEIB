@@ -20,6 +20,7 @@ use "${fdi_inter}/fdi_inter", clear
 gen n_projects = 1
 
 	* number of projects and total announced investment per country and year
+* Response to Question 4.6 a)
 collapse (sum) n_projects invest_bn, by(country year)
 
 save "${fdi_final}/fdi_final", replace

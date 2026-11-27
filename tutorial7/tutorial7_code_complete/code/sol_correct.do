@@ -20,6 +20,7 @@ use "${sol_inter}/sol_inter", clear
 replace iso3 = "XKX" if iso3 == "OWID_KOS"
 
 	* rows without a country code, or with an OWID_ code, are aggregates
+* Response to Question 4.3
 drop if iso3 == "" | strpos(iso3, "OWID") > 0
 
 save "${sol_inter}/sol_inter", replace

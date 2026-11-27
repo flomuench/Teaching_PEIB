@@ -48,6 +48,7 @@ else {
 	global data_root "/Users/${user_name}/Library/CloudStorage/OneDrive-UniversityCollegeLondon/tutorial7_project"
 }
 	* check: show both paths and test that both folders exist (1 = exists)
+* Response to Question 3.1 c)
 display "${code_root}"
 display "${data_root}"
 mata: direxists("${code_root}"), direxists("${data_root}")
@@ -58,6 +59,7 @@ global fdi_raw   "${data_root}/data/fdi/raw"
 global fdi_inter "${data_root}/data/fdi/inter"
 global fdi_final "${data_root}/data/fdi/final"
 
+* Response to Question 3.2
 global sol_raw   "${data_root}/data/sol/raw"
 global sol_inter "${data_root}/data/sol/inter"
 global sol_final "${data_root}/data/sol/final"
@@ -65,6 +67,7 @@ global sol_final "${data_root}/data/sol/final"
 global an_final  "${data_root}/data/an/final"
 
 global out_fig   "${data_root}/output/figures"
+* Response to Question 3.2
 global out_tab   "${data_root}/output/tables"
 }
 
@@ -104,6 +107,7 @@ if (1) do "${code}/fdi_aggregate.do"
 **# 	PART 3: 	Solar capacity (sol)
 ***********************************************************************
 {
+* Response to Question 4.4
 	* 3.1: import the raw solar capacity file
 	*   Requires: installed-solar-pv-capacity.csv
 	*   Creates:  sol_raw.dta

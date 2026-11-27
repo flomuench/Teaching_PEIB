@@ -15,6 +15,7 @@
 ***********************************************************************
 {
 	* the raw csv is never edited: we read it and save an unchanged copy
+* Response to Question 3.3 a)
 import delimited "${fdi_raw}/cm-fdi-projects.csv", varnames(1) bindquote(strict) encoding(UTF-8) clear
 
 save "${fdi_raw}/fdi_raw", replace

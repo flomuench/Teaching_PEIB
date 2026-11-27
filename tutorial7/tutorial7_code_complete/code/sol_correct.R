@@ -20,6 +20,7 @@ sol <- readRDS(file.path(sol_inter, "sol_inter.rds"))
 sol[iso3 == "OWID_KOS", iso3 := "XKX"]
 
 # Rows without a country code, or with an OWID_ code, are aggregates (World, Europe, ...)
+# Response to Question 4.3
 sol <- sol[iso3 != "" & !grepl("OWID", iso3)]
 
 saveRDS(sol, file.path(sol_inter, "sol_inter.rds"))

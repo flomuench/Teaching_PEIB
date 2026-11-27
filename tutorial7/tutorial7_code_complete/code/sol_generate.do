@@ -17,6 +17,7 @@
 use "${sol_inter}/sol_inter", clear
 
 	* the log is only defined for positive values
+* Response to Question 4.5 b)
 gen log_solar_gw = ln(solar_gw) if solar_gw > 0
 lab var log_solar_gw "Log installed solar PV capacity"
 

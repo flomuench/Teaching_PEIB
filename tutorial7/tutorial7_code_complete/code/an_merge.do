@@ -16,6 +16,7 @@
 {
 use "${sol_final}/sol_final", clear
 
+* Response to Question 4.7 a)
 merge 1:1 country year using "${fdi_final}/fdi_final"
 	* paste the merge table that Stata shows here as a comment
 

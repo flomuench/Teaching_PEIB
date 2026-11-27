@@ -17,6 +17,7 @@
 use "${sol_raw}/sol_raw", clear
 
 	* short names: country, iso3, year, solar_gw
+* Response to Question 4.2
 rename (entity code solar__total_gw) (country iso3 solar_gw)
 lab var solar_gw "Installed solar PV capacity (GW)"
 

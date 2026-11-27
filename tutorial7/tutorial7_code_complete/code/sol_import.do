@@ -15,6 +15,7 @@
 ***********************************************************************
 {
 	* the raw csv is never edited: we read it and save an unchanged copy
+* Response to Question 4.1 a)
 import delimited "${sol_raw}/installed-solar-pv-capacity.csv", varnames(1) clear
 
 save "${sol_raw}/sol_raw", replace

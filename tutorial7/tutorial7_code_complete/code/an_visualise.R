@@ -16,6 +16,7 @@
 
 an <- readRDS(file.path(an_final, "an_final.rds"))
 
+# Response to Question 4.8 a)
 fig <- ggplot(an[year == 2024 & solar_gw > 0], aes(x = fdi_cum, y = solar_gw)) +
   geom_point(colour = "#4C78A8") +
   scale_y_log10(breaks = c(0.00001, 0.001, 0.1, 10, 1000),
